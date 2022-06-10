@@ -4,7 +4,7 @@ node_modules/
 .eslintcache
 .stylelintcache
 *.egg-info/
-.ipynb_checkpoints
+*.ipynb_checkpoints
 *.tsbuildinfo
 jupyterlab_urdf/labextension
 
