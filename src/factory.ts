@@ -1,4 +1,8 @@
-import { ABCWidgetFactory, DocumentRegistry } from '@jupyterlab/docregistry';
+import { 
+    ABCWidgetFactory, 
+    DocumentRegistry,
+    DocumentModel,
+} from '@jupyterlab/docregistry';
 
 import { IModelDB } from '@jupyterlab/observables';
 
@@ -6,19 +10,22 @@ import { Contents } from '@jupyterlab/services';
 
 import { UrdfWidget, UrdfPanel } from './widget';
 
-import { UrdfModel } from './model';
+// import { UrdfModel } from './model';
 
 /**
  * A widget factory to create new instances of UrdfWidgets
  */
-export class UrdfWidgetFactory extends ABCWidgetFactory<UrdfWidget, UrdfModel> {
+export class UrdfWidgetFactory extends ABCWidgetFactory<
+    UrdfWidget, 
+    DocumentModel
+> {
     constructor(options: DocumentRegistry.IWidgetFactoryOptions) {
-        super(options);
+        super(options)
     }
 
     // Create new UrdfWidget given a context (file info)
     protected createNewWidget(
-        context: DocumentRegistry.IContext<UrdfModel>): UrdfWidget {
+        context: DocumentRegistry.IContext<DocumentModel>): UrdfWidget {
             return new UrdfWidget({
                 context,
                 content: new UrdfPanel(context),
@@ -31,7 +38,7 @@ export class UrdfWidgetFactory extends ABCWidgetFactory<UrdfWidget, UrdfModel> {
  * A model factory to create new instances of UrdfModel
  */
 export class UrdfModelFactory 
-    implements DocumentRegistry.IModelFactory<UrdfModel> {
+    implements DocumentRegistry.IModelFactory<DocumentModel> {
         // The name of the model
         get name(): string {
             return 'urdf-model';
@@ -69,8 +76,8 @@ export class UrdfModelFactory
          * @param modelDB Model database
          * @returns The model
          */
-        createNew(languagePreference?: string, modelDB?: IModelDB): UrdfModel {
-            return new UrdfModel(languagePreference, modelDB);
+        createNew(languagePreference?: string, modelDB?: IModelDB): DocumentModel {
+            return new DocumentModel(languagePreference, modelDB);
         }
 
         private _disposed = false;

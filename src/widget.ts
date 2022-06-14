@@ -1,4 +1,8 @@
-import { DocumentRegistry, DocumentWidget } from '@jupyterlab/docregistry';
+import { 
+    DocumentRegistry, 
+    DocumentWidget,
+    DocumentModel,
+} from '@jupyterlab/docregistry';
 
 import { Widget } from '@lumino/widgets';
 
@@ -6,13 +10,13 @@ import { Message } from '@lumino/messaging';
 
 import { Signal } from '@lumino/signaling';
 
-import { UrdfModel, UrdfChange, Position } from './model';
+// import { UrdfModel, UrdfChange, Position } from './model';
 
 /**
  * UrdfWidget: widget that represents the view for a urdf (file).
  */
-export class UrdfWidget extends DocumentWidget<UrdfPanel, UrdfModel> {
-    constructor(options: DocumentWidget.IOptions<UrdfPanel, UrdfModel>) {
+export class UrdfWidget extends DocumentWidget<UrdfPanel, DocumentModel> {
+    constructor(options: DocumentWidget.IOptions<UrdfPanel, DocumentModel>) {
         super(options);        
     }
 
@@ -32,12 +36,12 @@ export class UrdfPanel extends Widget {
      * 
      * @param context - The documents context
      */
-    constructor(context: DocumentRegistry.IContext<UrdfModel>) {
+    constructor(context: DocumentRegistry.IContext<DocumentModel>) {
         super();
         this.addClass('jp-urdf-canvas');  // for css styling
         this._context = context;
-        this._isDown = false;
-        this._offset = { x: 0, y: 0};
+        // this._isDown = false;
+        // this._offset = { x: 0, y: 0};
 
         this._context.ready.then((value) => {
             // TODO
@@ -46,7 +50,7 @@ export class UrdfPanel extends Widget {
         });
     
         // TODO
-        const obj = this._context.model.getSharedObject();
+        // const obj = this._context.model.getSharedObject();
     }
 
     // Dispose of resources held by widget
@@ -65,7 +69,7 @@ export class UrdfPanel extends Widget {
      */
     protected onAfterAttach(msg: Message): void {
         super.onAfterAttach(msg);
-        this._cube.addEventListener('mousedown', this, true);
+        // this._cube.addEventListener('mousedown', this, true);
         // TODO
     }
 
@@ -76,7 +80,7 @@ export class UrdfPanel extends Widget {
      */
     protected onBeforeDetach(msg: Message): void {
         super.onBeforeDetach(msg);
-        this._cube.removeEventListener('mousedown', this, true);
+        // this._cube.removeEventListener('mousedown', this, true);
         // TODO
     }
 
@@ -93,8 +97,8 @@ export class UrdfPanel extends Widget {
     }
 
 
-    private _context: DocumentRegistry.IContext<UrdfModel>;
-    private _isDown: boolean;
-    private _offset: Position;
-    private _cube: HTMLElement;
+    private _context: DocumentRegistry.IContext<DocumentModel>;
+    // private _isDown: boolean;
+    // private _offset: Position;
+    // private _cube: HTMLElement;
 }
