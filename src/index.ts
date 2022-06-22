@@ -57,7 +57,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     browserFactory: IFileBrowserFactory,
     launcher: ILauncher,
     menu: IMainMenu,
-    ) => {
+    ): void => {
     console.log('JupyterLab extension URDF is activated!');
 
     // const { commands, shell } = app;
@@ -114,7 +114,7 @@ const extension: JupyterFrontEndPlugin<void> = {
 
     // Add command for creating new urdf (file)
     commands.addCommand('urdf:create-new', {
-      label: 'URDF',
+      label: 'Create new URDF',
       iconClass: 'jp-MaterialIcon jp-Image-Icon',
       caption: 'Create a new URDF',
       execute: () => {
@@ -125,11 +125,31 @@ const extension: JupyterFrontEndPlugin<void> = {
           type: 'file',
           ext: '.urdf'
         })
-        .then(model =>
+        .then(model => {
           commands.execute('docmanager:open', {
             path: model.path,
             factory: FACTORY,
-          }));
+          });
+          commands.execute('docmanager:open', {
+            path: model.path,
+            // TODO open with text editor
+          })
+        })
+      }
+    });
+
+    // Add command for opening URDF viewer
+    commands.addCommand('urdf:open-viewer', {
+      label: 'Open URDF Viewer',
+      caption: 'Open a new URDF Viewer.',
+      isVisible: () => true,
+      isEnabled: () => true,
+      execute: () => {
+        commands.execute(
+          'docmanager:open', {
+            // path: model.path,  // TODO
+            factory: FACTORY,
+        })
       }
     });
 
@@ -144,7 +164,6 @@ const extension: JupyterFrontEndPlugin<void> = {
 
     // TODO: Add menu item if menu is available
     if (menu) {
-      // addMenus(commands, menu, tracker);
       const urdfMenu: Menu = new Menu({ commands });
       urdfMenu.title.label = 'URDF';
       urdfMenu.addItem({ command: 'urdf:create-new' });
@@ -163,19 +182,3 @@ const extension: JupyterFrontEndPlugin<void> = {
 };
 
 export default extension;
-
-// function addMenus(
-//   commands: CommandRegistry,
-//   mainMenu: IMainMenu,
-//   tracker: IWidgetTracker<UrdfWidget>,
-// ): void {
-//   const urdfMenu = new Menu({ commands });
-//   urdfMenu.title.label = 'URDF';
-
-//   mainMenu.addMenu(urdfMenu, { rank: 50 });
-
-//   urdfMenu.addItem({ command: 'urdf/create-new' });
-//   urdfMenu.addItem({ type: 'separator' });
-//   urdfMenu.addItem({ command: 'urdf/open-viewer' });
-// }
-

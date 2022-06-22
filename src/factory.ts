@@ -25,7 +25,8 @@ export class UrdfWidgetFactory extends ABCWidgetFactory<
 
     // Create new UrdfWidget given a context (file info)
     protected createNewWidget(
-        context: DocumentRegistry.IContext<DocumentModel>): UrdfWidget {
+        context: DocumentRegistry.IContext<DocumentModel>
+        ): UrdfWidget {
             return new UrdfWidget({
                 context,
                 content: new UrdfPanel(context),

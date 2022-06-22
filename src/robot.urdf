@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <robot name="simple_niryo">
 
     <material name="blue">
@@ -181,38 +182,5 @@
         <origin xyz="0.08 0 0"/>
     </joint>
 
-    <!-- LEFT FINGER LINK -->
-    <link name="left_finger_link">
-        <visual>
-            <geometry>
-                <mesh filename="package://urdf_tutorial/meshes/l_finger.dae"/>
-            </geometry>
-            <origin xyz="0.01 0.02 0"/>
-        </visual>
-    </link>
-    <joint name="knuckle_to_left_finger_joint" type="revolute">
-        <parent link="knuckle_link"/>
-        <child link="left_finger_link"/>
-        <origin rpy="0 0 0" xyz="0.08 0 0"/>
-        <axis xyz="0 0 1"/>
-        <limit effort="1000.0" lower="-0.17" upper="0.548" velocity="0.5"/>
-    </joint>
-
-    <!-- RIGHT FINGER LINK -->
-    <link name="right_finger_link">
-        <visual>
-            <geometry>
-                <mesh filename="package://urdf_tutorial/meshes/l_finger.dae"/>
-            </geometry>
-            <origin rpy="${radians(180)} 0 0" xyz="0.01 -0.02 0"/>
-        </visual>
-    </link>
-    <joint name="knuckle_to_right_finger_joint" type="revolute">
-        <parent link="knuckle_link"/>
-        <child link="right_finger_link"/>
-        <origin rpy="0 0 0" xyz="0.08 0 0"/>
-        <axis xyz="0 0 1"/>
-        <limit effort="1000.0" lower="-0.548" upper="0.17" velocity="0.5"/>
-    </joint>
 
 </robot>
