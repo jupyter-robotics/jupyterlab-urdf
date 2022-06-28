@@ -10,30 +10,29 @@ import { DefaultLoadingManager } from 'three';
 //https://github.com/RoboStack/amphion/blob/879045327e879d0bb6fe2c8eac54664de46ef675/src/core/urdf.ts#L22
 DefaultLoadingManager.setURLModifier(url => {
   console.debug("THREE MANAGER:", url);
-  return '/api/pkgs' + url;
+  return '/ros/pkgs' + url;
 });
 
 /**
- * A blockly layout to host the Blockly editor.
+ * A URDF layout to host the URDF viewer
  */
 export class URDFLayout extends PanelLayout {
   private _host: HTMLElement;
   private _viewer: any;
 
   /**
-   * Construct a `URDFLayout`.
-   *
+   * Construct a `URDFLayout`
    */
   constructor() {
     super();
 
-    // Creating the container for the Blockly editor
-    // and the output area to render the execution replies.
+    // Creating container for URDF viewer and
+    // output area to render execution replies
     this._host = document.createElement('div');
   }
 
   /**
-   * Dispose of the resources held by the widget.
+   * Dispose of the resources held by the widget
    */
   dispose(): void {
     this._viewer.destroy();
@@ -41,25 +40,25 @@ export class URDFLayout extends PanelLayout {
   }
 
   /**
-   * Init the blockly layout
+   * Init the URDF layout
    */
   init(): void {
     super.init();
-    // Add the blockly container into the DOM
+    // Add the URDF container into the DOM
     this.addWidget(new Widget({ node: this._host }));
   }
 
   /**
-   * Create an iterator over the widgets in the layout.
+   * Create an iterator over the widgets in the layout
    */
   iter(): IIterator<Widget> {
     return new ArrayIterator([]);
   }
 
   /**
-   * Remove a widget from the layout.
+   * Remove a widget from the layout
    *
-   * @param widget - The `widget` to remove.
+   * @param widget - The `widget` to remove
    */
   removeWidget(widget: Widget): void {
     return;

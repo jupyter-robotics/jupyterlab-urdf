@@ -9,6 +9,10 @@ node_modules/
 jupyterlab_urdf/labextension
 *untitled*
 *.vscode/
+*build/
+*devel/
+*logs/
+*catkin_tools/
 
 # Integration tests
 ui-tests/test-results/

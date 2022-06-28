@@ -27,3 +27,4 @@ export class UrdfWidgetFactory extends ABCWidgetFactory<
       content: new UrdfPanel(context)
     });
   }
+}

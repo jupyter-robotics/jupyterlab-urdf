@@ -62,7 +62,7 @@
         <child link="shoulder_link"/>
         <origin rpy="0 0 0" xyz="0 0 0.15"/>
         <axis xyz="0 0 1"/>
-        <limit effort="1000.0" lower="-${radians(150.0)}" upper="${radians(150.0)}" velocity="0.5"/>
+        <limit effort="1000.0" lower="-2.617994" upper="2.617994" velocity="0.5"/>
     </joint>
 
     <!-- [OPTIONAL] VISUAL FOR ELBOW LINK JOINT -->
@@ -86,16 +86,16 @@
             <geometry>
                 <cylinder length="0.4" radius="0.04"/>
             </geometry>
-            <origin rpy="0 ${radians(90)} 0" xyz="0.2 0 0"/>
+            <origin rpy="0 1.570796 0" xyz="0.2 0 0"/>
             <material name="silver"/>
         </visual>
     </link>
     <joint name="shoulder_to_elbow_joint" type="revolute">
         <parent link="shoulder_link"/>
         <child link="elbow_link"/>
-        <origin rpy="${radians(90)} 0 0" xyz="0 0 0.15"/>
+        <origin rpy="1.570796 0 0" xyz="0 0 0.15"/>
         <axis xyz="0 0 1"/>
-        <limit effort="1000.0" lower="${radians(-10.0)}" upper="${radians(200.0)}" velocity="0.5"/>
+        <limit effort="1000.0" lower="-0.1745329" upper="3.490659" velocity="0.5"/>
     </joint>
 
     <!-- [OPTIONAL] VISUAL FOR WRIST LINK JOINT -->
@@ -120,7 +120,7 @@
             <geometry>
                 <cylinder length="0.3" radius="0.04"/>
             </geometry>
-            <origin rpy="0 ${radians(90)} 0" xyz="0.15 0 0"/>
+            <origin rpy="0 1.570796 0" xyz="0.15 0 0"/>
             <material name="silver"/>
         </visual>
     </link>
@@ -129,7 +129,7 @@
         <child link="wrist_link"/>
         <origin rpy="0 0 0" xyz="0.4 0 0"/>
         <axis xyz="0 0 1"/>
-        <limit effort="1000.0" lower="${radians(-100.0)}" upper="${radians(100.0)}" velocity="0.5"/>
+        <limit effort="1000.0" lower="-1.745329" upper="1.745329" velocity="0.5"/>
     </joint>
 
     <!-- [OPTIONAL] VISUAL FOR KNUCKLE LINK JOINT -->
@@ -163,7 +163,7 @@
         <child link="knuckle_link"/>
         <origin rpy="0 0 0" xyz="0.3 0 0"/>
         <axis xyz="0 0 1"/>
-        <limit effort="1000.0" lower="${radians(-90.0)}" upper="${radians(90.0)}" velocity="0.5"/>
+        <limit effort="1000.0" lower="-1.570796" upper="1.570796" velocity="0.5"/>
     </joint>
 
     <!-- [OPTIONAL] VISUAL FOR FINGER LINK JOINT -->
@@ -204,7 +204,7 @@
             <geometry>
                 <mesh filename="package://urdf_tutorial/meshes/l_finger.dae"/>
             </geometry>
-            <origin rpy="${radians(180)} 0 0" xyz="0.01 -0.02 0"/>
+            <origin rpy="3.141593 0 0" xyz="0.01 -0.02 0"/>
         </visual>
     </link>
     <joint name="knuckle_to_right_finger_joint" type="revolute">
