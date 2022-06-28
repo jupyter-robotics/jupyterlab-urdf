@@ -101,7 +101,7 @@ const extension: JupyterFrontEndPlugin<void> = {
 
     // Add command for creating new urdf (file)
     commands.addCommand('urdf:create-new', {
-      label: 'URDF',
+      label: 'Create new URDF',
       iconClass: 'jp-MaterialIcon jp-Image-Icon',
       caption: 'Create a new URDF',
       execute: () => {
@@ -133,7 +133,6 @@ const extension: JupyterFrontEndPlugin<void> = {
 
     // TODO: Add menu item if menu is available
     if (menu) {
-      // addMenus(commands, menu, tracker);
       const urdfMenu: Menu = new Menu({ commands });
       urdfMenu.title.label = 'URDF';
       urdfMenu.addItem({ command: 'urdf:create-new' });

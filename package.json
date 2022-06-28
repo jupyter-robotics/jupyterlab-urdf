@@ -74,6 +74,7 @@
     "@jupyterlab/builder": "^3.4.0",
     "@jupyterlab/testutils": "^3.4.0",
     "@types/jest": "^26.0.0",
+    "@types/p5": "^1.4.2",
     "@typescript-eslint/eslint-plugin": "^4.8.1",
     "@typescript-eslint/parser": "^4.8.1",
     "eslint": "^7.14.0",

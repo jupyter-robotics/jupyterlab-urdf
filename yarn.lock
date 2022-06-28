@@ -7689,7 +7689,7 @@ pcl-decoder@^0.1.7:
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/pcl-decoder/-/pcl-decoder-0.1.8.tgz#a04a266dd3f0f42e12a5492554807beecb2e2d4d"
   integrity sha512-dLRv95J2KVWYo0VlnObBZK41hgw/vJay0mv1khpQyNp+cZ5V62us/az1+OAt/28paaQjYdVWBwMZL9WRP1fp/w==
-
+  
 performance-now@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"

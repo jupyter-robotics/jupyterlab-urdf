@@ -13,6 +13,7 @@ export class UrdfWidgetFactory extends ABCWidgetFactory<
   UrdfWidget,
   DocumentModel
 > {
+
   constructor(options: DocumentRegistry.IWidgetFactoryOptions) {
     super(options);
   }
@@ -26,4 +27,3 @@ export class UrdfWidgetFactory extends ABCWidgetFactory<
       content: new UrdfPanel(context)
     });
   }
-}
