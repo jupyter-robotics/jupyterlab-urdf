@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="niryo_ned">
+    <!-- Enable Gazebo control-->
+    <gazebo>
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+            <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+        </plugin>
+    </gazebo>
+
+    <!-- Import Robot -->
+    <xacro:include filename="$(find niryo_robot_description)/urdf/ned/niryo_ned.urdf.xacro"/>
+
+    <!-- Import Transmission -->
+    <xacro:include filename="$(find niryo_robot_description)/urdf/ned/niryo_ned.transmission.xacro"/>
+
+</robot>

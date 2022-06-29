@@ -1,0 +1,237 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="niryo_ned2">
+    <!-- Import Properties -->
+    <xacro:include filename="$(find niryo_robot_description)/urdf/ned2/niryo_ned2_param.urdf.xacro"/>
+
+    <!-- Links -->
+
+    <link name="world"/>
+
+    <link name="base_link">
+        <inertial>
+            <origin xyz="-0.008924 0.0001357 0.052392" rpy="0 0 0"/>
+            <mass value="0.71142"/>
+            <inertia ixx="0.0017" ixy="0.0" ixz="0.0" iyy="0.0017" iyz="0.0" izz="0.0032"/>
+        </inertial>
+        <collision>
+            <origin xyz="0 0 0" rpy="-${PI/2} 0 0"/>
+            <geometry>
+                <mesh filename="package://niryo_robot_description/meshes/ned2/stl/base_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="led_ring_link">
+        <!--
+        <visual>
+            <origin xyz="0 0 0"
+                    rpy="0 0 0"/>
+            <geometry>
+                <cylinder length="0.0019" radius="0.0775"/>
+            </geometry>
+            <material
+                    name="">
+                <color
+                        rgba="1 1 1 0.25"/>
+            </material>
+        </visual> -->
+    </link>
+
+    <link name="shoulder_link">
+        <inertial>
+            <origin xyz="-0.031951 0.0080419 0.030675" rpy="0 0 0"/>
+            <mass value="0.35056"/>
+            <inertia ixx="0.00023875" ixy="2.3853E-08" ixz="2.0596E-06" iyy="0.00032638" iyz="-8.9319E-07"
+                     izz="0.00030089"/>
+        </inertial>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://niryo_robot_description/meshes/ned2/stl/shoulder_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+
+    <link name="arm_link">
+        <inertial>
+            <origin xyz="-0.00096976 0.086432 0.0038832" rpy="0 ${PI} 0"/>
+            <mass value="1.0838"/>
+            <inertia ixx="0.008194" ixy="0.00015602" ixz="-3.434E-06" iyy="0.0011945" iyz="-0.00031298" izz="0.007915"/>
+        </inertial>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 ${PI} 0"/>
+            <geometry>
+                <mesh filename="package://niryo_robot_description/meshes/ned2/stl/arm_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+
+    <link name="elbow_link">
+        <inertial>
+            <origin xyz="-0.019703 0.037336 -1.7431E-09" rpy="0 ${PI} 0"/>
+            <mass value="0.22126"/>
+            <inertia ixx="0.00011754" ixy="-1.2314E-05" ixz="-6.2064E-11" iyy="0.00020851" iyz="9.2393E-11"
+                     izz="0.00022753"/>
+        </inertial>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 ${PI} 0"/>
+            <geometry>
+                <mesh filename="package://niryo_robot_description/meshes/ned2/stl/elbow_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+
+    <link name="forearm_link">
+        <inertial>
+            <origin xyz="-0.0049532 7.8351E-06 0.08106" rpy="0 0 0"/>
+            <mass value="0.35686"/>
+            <inertia ixx="0.0013664" ixy="-9.6367E-08" ixz="0.00013594" iyy="0.0014781" iyz="-1.4596E-07"
+                     izz="0.00023715"/>
+        </inertial>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://niryo_robot_description/meshes/ned2/stl/forearm_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- add collision for the motor of joint 5
+    <link name="joint5_motor">
+        <inertial>
+            <origin xyz="0 0 0.015" rpy="0 0 0"/>
+            <mass value="0.203543862275952"/>
+            <inertia ixx="0.0015" ixy="0.0" ixz="0.0" iyy="0.0015" iyz="0.0" izz="0.0015"/>
+        </inertial>
+        <collision>
+            <origin xyz="0 0 0.015" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.047 0.0285 0.03"/>
+            </geometry>
+        </collision>
+    </link> -->
+
+
+    <link name="wrist_link">
+        <inertial>
+            <origin xyz="-0.019666 0.037312 0.0" rpy="0 0 0"/>
+            <mass value="0.22126"/>
+            <inertia ixx="0.0015" ixy="0.0" ixz="0.0" iyy="0.0015" iyz="0.0" izz="0.0015"/>
+        </inertial>
+        <collision>
+            <origin xyz="0 0 0"
+                    rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://niryo_robot_description/meshes/ned2/stl/wrist_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+
+    <link name="hand_link">
+        <inertial>
+            <origin xyz="0 0 0.009" rpy="0 0 0"/>
+            <mass value="0.0070027"/>
+            <inertia ixx="0.0015" ixy="0.0" ixz="0.0" iyy="0.0015" iyz="0.0" izz="0.0015"/>
+        </inertial>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://niryo_robot_description/meshes/ned2/stl/hand_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+
+    <link name="tool_link">
+    </link>
+
+
+    <!-- Joints -->
+
+    <joint name="joint_world" type="fixed">
+        <parent link="world"/>
+        <child link="base_link"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="joint_1" type="revolute">
+        <origin xyz="0 0 0.1013" rpy="0 0 ${-PI/2}"/>
+        <parent link="base_link"/>
+        <child link="shoulder_link"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="10.0" velocity="10.0" lower="${(limit_low_shoulder_rotation + safety_pos_margin) * deg_to_rad}"
+               upper="${(limit_up_shoulder_rotation - safety_pos_margin) * deg_to_rad}"/>
+    </joint>
+
+    <joint name="joint_2" type="revolute">
+        <origin xyz="0 0 0.065" rpy="${PI/2} 0 ${PI/2}"/>
+        <parent link="shoulder_link"/>
+        <child link="arm_link"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="10.0" velocity="8.0" lower="${(limit_low_arm_rotation + safety_pos_margin) * deg_to_rad}"
+               upper="${(limit_up_arm_rotation - safety_pos_margin) * deg_to_rad}"/>
+
+    </joint>
+
+    <joint name="joint_3" type="revolute">
+        <origin xyz="0.012 0.221 0" rpy="0 0 0"/>
+        <parent link="arm_link"/>
+        <child link="elbow_link"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="7.0" velocity="8.0" lower="${(limit_low_elbow_rotation + safety_pos_margin) * deg_to_rad}"
+               upper="${(limit_up_elbow_rotation - safety_pos_margin) * deg_to_rad}"/>
+
+    </joint>
+
+    <joint name="joint_4" type="revolute">
+        <origin xyz="0.065 0.0325 0" rpy="0 ${PI/2} 0"/>
+        <parent link="elbow_link"/>
+        <child link="forearm_link"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="7.0" velocity="2.0" lower="${(limit_low_forearm_rotation + safety_pos_margin) * deg_to_rad}"
+               upper="${(limit_up_forearm_rotation - safety_pos_margin) * deg_to_rad}"/>
+    </joint>
+
+    <joint name="joint_5" type="revolute">
+        <origin xyz="0 0 0.17" rpy="${PI} ${-PI/2} ${PI}"/>
+        <parent link="forearm_link"/>
+        <child link="wrist_link"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="6.0" velocity="2.0" lower="${(limit_low_wrist_rotation + safety_pos_margin) * deg_to_rad}"
+               upper="${(limit_up_wrist_rotation - safety_pos_margin) * deg_to_rad}"/>
+
+    </joint>
+
+    <joint name="joint_6" type="revolute">
+        <origin xyz="0.0197 0.00925 0" rpy="0 ${PI/2} 0"/>
+        <parent link="wrist_link"/>
+        <child link="hand_link"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="5.0" velocity="2.0" lower="${(limit_low_hand_rotation + safety_pos_margin) * deg_to_rad}"
+               upper="${(limit_up_hand_rotation - safety_pos_margin) * deg_to_rad}"/>
+    </joint>
+
+    <joint name="hand_tool_joint" type="fixed">
+        <parent link="hand_link"/>
+        <child link="tool_link"/>
+        <origin xyz="0 0 ${distance_hand_tool}" rpy="${-PI/2} ${-PI/2} 0"/>
+    </joint>
+
+    <!--
+    <joint name="joint_test" type="fixed">
+        <origin xyz="-0.03 0 0.158" rpy="0 -${PI/2} 0"/>
+        <parent link="forearm_link"/>
+        <child link="joint5_motor"/>
+    </joint> -->
+
+    <joint name="joint_led_ring" type="fixed">
+        <parent link="world"/>
+        <child link="led_ring_link"/>
+        <origin xyz="0 0 0.0923" rpy="0 0 0"/>
+    </joint>
+
+</robot>

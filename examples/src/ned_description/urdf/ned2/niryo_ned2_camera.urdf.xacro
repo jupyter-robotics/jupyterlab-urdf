@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="niryo_ned2">
+    <!-- Including base robot -->
+    <xacro:include filename="$(find niryo_robot_description)/urdf/ned2/niryo_ned2_gazebo.urdf.xacro"/>
+
+    <!-- Properties -->
+    <xacro:property name="cameraWidth" value="0.01"/>
+    <xacro:property name="cameraHeight" value="0.037"/>
+    <xacro:property name="cameraMass" value="0.05"/>
+
+    <!-- Joint for camera -->
+    <joint name="camera_joint" type="fixed">
+        <axis xyz="0 0 1"/>
+        <origin xyz="0 ${cameraHeight/2 + 0.02} 0" rpy="${PI/2} 0 ${deg_to_rad*10}"/>
+        <parent link="wrist_link"/>
+        <child link="camera_link"/>
+    </joint>
+
+    <!-- Camera link -->
+
+    <link name="camera_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="${cameraWidth} ${cameraHeight} ${cameraHeight}"/>
+            </geometry>
+            <material name="DarkGrey"/>
+        </visual>
+    </link>
+
+    <!-- Add gazebo settings to make the link an camera ! -->
+    <gazebo reference="camera_link">
+        <material>Gazebo/DarkGrey</material>
+        <sensor type="camera" name="camera_gazebo">
+            <update_rate>15.0</update_rate>
+            <camera name="head">
+                <!--69,33 degrees-->
+                <horizontal_fov>1.21</horizontal_fov>
+                <!--  <aspect_ratio>1.333</aspect_ratio>-->
+                <image>
+                    <width>640</width>
+                    <height>480</height>
+                    <format>R8G8B8</format>
+                </image>
+                <clip>
+                    <near>0.03</near>
+                    <far>2</far>
+                </clip>
+                <distortion>
+                    <k1>-0.4146402</k1>
+                    <k2>0.2407384</k2>
+                    <p1>-0.0</p1>
+                    <p2>-0.0</p2>
+                    <k3>-0.1040042</k3>
+                    <center>0.5 0.5</center>
+                </distortion>
+            </camera>
+            <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+                <alwaysOn>true</alwaysOn>
+                <updateRate>0.0</updateRate>
+                <cameraName>gazebo_camera</cameraName>
+                <imageTopicName>image_raw</imageTopicName>
+                <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+                <frameName>camera_link</frameName>
+            </plugin>
+        </sensor>
+    </gazebo>
+</robot>

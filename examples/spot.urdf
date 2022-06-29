@@ -22,7 +22,7 @@
     <visual>
       <origin xyz="0 0 0.7" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://spot_links/base.stl"/>
+        <mesh filename="package://spot_description/meshes/base.stl"/>
       </geometry>
       <material name="heliotrope"/>
     </visual>
@@ -32,7 +32,7 @@
     <visual>
       <origin xyz="0 0 0.7" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://spot_links/fl.hip.stl"/>
+        <mesh filename="package://spot_description/meshes/fl.hip.stl"/>
       </geometry>
       <material name="gray"/>
     </visual>
@@ -50,7 +50,7 @@
     <visual>
       <origin xyz="0 0 0.7" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://spot_links/fl.uleg.stl"/>
+        <mesh filename="package://spot_description/meshes/fl.uleg.stl"/>
       </geometry>
       <material name="carnelian"/>
     </visual>
@@ -67,7 +67,7 @@
     <visual>
       <origin xyz="0 0 0.7" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://spot_links/fl.lleg.stl"/>
+        <mesh filename="package://spot_description/meshes/fl.lleg.stl"/>
       </geometry>
       <material name="gray"/>
     </visual>
@@ -84,7 +84,7 @@
     <visual>
       <origin xyz="0 0 0.7" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://spot_links/fr.hip.stl"/>
+        <mesh filename="package://spot_description/meshes/fr.hip.stl"/>
       </geometry>
       <material name="gray"/>
     </visual>
@@ -102,7 +102,7 @@
     <visual>
       <origin xyz="0 0 0.7" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://spot_links/fr.uleg.stl"/>
+        <mesh filename="package://spot_description/meshes/fr.uleg.stl"/>
       </geometry>
       <material name="carnelian"/>
     </visual>
@@ -119,7 +119,7 @@
     <visual>
       <origin xyz="0 0 0.7" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://spot_links/fr.lleg.stl"/>
+        <mesh filename="package://spot_description/meshes/fr.lleg.stl"/>
       </geometry>
       <material name="gray"/>
     </visual>
@@ -136,7 +136,7 @@
     <visual>
       <origin xyz="0 0 0.7" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://spot_links/hl.hip.stl"/>
+        <mesh filename="package://spot_description/meshes/hl.hip.stl"/>
       </geometry>
       <material name="gray"/>
     </visual>
@@ -154,7 +154,7 @@
     <visual>
       <origin xyz="0 0 0.7" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://spot_links/hl.uleg.stl"/>
+        <mesh filename="package://spot_description/meshes/hl.uleg.stl"/>
       </geometry>
       <material name="carnelian"/>
     </visual>
@@ -171,7 +171,7 @@
     <visual>
       <origin xyz="0 0 0.7" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://spot_links/hl.lleg.stl"/>
+        <mesh filename="package://spot_description/meshes/hl.lleg.stl"/>
       </geometry>
       <material name="gray"/>
     </visual>
@@ -188,7 +188,7 @@
     <visual>
       <origin xyz="0 0 0.7" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://spot_links/hr.hip.stl"/>
+        <mesh filename="package://spot_description/meshes/hr.hip.stl"/>
       </geometry>
       <material name="gray"/>
     </visual>
@@ -206,7 +206,7 @@
     <visual>
       <origin xyz="0 0 0.7" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://spot_links/hr.uleg.stl"/>
+        <mesh filename="package://spot_description/meshes/hr.uleg.stl"/>
       </geometry>
       <material name="carnelian"/>
     </visual>
@@ -223,7 +223,7 @@
     <visual>
       <origin xyz="0 0 0.7" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://spot_links/hr.lleg.stl"/>
+        <mesh filename="package://spot_description/meshes/hr.lleg.stl"/>
       </geometry>
       <material name="gray"/>
     </visual>

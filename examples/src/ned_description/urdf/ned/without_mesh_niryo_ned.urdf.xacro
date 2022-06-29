@@ -1,0 +1,186 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="niryo_ned">
+    <!-- Import Properties -->
+    <xacro:include filename="$(find niryo_robot_description)/urdf/ned/niryo_ned_param.urdf.xacro"/>
+
+    <!-- Links -->
+
+    <link name="world"/>
+
+    <joint name="joint_world" type="fixed">
+        <parent link="world"/>
+        <child link="base_link"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <link name="base_link">
+        <collision>
+            <origin xyz="0 0 0"
+                    rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://niryo_robot_description/meshes/ned/stl/base_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="joint_1"
+           type="revolute">
+        <origin xyz="0 0 0.1065"
+                rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="shoulder_link"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="10.0" velocity="2.2" lower="${(limit_low_shoulder_rotation + safety_pos_margin) * deg_to_rad}"
+               upper="${(limit_up_shoulder_rotation - safety_pos_margin) * deg_to_rad}"/>
+    </joint>
+
+    <link name="shoulder_link">
+        <collision>
+            <origin xyz="0 0 0"
+                    rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://niryo_robot_description/meshes/ned/stl/shoulder_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="joint_2"
+           type="revolute">
+        <origin xyz="0 0 0.065"
+                rpy="${PI/2} ${-PI/2} 0"/>
+        <parent link="shoulder_link"/>
+        <child link="arm_link"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="10.0" velocity="2.2" lower="${(limit_low_arm_rotation + safety_pos_margin) * deg_to_rad}"
+               upper="${(limit_up_arm_rotation - safety_pos_margin) * deg_to_rad}"/>
+
+    </joint>
+
+    <link name="arm_link">
+        <collision>
+            <origin xyz="0 0 0"
+                    rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://niryo_robot_description/meshes/ned/stl/arm_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="joint_3"
+           type="revolute">
+        <origin xyz="0.221 -0.012 0"
+                rpy="0 0 ${-PI/2}"/>
+        <parent link="arm_link"/>
+        <child link="elbow_link"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="7.0" velocity="2.0" lower="${(limit_low_elbow_rotation + safety_pos_margin) * deg_to_rad}"
+               upper="${(limit_up_elbow_rotation - safety_pos_margin) * deg_to_rad}"/>
+
+    </joint>
+
+    <link name="elbow_link">
+        <collision>
+            <origin xyz="0 0 0"
+                    rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://niryo_robot_description/meshes/ned/stl/elbow_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="joint_4"
+           type="revolute">
+        <origin xyz="0.047 0.0325 0"
+                rpy="0 ${PI/2} 0"/>
+        <parent link="elbow_link"/>
+        <child link="forearm_link"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="7.0" velocity="2.0" lower="${(limit_low_forearm_rotation + safety_pos_margin) * deg_to_rad}"
+               upper="${(limit_up_forearm_rotation - safety_pos_margin) * deg_to_rad}"/>
+    </joint>
+
+    <link name="forearm_link">
+        <collision>
+            <origin xyz="0 0 0"
+                    rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://niryo_robot_description/meshes/ned/stl/forearm_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+
+    <!-- add collision for the motor of joint 5 -->
+    <link name="joint5_motor">
+        <collision>
+            <origin xyz="-0.045 0.0 0.1765"
+                    rpy="0 0 0"/>
+            <geometry>
+                <box size="0.0435 0.0285 0.0465"/>
+            </geometry>
+        </collision>
+    </link>
+
+    
+    <joint name="joint_test"
+           type="fixed">
+        <origin xyz="0 0 0"
+                rpy="0 0 0"/>
+        <parent link="forearm_link"/>
+        <child link="joint5_motor"/>
+    </joint>
+
+
+    <joint name="joint_5"
+           type="revolute">
+        <origin xyz="0 0 0.188"
+                rpy="${PI} ${-PI/2} ${PI}"/>
+        <parent link="forearm_link"/>
+        <child link="wrist_link"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="6.0" velocity="2.0" lower="${(limit_low_wrist_rotation + safety_pos_margin) * deg_to_rad}"
+               upper="${(limit_up_wrist_rotation - safety_pos_margin) * deg_to_rad}"/>
+
+    </joint>
+
+    <link name="wrist_link">
+        <collision>
+            <origin xyz="0 0 0"
+                    rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://niryo_robot_description/meshes/ned/stl/wrist_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="joint_6"
+           type="revolute">
+        <origin xyz="0.0197 0.00925 0"
+                rpy="0 ${PI/2} 0"/>
+        <parent link="wrist_link"/>
+        <child link="hand_link"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="5.0" velocity="2.0" lower="${(limit_low_hand_rotation + safety_pos_margin) * deg_to_rad}"
+               upper="${(limit_up_hand_rotation - safety_pos_margin) * deg_to_rad}"/>
+    </joint>
+
+    <link name="hand_link">
+        <collision>
+            <origin xyz="0 0 0"
+                    rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://niryo_robot_description/meshes/ned/stl/hand_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="hand_tool_joint" type="fixed">
+        <parent link="hand_link"/>
+        <child link="tool_link"/>
+        <origin xyz="0 0 ${distance_hand_tool}" rpy="${-PI/2} ${-PI/2} 0"/>
+    </joint>
+
+    <link name="tool_link">
+    </link>
+
+</robot>
