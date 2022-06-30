@@ -19,6 +19,7 @@ DefaultLoadingManager.setURLModifier(url => {
 export class URDFLayout extends PanelLayout {
   private _host: HTMLElement;
   private _viewer: any;
+  private _robotModel: any = null;
 
   /**
    * Construct a `URDFLayout`
@@ -69,12 +70,40 @@ export class URDFLayout extends PanelLayout {
     const ros = new ROSLIB.Ros();
     //ros.connect("ws://localhost:9090");
 
+    
+
     // Load robot model
-    const robotModel = new Amphion.RobotModel(ros, 'robot_description');
+    if (this._robotModel == null) {
+      console.log('Robot is null');
+    } else {
+      console.log('NOT NULL');
+      // Robot is the first child of the group
+      // const oldRobot = this._viewer.scene.getObjectByName(
+      //   this._robotModel.object.name
+      //   );
+      // oldRobot.parent.remove( oldRobot );
+      this._robotModel.object.parent.remove( this._robotModel.object );
+
+
+      // this._viewer.scene.children[0].remove(this._robotModel.object);
+    }
+    
+    // const robotModel = new Amphion.RobotModel(ros, 'robot_description');
     
     // https://github.com/RoboStack/amphion/blob/879045327e879d0bb6fe2c8eac54664de46ef675/src/core/urdf.ts#L46
-    robotModel.loadURDF(data, robotModel.onComplete, {});
-    this._viewer.addVisualization(robotModel);
+    // robotModel.loadURDF(data, robotModel.onComplete, {});
+    this._robotModel = new Amphion.RobotModel(ros, 'robot_description');
+    this._robotModel.loadURDF(data, this._robotModel.onComplete, {});
+
+    this._robotModel.object.getObjectByName('base_to_shoulder_joint').setAngle(2);
+
+    // window['robot'] = this._robotModel;
+
+    this._viewer.addVisualization(this._robotModel);
+
+    console.log(this._robotModel);
+  
+
   }
 
   /**
@@ -102,7 +131,7 @@ export class URDFLayout extends PanelLayout {
    * Handle `after-attach` messages sent to the widget.
    */
   protected onAfterAttach(msg: Message): void {
-    //inject Blockly with appropiate JupyterLab theme.
+    //inject URDF viewer with appropiate JupyterLab theme.
     //inject Amphion.
     this._viewer = new Amphion.Viewer3d();
     this._viewer.setContainer(this._host);

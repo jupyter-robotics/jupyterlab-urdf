@@ -49,6 +49,10 @@ export class UrdfPanel extends Panel {
     this._context.ready.then(value => {
       // TODO
       (this.layout as URDFLayout).setURDF(this._context.model.toString());
+      this._context.model.contentChanged.connect((sender, args)=>{
+        console.log("Model changed.", args);
+        (this.layout as URDFLayout).setURDF(this._context.model.toString());
+      });
     });
 
     // TODO
