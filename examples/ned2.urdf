@@ -30,7 +30,7 @@
                     rpy="0 0 0"/>
             <geometry>
                 <cylinder length="0.0019" radius="0.0775"/>
-            </geometry>
+            </geometry>d
             <material
                     name="">
                 <color
