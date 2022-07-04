@@ -60,6 +60,7 @@
     "@jupyterlab/filebrowser": "^3.4.0",
     "@jupyterlab/launcher": "^3.4.0",
     "@jupyterlab/mainmenu": "^3.4.0",
+    "@jupyterlab/ui-components": "^3.4.3",
     "@lumino/algorithm": "^1.9.0",
     "@lumino/coreutils": "^1.11.0",
     "@lumino/messaging": "^1.10.0",

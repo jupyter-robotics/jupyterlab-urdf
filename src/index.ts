@@ -24,6 +24,8 @@ import { UrdfWidget } from './widget';
 
 import { UrdfWidgetFactory } from './factory';
 
+import { urdf_icon } from './icons';
+
 // Name of the factory that creates the URDF widgets
 const FACTORY = 'URDF Widget Factory';
 
@@ -78,7 +80,9 @@ const extension: JupyterFrontEndPlugin<void> = {
 
     // Add widget to tracker when created
     widgetFactory.widgetCreated.connect((sender, widget) => {
-      widget.title.icon = 'jp-MaterialIcon jp-ImageIcon'; // TODO change
+      widget.title.icon = urdf_icon;
+      widget.title.iconClass = 'jp-URDFIcon';
+
       // Notify instance tracker if restore data needs to be updated
       widget.context.pathChanged.connect(() => {
         tracker.save(widget);
@@ -94,18 +98,19 @@ const extension: JupyterFrontEndPlugin<void> = {
       name: 'urdf',
       displayName: 'URDF',
       extensions: ['.urdf', '.xacro'],
-      iconClass: 'jp-MaterialIcon jp-ImageIcon', // TODO change
+      iconClass: 'jp-URDFIcon',
       fileFormat: 'text',
-      contentType: 'file'
+      contentType: 'file',
+      icon: urdf_icon,
     });
 
     // Add command for creating new urdf (file)
     commands.addCommand('urdf:create-new', {
       label: 'Create new URDF',
-      iconClass: 'jp-MaterialIcon jp-Image-Icon',
+      icon: urdf_icon,
+      iconClass: 'jp-URDFIcon',
       caption: 'Create a new URDF',
       execute: () => {
-        // Current Working Directory
         const cwd = browserFactory.defaultBrowser.model.path;
         commands
           .execute('docmanager:new-untitled', {
@@ -131,7 +136,7 @@ const extension: JupyterFrontEndPlugin<void> = {
       });
     }
 
-    // TODO: Add menu item if menu is available
+    // Add menu item if menu is available
     if (menu) {
       const urdfMenu: Menu = new Menu({ commands });
       urdfMenu.title.label = 'URDF';
