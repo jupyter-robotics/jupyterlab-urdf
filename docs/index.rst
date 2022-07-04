@@ -10,6 +10,15 @@ Welcome to jupyterlab-urdf's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   installation
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Usage:
+
+   urdf_editor
+   urdf_viewer
+   examples
 
 
 Indices and tables
