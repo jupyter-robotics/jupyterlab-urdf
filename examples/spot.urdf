@@ -20,7 +20,7 @@
 
   <link name="base">
     <visual>
-      <origin xyz="0 0 0.7" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://spot_description/meshes/base.stl"/>
       </geometry>
@@ -30,7 +30,7 @@
 
   <link name="fl.hip">
     <visual>
-      <origin xyz="0 0 0.7" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://spot_description/meshes/fl.hip.stl"/>
       </geometry>
@@ -48,7 +48,7 @@
   <!-- FRONT LEFT UPPER LEG -->
   <link name="fl.uleg">
     <visual>
-      <origin xyz="0 0 0.7" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://spot_description/meshes/fl.uleg.stl"/>
       </geometry>
@@ -65,7 +65,7 @@
 
   <link name="fl.lleg">
     <visual>
-      <origin xyz="0 0 0.7" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://spot_description/meshes/fl.lleg.stl"/>
       </geometry>
@@ -82,7 +82,7 @@
 
   <link name="fr.hip">
     <visual>
-      <origin xyz="0 0 0.7" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://spot_description/meshes/fr.hip.stl"/>
       </geometry>
@@ -100,7 +100,7 @@
   <!-- FRONT RIGHT UPPER LEG -->
   <link name="fr.uleg">
     <visual>
-      <origin xyz="0 0 0.7" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://spot_description/meshes/fr.uleg.stl"/>
       </geometry>
@@ -117,7 +117,7 @@
 
   <link name="fr.lleg">
     <visual>
-      <origin xyz="0 0 0.7" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://spot_description/meshes/fr.lleg.stl"/>
       </geometry>
@@ -134,7 +134,7 @@
 
   <link name="hl.hip">
     <visual>
-      <origin xyz="0 0 0.7" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://spot_description/meshes/hl.hip.stl"/>
       </geometry>
@@ -152,7 +152,7 @@
   <!-- HIND LEFT UPPER LEG -->
   <link name="hl.uleg">
     <visual>
-      <origin xyz="0 0 0.7" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://spot_description/meshes/hl.uleg.stl"/>
       </geometry>
@@ -169,7 +169,7 @@
 
   <link name="hl.lleg">
     <visual>
-      <origin xyz="0 0 0.7" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://spot_description/meshes/hl.lleg.stl"/>
       </geometry>
@@ -186,7 +186,7 @@
 
   <link name="hr.hip">
     <visual>
-      <origin xyz="0 0 0.7" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://spot_description/meshes/hr.hip.stl"/>
       </geometry>
@@ -204,7 +204,7 @@
   <!-- HIND RIGHT UPPER LEG -->
   <link name="hr.uleg">
     <visual>
-      <origin xyz="0 0 0.7" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://spot_description/meshes/hr.uleg.stl"/>
       </geometry>
@@ -221,7 +221,7 @@
 
   <link name="hr.lleg">
     <visual>
-      <origin xyz="0 0 0.7" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://spot_description/meshes/hr.lleg.stl"/>
       </geometry>
