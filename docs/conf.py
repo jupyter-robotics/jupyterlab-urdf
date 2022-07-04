@@ -22,7 +22,7 @@ copyright = '2022, Isabel Paredes'
 author = 'Isabel Paredes'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0'
+release = '0.1.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -39,6 +39,8 @@ templates_path = ['_templates']
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
+master_doc = 'index'
 
 
 # -- Options for HTML output -------------------------------------------------
