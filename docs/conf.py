@@ -40,7 +40,7 @@ extensions = ['myst_parser']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
-master_doc = 'index'
+master_doc = 'docs/index.rst'
 
 
 # -- Options for HTML output -------------------------------------------------
