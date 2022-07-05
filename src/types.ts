@@ -1,2 +1,2 @@
-declare module '@robostack/amphion';
-declare module '@robostack/roslib';
+declare module 'amphion';
+declare module 'roslib';

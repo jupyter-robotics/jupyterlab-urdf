@@ -20,7 +20,6 @@
     "strictNullChecks": true,
     "target": "es2017",
     "types": ["jest"],
-    "allowJs": true,
   },
   "include": ["src/**/*"],
 }

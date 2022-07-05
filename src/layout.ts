@@ -2,8 +2,8 @@ import { Message } from '@lumino/messaging';
 import { PanelLayout, Widget } from '@lumino/widgets';
 import { ArrayIterator, IIterator } from '@lumino/algorithm';
 
-import ROSLIB from '@robostack/roslib';
-import Amphion from '@robostack/amphion';
+import ROSLIB from 'roslib';
+import Amphion from 'amphion';
 import { DefaultLoadingManager } from 'three';
 import dat from 'dat.gui';
 
