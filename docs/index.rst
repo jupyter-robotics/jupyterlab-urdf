@@ -6,6 +6,11 @@
 Welcome to jupyterlab-urdf's documentation!
 ===========================================
 
+With this JupyterLab extension, you can easily create and modify URDF files from the comfort of your web browser.
+
+.. image:: _static/urdfOverview.gif
+   :alt: Functionality of extension
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
