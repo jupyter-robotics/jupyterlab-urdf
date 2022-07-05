@@ -131,7 +131,7 @@ export class URDFLayout extends PanelLayout {
     const joint = this._robotModel.urdfObject.joints[jointName];
 
     // Skip joints which should not be moved
-    if (joint._jointType == 'fixed') {
+    if (joint._jointType === 'fixed') {
       return;
     }
 
@@ -140,7 +140,7 @@ export class URDFLayout extends PanelLayout {
     let limitMax = joint.limit.upper;
 
     // If the limits are not defined, set defaults to +/- 180 degrees
-    if (limitMin == 0 && limitMax == 0) {
+    if (limitMin === 0 && limitMax === 0) {
       limitMin = -Math.PI;
       limitMax = +Math.PI;
     }
@@ -152,7 +152,7 @@ export class URDFLayout extends PanelLayout {
     const initValue = joint.jointValue;
 
     // Object to be manipulated
-    let jointObject = { [jointName]: initValue };
+    const jointObject = { [jointName]: initValue };
 
     // Add slider to GUI
     this._gui.__folders['Robot Joints']
@@ -165,7 +165,7 @@ export class URDFLayout extends PanelLayout {
    *
    * @param bgColor - The new background color as RGB array
    */
-  setBGColor(bgColor: any): void {
+  setBGColor(bgColor: any[]): void {
     this._viewer.scene.background.r = bgColor[0] / 255;
     this._viewer.scene.background.g = bgColor[1] / 255;
     this._viewer.scene.background.b = bgColor[2] / 255;
@@ -178,7 +178,7 @@ export class URDFLayout extends PanelLayout {
     const defaultColor = [240, 240, 240];
 
     // Object to be manipulated
-    let colorObject = { Background: defaultColor };
+    const colorObject = { Background: defaultColor };
 
     // Add controller to GUI
     this._gui.__folders['Scene']

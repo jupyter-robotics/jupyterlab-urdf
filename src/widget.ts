@@ -79,11 +79,4 @@ export class UrdfPanel extends Panel {
   protected onBeforeDetach(msg: Message): void {
     super.onBeforeDetach(msg);
   }
-
-  /**
-   * Handle event messages sent to widget
-   *
-   * @param event - Event on the widget
-   */
-  public handleEvent(event: MouseEvent): void {}
 }
