@@ -8,7 +8,7 @@ With the URDF editor open, files can be modified directly and the changes will b
 
 ![URDF live editing](_static/urdfEditor.gif)
 
-The viewer provides a control panel to manually modify the joint positions. The changes are only reflected in the viewer and are not saved to the URDF file. 
+The viewer provides a control panel to manually modify the joint positions. The changes are only reflected in the viewer and are not saved to the URDF file.
 
 ![Moving joints with panel](_static/urdfControls.gif)
 

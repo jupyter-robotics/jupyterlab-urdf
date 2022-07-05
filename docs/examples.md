@@ -13,7 +13,6 @@ To display the basic Niryo and the Burger robot, a ROS environment needs to be c
 
 ![Burger Robot](_static/exBurger.png)
 
-
 Similarly, Ned, Spot and the T12 robot use robot description ROS packages to store their respective mesh files. These packages will need to be installed locally and the ROS environment configured correctly (`source <workspace>/devel/setup.bash`) so that these packages can be accessed.
 
 - `ned_description`
