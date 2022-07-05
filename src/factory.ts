@@ -13,7 +13,6 @@ export class UrdfWidgetFactory extends ABCWidgetFactory<
   UrdfWidget,
   DocumentModel
 > {
-
   constructor(options: DocumentRegistry.IWidgetFactoryOptions) {
     super(options);
   }

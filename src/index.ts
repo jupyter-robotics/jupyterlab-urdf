@@ -53,7 +53,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     restorer: ILayoutRestorer,
     browserFactory: IFileBrowserFactory,
     menu: IMainMenu,
-    launcher: ILauncher,
+    launcher: ILauncher
   ) => {
     console.log('JupyterLab extension URDF is activated!');
     const { commands } = app;
@@ -101,7 +101,7 @@ const extension: JupyterFrontEndPlugin<void> = {
       iconClass: 'jp-URDFIcon',
       fileFormat: 'text',
       contentType: 'file',
-      icon: urdf_icon,
+      icon: urdf_icon
     });
 
     // Add command for creating new urdf (file)

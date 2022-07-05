@@ -1,4 +1,3 @@
-
 import { LabIcon } from '@jupyterlab/ui-components';
 
 import urdf_logo from '/style/icons/urdf_logo.svg';

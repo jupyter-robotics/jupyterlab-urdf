@@ -40,14 +40,14 @@ export class UrdfPanel extends Panel {
    */
   constructor(context: DocumentRegistry.IContext<DocumentModel>) {
     super({ layout: new URDFLayout() });
-    
+
     this.addClass('jp-urdf-canvas'); // for css styling
     this._context = context;
 
     this._context.ready.then(value => {
       (this.layout as URDFLayout).setURDF(this._context.model.toString());
-      this._context.model.contentChanged.connect((sender, args)=>{
-        console.log("Model changed.", args);
+      this._context.model.contentChanged.connect((sender, args) => {
+        console.log('Model changed.', args);
         (this.layout as URDFLayout).setURDF(this._context.model.toString());
       });
     });
@@ -85,6 +85,5 @@ export class UrdfPanel extends Panel {
    *
    * @param event - Event on the widget
    */
-  public handleEvent(event: MouseEvent): void {
-  }
+  public handleEvent(event: MouseEvent): void {}
 }
