@@ -1,4 +1,4 @@
-# jupyterlab_urdf
+# jupyterlab-urdf
 
 [![Github Actions Status](https://github.com/ihuicatl/jupyterlab_urdf/workflows/Build/badge.svg)](https://github.com/ihuicatl/jupyterlab_urdf/actions/workflows/build.yml)[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ihuicatl/jupyterlab_urdf/main?urlpath=lab)
 A URDF viewer and editor extension for JupyterLab.
