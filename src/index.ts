@@ -55,7 +55,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     menu: IMainMenu,
     launcher: ILauncher
   ) => {
-    console.log('JupyterLab extension URDF is activated!'); 
+    console.log('JupyterLab extension URDF is activated!');
     const { commands } = app;
 
     // Tracker
