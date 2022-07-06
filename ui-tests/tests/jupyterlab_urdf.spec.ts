@@ -16,6 +16,6 @@ test('should emit an activation console message', async ({ page }) => {
   await page.goto();
 
   expect(
-    logs.filter(s => s === 'JupyterLab extension jupyterlab_urdf is activated!')
+    logs.filter(s => s === 'JupyterLab extension URDF is activated!')
   ).toHaveLength(1);
 });
