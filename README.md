@@ -12,7 +12,7 @@ A URDF viewer and editor extension for JupyterLab.
 To install the extension, execute:
 
 ```bash
-pip install jupyterlab_urdf
+pip install jupyterlab-urdf
 ```
 
 ## Uninstall
@@ -20,7 +20,7 @@ pip install jupyterlab_urdf
 To remove the extension, execute:
 
 ```bash
-pip uninstall jupyterlab_urdf
+pip uninstall jupyterlab-urdf
 ```
 
 ## Contributing
@@ -64,7 +64,7 @@ jupyter lab build --minimize=False
 ### Development uninstall
 
 ```bash
-pip uninstall jupyterlab_urdf
+pip uninstall jupyterlab-urdf
 ```
 
 In development mode, you will also need to remove the symlink created by `jupyter labextension develop`
