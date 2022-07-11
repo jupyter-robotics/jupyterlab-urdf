@@ -28,7 +28,6 @@ To remove the extension, execute:
 2. `pip uninstall jupyterlab-urdf` or
 3. `npm uninstall jupyterlab_urdf`
 
-
 ## Development install
 
 **Note:** You will need NodeJS to build the extension package.
