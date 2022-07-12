@@ -36,6 +36,9 @@ recursive-include docs *.py
 recursive-include docs *.rst
 recursive-include docs *.txt
 recursive-include docs Makefile
+recursive-include docs *.json
+recursive-include docs *.ipynb
+recursive-include docs *.urdf
 
 # Examples
 recursive-include examples *.STL
