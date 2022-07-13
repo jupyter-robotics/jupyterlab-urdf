@@ -64,5 +64,6 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # html_static_path = ['_static']
 
 # JupyterLite
-jupyterlite_contents = ["robotLite.urdf", "notebook.ipynb"]
+jupyterlite_config = "jupyterlite_config.json"
+jupyterlite_contents = ["robotLite.urdf"]
 jupyterlite_dir = "."

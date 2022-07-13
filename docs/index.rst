@@ -11,7 +11,7 @@ With this JupyterLab extension, you can easily create and modify URDF files from
 .. image:: _static/urdfOverview.gif
    :alt: Functionality of extension
 
-.. jupyterlite:: notebook.ipynb
+.. jupyterlite::
 
 .. toctree::
    :maxdepth: 2
