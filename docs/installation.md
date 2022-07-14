@@ -4,6 +4,30 @@
 
 - JupyterLab >= 3.0
 
+For running the examples and interfacing with ROS, the following packages are also required:
+
+- `jupyterlab-ros`
+- `ros-noetic-urdf-tutorial`
+- `ros-noetic-turtlebot3-description`
+
+These packages can be installed with `conda` from the RoboStack channel.
+
+## Install
+
+To install the extension, execute:
+
+1. `conda install jupyterlab-urdf -c conda-forge` or
+2. `pip install jupyterlab-urdf` or
+3. `npm i jupyterlab_urdf`
+
+## Uninstall
+
+To remove the extension, execute:
+
+1. `conda remove jupyterlab-urdf` or
+2. `pip uninstall jupyterlab-urdf` or
+3. `npm uninstall jupyterlab_urdf`
+
 ## Development install
 
 **Note:** You will need NodeJS to build the extension package.
