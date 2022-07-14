@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to jupyterlab-urdf's documentation!
+Welcome to JupyterLab-URDF's documentation!
 ===========================================
 
 With this JupyterLab extension, you can easily create and modify URDF files from the comfort of your web browser.
@@ -11,7 +11,13 @@ With this JupyterLab extension, you can easily create and modify URDF files from
 .. image:: _static/urdfOverview.gif
    :alt: Functionality of extension
 
-.. jupyterlite::
+Try it with JupyterLite!
+------------------------
+
+.. image:: https://jupyterlite.rtfd.io/en/latest/_static/badge.svg
+   :target: ./lite/lab
+
+.. jupyterlite:: robot.urdf
 
 .. toctree::
    :maxdepth: 2
