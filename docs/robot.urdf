@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<robot name="robot">
+   
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <sphere radius="0.5"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <material name="blue"/>
+        </visual>
+    </link>
+    
+    <joint name="shoulder" type="revolute">
+        <parent link="base_link"/>
+        <child link="humerus"/>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <axis xyz="1 0 0"/>
+        <limit effort="1000.0" lower="-3.14" upper="3.14" velocity="0.5"/>
+    </joint>
+    
+    <link name="humerus">
+        <visual>
+            <geometry>
+                <cylinder length="2.5" radius="0.25"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 1.25"/>
+            <material name="purple"/>
+        </visual>
+    </link>
+    
+    <joint name="elbow" type="revolute">
+        <parent link="humerus"/>
+        <child link="ulna"/>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="1000.0" lower="-3.14" upper="3.14" velocity="0.5"/>
+    </joint>
+    
+    <link name="ulna">
+        <visual>
+            <geometry>
+                <cylinder length="0.6" radius="0.3"/>
+            </geometry>
+            <origin rpy="1.570796 0 0" xyz="0 0 2.5"/>
+            <material name="pink"/>
+        </visual>
+    </link>
+    
+    <joint name="wrist" type="prismatic">
+        <parent link="ulna"/>
+        <child link="ossa"/>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <axis xyz="0 1 0"/>
+        <limit effort="1000.0" lower="-1.5" upper="1.5" velocity="0.5"/>
+    </joint>
+    
+    <link name="ossa">
+        <visual>
+            <geometry>
+                <box size="0.25 3 0.25"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 2.5"/>
+            <material name="yellow"/>
+        </visual>
+    </link>
+    
+    <material name="yellow">
+        <color rgba="1 0.83 0 1"/>
+    </material>
+    
+    <material name="blue">
+        <color rgba="0.18 0.16 0.31 1"/>
+    </material>
+    
+    <material name="pink">
+        <color rgba="0.85 0.01 0.41 1"/>
+    </material>
+    
+    <material name="purple">
+        <color rgba="0.51 0.01 0.39 1"/>
+    </material>
+</robot>

@@ -65,5 +65,5 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # JupyterLite
 jupyterlite_config = "jupyterlite_config.json"
-jupyterlite_contents = ["robotLite.urdf"]
+jupyterlite_contents = ["robot.urdf"]
 jupyterlite_dir = "."
