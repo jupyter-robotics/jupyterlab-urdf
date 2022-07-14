@@ -14,9 +14,6 @@ With this JupyterLab extension, you can easily create and modify URDF files from
 Try it with JupyterLite!
 ------------------------
 
-.. image:: https://jupyterlite.rtfd.io/en/latest/_static/badge.svg
-   :target: https://jupyterlab-urdf.readthedocs.io/en/latest/lite/lab
-
 .. jupyterlite:: robot.urdf
 
 .. toctree::
