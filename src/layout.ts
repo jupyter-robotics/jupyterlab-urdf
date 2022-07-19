@@ -102,11 +102,11 @@ export class URDFLayout extends PanelLayout {
     this._host.appendChild(this._gui.domElement);
 
     // Add option for configuring the scene background
-    this._gui.addFolder('Scene').open();
+    this._gui.addFolder('Scene');
     this.createColorControl();
 
     // Create new folder for the joints
-    this._gui.addFolder('Robot Joints').open();
+    this._gui.addFolder('Robot Joints');
     Object.keys(this._robotModel.urdfObject.joints).forEach(jointName => {
       this.createJointSlider(jointName);
     });
