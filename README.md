@@ -1,6 +1,9 @@
 # jupyterlab-urdf
 
-[![Github Actions Status](https://github.com/ihuicatl/jupyterlab_urdf/workflows/Build/badge.svg)](https://github.com/ihuicatl/jupyterlab_urdf/actions/workflows/build.yml)[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ihuicatl/jupyterlab_urdf/main?urlpath=lab)
+[![Github Actions Status](https://github.com/ihuicatl/jupyterlab_urdf/workflows/Build/badge.svg)](https://github.com/ihuicatl/jupyterlab_urdf/actions/workflows/build.yml)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ihuicatl/jupyterlab_urdf/main?urlpath=lab)
+[![lite-badge](https://jupyterlite.rtfd.io/en/latest/_static/badge-launch.svg)](https://jupyterlab-urdf.readthedocs.io/en/latest/lite/lab/index.html?path=robot.urdf)
+
 A URDF viewer and editor extension for JupyterLab.
 
 ## Requirements
