@@ -15,7 +15,7 @@ Try it with JupyterLite!
 ------------------------
 
 .. image:: https://jupyterlite.rtfd.io/en/latest/_static/badge.svg
-   :target: https://jupyterlab-urdf.readthedocs.io/en/latest/lite/lab
+   :target: https://jupyterlab-urdf.readthedocs.io/en/latest/lite/lab/index.html?path=robot.urdf
 
 .. jupyterlite:: robot.urdf
 
