@@ -1,0 +1,13 @@
+{
+  "jupyter-config-data": {
+    "fileTypes": {
+      "urdf": {
+        "extensions": [".urdf", ".xacro"],
+        "fileFormat": "text",
+        "mimeTypes": ["application/xml"],
+        "name": "urdf"
+      }
+    }
+  },
+  "jupyter-lite-schema-version": 0
+}
