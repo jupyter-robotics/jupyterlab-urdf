@@ -70,7 +70,7 @@ export class URDFLayout extends PanelLayout {
 
   setURDF(data: string): void {
     // Load robot model
-    if (this._robotModel !== null) {
+    if (this._robotModel !== null && this._robotModel.object.parent !== null) {
       // Remove old robot model from visualization
       // Viewer -> Scene -> Group -> Robot Model
       this._robotModel.object.parent.remove(this._robotModel.object);
