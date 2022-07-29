@@ -129,7 +129,6 @@ export class URDFLayout extends PanelLayout {
   createJointSlider(jointName: string): void {
     // Retrieve joint
     const joint = this._robotModel.urdfObject.joints[jointName];
-    
 
     // Skip joints which should not be moved
     if (joint._jointType === 'fixed') {
