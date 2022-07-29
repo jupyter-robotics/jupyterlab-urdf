@@ -141,10 +141,10 @@ export class URDFLayout extends PanelLayout {
 
     // If the limits are not defined, set defaults to +/- 180 degrees
     if (limitMin === 0 && limitMax === 0) {
-          limitMin = -Math.PI;
-          limitMax = +Math.PI;
-          this._robotModel.urdfObject.joints[jointName].limit.lower = limitMin;
-          this._robotModel.urdfObject.joints[jointName].limit.upper = limitMax;
+      limitMin = -Math.PI;
+      limitMax = +Math.PI;
+      this._robotModel.urdfObject.joints[jointName].limit.lower = limitMin;
+      this._robotModel.urdfObject.joints[jointName].limit.upper = limitMax;
     }
 
     // Step increments for slider
