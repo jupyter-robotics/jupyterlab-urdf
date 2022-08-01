@@ -1,7 +1,7 @@
 {
   "LiteBuildConfig": {
     "federated_extensions": [
-      "https://files.pythonhosted.org/packages/ca/ce/4ca1d39f50def2b06ed82a759e5fc29667f9ac0a9b38c4a2083daf7b5b74/jupyterlab_urdf-0.1.1-py3-none-any.whl"
+      "https://files.pythonhosted.org/packages/b8/34/c4a9f1320d10806b37b161ae63bedac3eade3d3f969ea9ea05ed56d6e1c8/jupyterlab_urdf-0.1.2-py3-none-any.whl"
     ],
     "ignore_sys_prefix": true
   }
