@@ -1,6 +1,7 @@
 """
 jupyterlab_urdf setup
 """
+from gettext import install
 import json
 import sys
 from pathlib import Path
@@ -51,6 +52,15 @@ setup_args = dict(
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(),
+    install_requires = [
+        'jupyter_rospkg',
+    ],
+    extras_require = {
+        'dev': [
+            'click',
+            'jupyter_releaser>=0.22'
+        ]
+    },
     zip_safe=False,
     include_package_data=True,
     python_requires=">=3.7",
