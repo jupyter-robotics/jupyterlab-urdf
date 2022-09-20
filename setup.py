@@ -53,7 +53,7 @@ setup_args = dict(
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(),
     install_requires = [
-        'jupyter_rospkg',
+        'jupyter_rospkg>=0.3',
     ],
     extras_require = {
         'dev': [
