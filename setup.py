@@ -1,7 +1,6 @@
 """
 jupyterlab_urdf setup
 """
-from gettext import install
 import json
 import sys
 from pathlib import Path
