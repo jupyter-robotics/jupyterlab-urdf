@@ -4,7 +4,7 @@ Without any configuration, the basic robot example can be displayed in the viewe
 
 ![Basic Robot](_static/exBasic.png)
 
-To display the basic Niryo and the Burger robot, a ROS environment needs to be configured accordingly in order for the viewer to locate the necessary mesh files, see [Tutorial for Configuring ROS Environment](http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment). 
+To display the basic Niryo and the Burger robot, a ROS environment needs to be configured accordingly in order for the viewer to locate the necessary mesh files, see [Tutorial for Configuring ROS Environment](http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment).
 
 The following packages are required:
 
