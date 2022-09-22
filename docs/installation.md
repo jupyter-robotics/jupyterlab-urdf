@@ -6,7 +6,6 @@
 
 For running the examples and interfacing with ROS, the following packages are also required:
 
-- `jupyterlab-ros`
 - `ros-noetic-urdf-tutorial`
 - `ros-noetic-turtlebot3-description`
 
