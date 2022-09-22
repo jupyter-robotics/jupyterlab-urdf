@@ -58,6 +58,12 @@ setup_args = dict(
         'dev': [
             'click',
             'jupyter_releaser>=0.22'
+        ],
+        'docs': [
+            'jupyterlite-sphinx',
+            'myst-parser',
+            'sphinx',
+            'sphinx-rtd-theme'
         ]
     },
     zip_safe=False,
