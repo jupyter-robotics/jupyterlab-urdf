@@ -2,6 +2,26 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.2.1
+
+([Full Changelog](https://github.com/ihuicatl/jupyterlab-urdf/compare/v0.2.0...3602f83946e864c522863ffec0ef78a6b8612d24))
+
+### Enhancements made
+
+- Enable syntax highlighting for URDFs [#26](https://github.com/ihuicatl/jupyterlab-urdf/pull/26) ([@ihuicatl](https://github.com/ihuicatl))
+
+### Bugs fixed
+
+- Enable syntax highlighting for URDFs [#26](https://github.com/ihuicatl/jupyterlab-urdf/pull/26) ([@ihuicatl](https://github.com/ihuicatl))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/ihuicatl/jupyterlab-urdf/graphs/contributors?from=2022-09-22&to=2022-10-11&type=c))
+
+[@ihuicatl](https://github.com/search?q=repo%3Aihuicatl%2Fjupyterlab-urdf+involves%3Aihuicatl+updated%3A2022-09-22..2022-10-11&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.2.0
 
 ([Full Changelog](https://github.com/ihuicatl/jupyterlab-urdf/compare/v0.1.2...1c83122721711101f1973080b98eb7a359aebb6d))
@@ -19,8 +39,6 @@
 ([GitHub contributors page for this release](https://github.com/ihuicatl/jupyterlab-urdf/graphs/contributors?from=2022-07-29&to=2022-09-22&type=c))
 
 [@github-actions](https://github.com/search?q=repo%3Aihuicatl%2Fjupyterlab-urdf+involves%3Agithub-actions+updated%3A2022-07-29..2022-09-22&type=Issues) | [@ihuicatl](https://github.com/search?q=repo%3Aihuicatl%2Fjupyterlab-urdf+involves%3Aihuicatl+updated%3A2022-07-29..2022-09-22&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.1.2
 
