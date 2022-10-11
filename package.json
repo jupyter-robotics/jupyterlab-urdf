@@ -56,6 +56,7 @@
   "dependencies": {
     "@jupyterlab/application": "^3.4.0",
     "@jupyterlab/apputils": "^3.4.0",
+    "@jupyterlab/codemirror": "^3.4.8",
     "@jupyterlab/docregistry": "^3.4.0",
     "@jupyterlab/filebrowser": "^3.4.0",
     "@jupyterlab/launcher": "^3.4.0",
@@ -66,10 +67,11 @@
     "@lumino/messaging": "^1.10.0",
     "@lumino/signaling": "^1.10.0",
     "@lumino/widgets": "^1.30.0",
-    "amphion": "npm:@robostack/amphion@^0.1.25",
-    "roslib": "npm:@robostack/roslib@^1.1.1",
+    "@types/codemirror": "^5.60.5",
     "@types/dat.gui": "^0.7.7",
-    "dat.gui": "^0.7.9"
+    "amphion": "npm:@robostack/amphion@^0.1.25",
+    "dat.gui": "^0.7.9",
+    "roslib": "npm:@robostack/roslib@^1.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
