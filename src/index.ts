@@ -26,6 +26,9 @@ import { UrdfWidgetFactory } from './factory';
 
 import { urdf_icon } from './icons';
 
+// For syntax highlighting
+import { Mode } from '@jupyterlab/codemirror';
+
 // Name of the factory that creates the URDF widgets
 const FACTORY = 'URDF Widget Factory';
 
@@ -90,6 +93,14 @@ const extension: JupyterFrontEndPlugin<void> = {
       tracker.add(widget);
     });
 
+    // Syntax highlighting
+    Mode.getModeInfo().push({
+      name: 'URDF',
+      mime: 'text/xml',
+      mode: 'xml',
+      ext: ['urdf', 'xacro']
+    });
+
     // Register widget and model factories
     app.docRegistry.addWidgetFactory(widgetFactory);
 
@@ -101,6 +112,7 @@ const extension: JupyterFrontEndPlugin<void> = {
       iconClass: 'jp-URDFIcon',
       fileFormat: 'text',
       contentType: 'file',
+      mimeTypes: ['application/xml', 'text/xml'],
       icon: urdf_icon
     });
 
