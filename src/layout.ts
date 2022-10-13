@@ -4,6 +4,7 @@ import { ArrayIterator, IIterator } from '@lumino/algorithm';
 
 import ROSLIB from 'roslib';
 import Amphion from 'amphion';
+import URDFModel from './xacro';
 import { DefaultLoadingManager } from 'three';
 import dat from 'dat.gui';
 
@@ -78,8 +79,8 @@ export class URDFLayout extends PanelLayout {
 
     // https://github.com/RoboStack/amphion/blob/879045327e879d0bb6fe2c8eac54664de46ef675/src/core/urdf.ts#L46
     const ros = new ROSLIB.Ros();
-    this._robotModel = new Amphion.RobotModel(ros, 'robot_description');
-    this._robotModel.loadURDF(data, this._robotModel.onComplete, {});
+    this._robotModel = new URDFModel(ros, 'robot_description');
+    this._robotModel.loadXACRO(data, this._robotModel.onComplete, {});
     this._viewer.addVisualization(this._robotModel);
 
     // Create controller  panel
