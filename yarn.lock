@@ -4852,6 +4852,11 @@ expect@^26.6.2:
     jest-message-util "^26.6.2"
     jest-regex-util "^26.0.0"
 
+expr-eval@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/expr-eval/-/expr-eval-2.0.2.tgz#fa6f044a7b0c93fde830954eb9c5b0f7fbc7e201"
+  integrity sha512-4EMSHGOPSwAfBiibw3ndnP0AvjDWLsMvGOvWEZ2F96IGk0bIVdjQisOHxReSkE13mHcfbuCiXw+G4y0zv6N8Eg==
+
 express-rate-limit@5.5.1:
   version "5.5.1"
   resolved "https://registry.yarnpkg.com/express-rate-limit/-/express-rate-limit-5.5.1.tgz#110c23f6a65dfa96ab468eda95e71697bc6987a2"
@@ -10558,6 +10563,13 @@ ws@~6.1.0:
   integrity sha512-eqZfL+NE/YQc1/ZynhojeV8q+H050oR8AZ2uIev7RU10svA9ZnJUddHcOUZTJLinZ9yEfdA2kSATS2qZK5fhJA==
   dependencies:
     async-limiter "~1.0.0"
+
+xacro-parser@^0.3.8:
+  version "0.3.8"
+  resolved "https://registry.yarnpkg.com/xacro-parser/-/xacro-parser-0.3.8.tgz#4243e69a3b998548e95b7f919693522390470ff9"
+  integrity sha512-XqnUgY93rINBtpuQSLImAycBj3eKWS1igP6rklgiUVMh5Jseq/u1Xac6X8LxwgOhurpIftGJxPklu3wcyQAEBg==
+  dependencies:
+    expr-eval "^2.0.2"
 
 xml-name-validator@^3.0.0:
   version "3.0.0"
