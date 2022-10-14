@@ -4,7 +4,7 @@ import { ArrayIterator, IIterator } from '@lumino/algorithm';
 
 import ROSLIB from 'roslib';
 import Amphion from 'amphion';
-import URDFModel from './xacro';
+import xacro2urdf from './xacro';
 import { DefaultLoadingManager } from 'three';
 import dat from 'dat.gui';
 
@@ -69,7 +69,15 @@ export class URDFLayout extends PanelLayout {
     return;
   }
 
-  setURDF(data: string): void {
+  setURDF(fileType: string, xmlString: string): void {
+    // Check if it's xacro
+    if (fileType.endsWith("xacro")) {
+      console.log("Yee XACRO");
+      const xacro = new xacro2urdf(xmlString);
+      console.log(xacro);
+    } 
+
+
     // Load robot model
     if (this._robotModel !== null && this._robotModel.object.parent !== null) {
       // Remove old robot model from visualization
@@ -79,8 +87,8 @@ export class URDFLayout extends PanelLayout {
 
     // https://github.com/RoboStack/amphion/blob/879045327e879d0bb6fe2c8eac54664de46ef675/src/core/urdf.ts#L46
     const ros = new ROSLIB.Ros();
-    this._robotModel = new URDFModel(ros, 'robot_description');
-    this._robotModel.loadXACRO(data, this._robotModel.onComplete, {});
+    this._robotModel = new Amphion.RobotModel(ros, 'robot_description');
+    this._robotModel.loadURDF(xmlString, this._robotModel.onComplete, {});
     this._viewer.addVisualization(this._robotModel);
 
     // Create controller  panel
