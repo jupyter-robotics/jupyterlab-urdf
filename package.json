@@ -7,9 +7,9 @@
     "jupyterlab",
     "jupyterlab-extension"
   ],
-  "homepage": "https://github.com/ihuicatl/jupyterlab_urdf",
+  "homepage": "https://github.com/jupyter-robotics/jupyterlab-urdf",
   "bugs": {
-    "url": "https://github.com/ihuicatl/jupyterlab_urdf/issues"
+    "url": "https://github.com/jupyter-robotics/jupyterlab-urdf/issues"
   },
   "license": "BSD-3-Clause",
   "author": {
@@ -25,7 +25,7 @@
   "style": "style/index.css",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ihuicatl/jupyterlab_urdf.git"
+    "url": "https://github.com/jupyter-robotics/jupyterlab-urdf.git"
   },
   "scripts": {
     "build": "jlpm build:lib && jlpm build:labextension:dev",
