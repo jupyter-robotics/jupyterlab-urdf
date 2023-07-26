@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="nao">
+<!-- 
+  ROS urdf definition of the Nao humanoid robot by Aldebaran Robotics
+
+  This is part of the Nao-Stack of University of Freiburg, available at:
+  http://code.google.com/p/alufr-ros-pkg/
+
+  Authors: Armin Hornung, Stefan Osswald
+
+  Joint names and properties are according to the Nao-documentation of
+  Aldebaran Robotics ("Kinematics 3.2" for Nao V3.2). 
+      
+  Note that according to the documentation, the joint limits for the left leg 
+  are different from the corresponding limits for the right leg. 
+  For {L,R}HipPitch, {L,R}KneePitch and {L,R}AnklePitch the smallest interval 
+  of the joint limits was chosen, whereas for {L,R}HipRoll and {L,R}AnkleRoll 
+  the respective (differing) limits were copied from the documentation.
+      
+  The joint limits for {L,R}ShoulderRoll and {L,R}ElbowRoll do
+  not include the zero position.
+  
+  This file loads a basic visualization of Nao and the structure (you need both)
+
+-->
+
+  <include filename="$(find nao_description)/urdf/visuals.xacro" />
+  <include filename="$(find nao_description)/urdf/nao_robot_v3_structure.urdf.xacro" />
+  
+  
+</robot>

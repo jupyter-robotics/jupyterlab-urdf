@@ -1,6 +1,7 @@
 import { Message } from '@lumino/messaging';
 import { PanelLayout, Widget } from '@lumino/widgets';
-import { ArrayIterator, IIterator } from '@lumino/algorithm';
+// https://github.com/jupyterlab/lumino/pull/346
+// import { ArrayIterator, IIterator } from '@lumino/algorithm';
 
 import ROSLIB from 'roslib';
 import Amphion from 'amphion';
@@ -55,8 +56,8 @@ export class URDFLayout extends PanelLayout {
   /**
    * Create an iterator over the widgets in the layout
    */
-  iter(): IIterator<Widget> {
-    return new ArrayIterator([]);
+  iter(): Iterator<Widget> {
+    return [][Symbol.iterator]();
   }
 
   /**

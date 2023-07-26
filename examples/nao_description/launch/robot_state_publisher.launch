@@ -1,0 +1,12 @@
+<launch>
+  <arg name="version" default="V40" />
+  <include file="$(find nao_description)/launch/upload_nao.launch" >
+    <arg name="version" value="$(arg version)" />
+  </include>
+
+  <!-- complete robot model with base_footprint -->
+  <node pkg="nao_description" type="base_footprint" name="base_footprint" />
+
+  <!-- additionally load the robot state publisher -->
+  <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher" />
+</launch>

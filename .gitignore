@@ -13,6 +13,15 @@ jupyterlab_urdf/labextension
 *devel/
 *logs/
 *catkin_tools/
+*.log
+.eslintcache
+.stylelintcache
+*.egg-info/
+.ipynb_checkpoints
+*.tsbuildinfo
+jupyterlab_urdf/labextension
+# Version file is handled by hatchling
+jupyterlab_urdf/_version.py
 
 # Integration tests
 ui-tests/test-results/
@@ -68,6 +77,7 @@ htmlcov/
 .coverage.*
 .cache
 nosetests.xml
+coverage/
 coverage.xml
 *.cover
 .hypothesis/
@@ -122,3 +132,6 @@ dmypy.json
 
 # OSX files
 .DS_Store
+
+# Yarn cache
+.yarn/

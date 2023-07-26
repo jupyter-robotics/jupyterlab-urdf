@@ -27,7 +27,7 @@ import { UrdfWidgetFactory } from './factory';
 import { urdf_icon } from './icons';
 
 // For syntax highlighting
-import { Mode } from '@jupyterlab/codemirror';
+// import { Mode } from '@jupyterlab/codemirror'; // FIXME:
 
 // Name of the factory that creates the URDF widgets
 const FACTORY = 'URDF Widget Factory';
@@ -93,13 +93,13 @@ const extension: JupyterFrontEndPlugin<void> = {
       tracker.add(widget);
     });
 
-    // Syntax highlighting
-    Mode.getModeInfo().push({
-      name: 'URDF',
-      mime: 'text/xml',
-      mode: 'xml',
-      ext: ['urdf', 'xacro']
-    });
+    // FIXME: // Syntax highlighting
+    // Mode.getModeInfo().push({
+    //   name: 'URDF',
+    //   mime: 'text/xml',
+    //   mode: 'xml',
+    //   ext: ['urdf', 'xacro']
+    // });
 
     // Register widget and model factories
     app.docRegistry.addWidgetFactory(widgetFactory);
@@ -123,10 +123,10 @@ const extension: JupyterFrontEndPlugin<void> = {
       iconClass: 'jp-URDFIcon',
       caption: 'Create a new URDF',
       execute: () => {
-        const cwd = browserFactory.defaultBrowser.model.path;
+        // FIXME: const cwd = browserFactory.defaultBrowser.model.path;
         commands
           .execute('docmanager:new-untitled', {
-            path: cwd,
+            // FIXME: path: cwd,
             type: 'file',
             ext: '.urdf'
           })
@@ -153,7 +153,8 @@ const extension: JupyterFrontEndPlugin<void> = {
       const urdfMenu: Menu = new Menu({ commands });
       urdfMenu.title.label = 'URDF';
       urdfMenu.addItem({ command: 'urdf:create-new' });
-      menu.addMenu(urdfMenu, { rank: 20 });
+      // FIXME: menu.addMenu(urdfMenu, { rank: 20 });
+      menu.addMenu(urdfMenu);
     }
 
     // Add palette item if palette is available

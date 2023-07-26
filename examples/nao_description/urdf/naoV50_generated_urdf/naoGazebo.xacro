@@ -1,0 +1,869 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <!-- MACROS FOR DISABLE LINKS -->
+	<xacro:property name="PI" value="3.14159265359" />
+    <xacro:macro name="DisabledLinks" params="side side_small">
+        <plugin name="${side}Finger11_link" filename="libroboticsgroup_gazebo_disable_link_plugin.so">
+            <link>${side}Finger11_link</link>
+        </plugin>
+        <plugin name="${side}Finger12_link" filename="libroboticsgroup_gazebo_disable_link_plugin.so">
+            <link>${side}Finger12_link</link>
+        </plugin>
+        <plugin name="${side}Finger13_link" filename="libroboticsgroup_gazebo_disable_link_plugin.so">
+            <link>${side}Finger13_link</link>
+        </plugin>
+        <plugin name="${side}Finger21_link" filename="libroboticsgroup_gazebo_disable_link_plugin.so">
+            <link>${side}Finger21_link</link>
+        </plugin>
+        <plugin name="${side}Finger22_link" filename="libroboticsgroup_gazebo_disable_link_plugin.so">
+            <link>${side}Finger22_link</link>
+        </plugin>
+        <plugin name="${side}Finger23_link" filename="libroboticsgroup_gazebo_disable_link_plugin.so">
+            <link>${side}Finger23_link</link>
+        </plugin>
+        <plugin name="${side}Thumb1_link" filename="libroboticsgroup_gazebo_disable_link_plugin.so">
+            <link>${side}Thumb1_link</link>
+        </plugin>
+        <plugin name="${side}Thumb2_link" filename="libroboticsgroup_gazebo_disable_link_plugin.so">
+            <link>${side}Thumb2_link</link>
+        </plugin>
+        <plugin name="${side_small}_gripper" filename="libroboticsgroup_gazebo_disable_link_plugin.so">
+            <link>${side_small}_gripper</link>
+        </plugin>
+    </xacro:macro>
+    <!-- MACROS FOR MIMIC JOINTS -->
+    <!-- Fingers -->
+    <xacro:macro name="FingerMimics" params="side num">
+        <plugin name="mimic_${side}Finger${num}1" filename="libroboticsgroup_gazebo_mimic_joint_plugin.so">
+            <joint>${side}Hand</joint>
+            <mimicJoint>${side}Finger${num}1</mimicJoint>
+            <multiplier>-${PI/4}</multiplier>
+            <offset>${PI/4}</offset>
+        </plugin>
+        <plugin name="mimic_${side}Finger${num}2" filename="libroboticsgroup_gazebo_mimic_joint_plugin.so">
+            <joint>${side}Hand</joint>
+            <mimicJoint>${side}Finger${num}2</mimicJoint>
+            <multiplier>-${PI/4}</multiplier>
+            <offset>${PI/4}</offset>
+        </plugin>
+        <plugin name="mimic_${side}Finger${num}3" filename="libroboticsgroup_gazebo_mimic_joint_plugin.so">
+            <joint>${side}Hand</joint>
+            <mimicJoint>${side}Finger${num}3</mimicJoint>
+            <multiplier>-${PI/4}</multiplier>
+            <offset>${PI/4}</offset>
+        </plugin>
+    </xacro:macro>
+    <!-- Thumbs -->
+    <xacro:macro name="ThumbMimics" params="side">
+        <plugin name="${side}Thumb1" filename="libroboticsgroup_gazebo_mimic_joint_plugin.so">
+            <joint>${side}Hand</joint>
+            <mimicJoint>${side}Thumb1</mimicJoint>
+            <multiplier>-${PI/4}</multiplier>
+            <offset>${PI/4}</offset>
+        </plugin>
+        <plugin name="${side}Thumb2" filename="libroboticsgroup_gazebo_mimic_joint_plugin.so">
+            <joint>${side}Hand</joint>
+            <mimicJoint>${side}Thumb2</mimicJoint>
+            <multiplier>-${PI/4}</multiplier>
+            <offset>${PI/4}</offset>
+        </plugin>
+    </xacro:macro>
+    <!-- GAZEBO ROS CONTROL AND IMU PLUGIN -->
+
+    <gazebo>
+
+        <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control">
+            <robotNamespace>/nao_dcm</robotNamespace>
+            <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+        </plugin>
+
+<!--        <plugin filename="libgazebo_ros_imu.so" name="gazebo_ros_imu_controller">
+            <robotNamespace>/nao_dcm</robotNamespace>
+            <topicName>imu_data</topicName>
+            <bodyName>imu</bodyName>
+            <frameId>ImuAccelerometer_frame</frameId>
+            <gaussianNoise>2.89e-08</gaussianNoise>
+            <accelGaussianNoise>2.89e-08 2.89e-08 2.89e-08</accelGaussianNoise>
+            <rateGaussianNoise>2.89e-08 2.89e-08 2.89e-08</rateGaussianNoise>
+            <headingGaussianNoise>2.89e-08 2.89e-08 2.89e-08</headingGaussianNoise>
+            <xyzOffsets>0 0 0</xyzOffsets>
+            <rpyOffsets>0 0 0</rpyOffsets>
+            <updateRate>30.0</updateRate>
+            <alwaysOn>true</alwaysOn>
+        </plugin>
+-->
+<!--        <plugin name="gazebo_ros_imu_controller" filename="${imu_plugin}">
+            <robotNamespace>/nao_dcm</robotNamespace>
+            <topicName>imu_data</topicName>
+            <bodyName>imu</bodyName>
+            <frameId>imu</frameId>
+            <gaussianNoise>2.89e-08</gaussianNoise>
+            <accelGaussianNoise>2.89e-08 2.89e-08 2.89e-08</accelGaussianNoise>
+            <rateGaussianNoise>2.89e-08 2.89e-08 2.89e-08</rateGaussianNoise>
+            <headingGaussianNoise>2.89e-08 2.89e-08 2.89e-08</headingGaussianNoise>
+            <xyzOffsets>0 0 0</xyzOffsets>
+            <rpyOffsets>0 0 0</rpyOffsets>
+            <updateRate>30.0</updateRate>
+            <alwaysOn>true</alwaysOn>
+        </plugin>
+-->        <!-- Mimic joints through plugin develop by costashatz based on implementation by Goncalo Cabrita -->
+        <plugin name="mimic_hipyawpitch" filename="libroboticsgroup_gazebo_mimic_joint_plugin.so">
+            <joint>LHipYawPitch</joint>
+            <mimicJoint>RHipYawPitch</mimicJoint>
+            <multiplier>1.0</multiplier>
+            <offset>0.0</offset>
+        </plugin>
+
+        <xacro:FingerMimics side="L" num="1"/>
+        <xacro:FingerMimics side="L" num="2"/>
+        <xacro:FingerMimics side="R" num="1"/>
+        <xacro:FingerMimics side="R" num="2"/>
+
+        <xacro:ThumbMimics side="L"/>
+        <xacro:ThumbMimics side="R"/>
+
+        <xacro:DisabledLinks side="L" side_small="l"/>
+        <xacro:DisabledLinks side="R" side_small="r"/>
+    </gazebo>
+    <!-- END OF GAZEBO ROS CONTROL PLUGIN -->
+    <!-- GAZEBO MATERIALS -->
+    <gazebo reference="torso">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+
+    <gazebo reference="Neck">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+    <gazebo reference="Head">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+    <gazebo reference="gaze">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+<!--    <gazebo reference="LShoulderDummy">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+    <gazebo reference="RShoulderDummy">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo> -->
+
+
+<!-- ARMS -->
+    <gazebo reference="LShoulder">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+    <gazebo reference="LBicep">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+    <gazebo reference="LElbow">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+    <gazebo reference="LForeArm">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+    <gazebo reference="l_wrist">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+    <gazebo reference="l_gripper">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>true</turnGravityOff>
+    </gazebo>
+    <gazebo reference="RShoulder">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+
+    <gazebo reference="RBicep">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+    <gazebo reference="RElbow">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+    <gazebo reference="RForeArm">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+    <gazebo reference="r_wrist">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+    <gazebo reference="r_gripper">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>true</turnGravityOff>
+    </gazebo>
+
+
+<!--    <gazebo reference="LElbowDummy">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+-->
+    <gazebo reference="LFinger11_link">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>true</turnGravityOff>
+    </gazebo>
+    <gazebo reference="LFinger12_link">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>true</turnGravityOff>
+    </gazebo>
+    <gazebo reference="LFinger13_link">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>true</turnGravityOff>
+    </gazebo>
+    <gazebo reference="LFinger21_link">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>true</turnGravityOff>
+    </gazebo>
+    <gazebo reference="LFinger22_link">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>true</turnGravityOff>
+    </gazebo>
+    <gazebo reference="LFinger23_link">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>true</turnGravityOff>
+    </gazebo>
+    <gazebo reference="LThumb1_link">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>true</turnGravityOff>
+    </gazebo>
+    <gazebo reference="LThumb2_link">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>true</turnGravityOff>
+    </gazebo>
+
+    <gazebo reference="LPelvis">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+    <gazebo reference="LHip">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+    <gazebo reference="LThigh">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+    <gazebo reference="LTibia">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+ <gazebo reference="LAnklePitch">
+    <mu1>0.5</mu1>
+    <mu2>0.5</mu2>
+    <selfCollide>false</selfCollide>
+    <turnGravityOff>false</turnGravityOff>
+  </gazebo>
+  <gazebo reference="l_ankle">
+    <mu1>0.5</mu1>
+    <mu2>0.5</mu2>
+    <selfCollide>false</selfCollide>
+    <turnGravityOff>false</turnGravityOff>
+    <fdir1>1 0 0</fdir1>
+    <maxVel>0.1</maxVel>
+    <minDepth>0.003</minDepth>
+  </gazebo>
+  <gazebo reference="RPelvis">
+      <mu1>0.5</mu1>
+      <mu2>0.5</mu2>
+      <selfCollide>false</selfCollide>
+      <turnGravityOff>false</turnGravityOff>
+  </gazebo>
+  <gazebo reference="RHip">
+      <mu1>0.5</mu1>
+      <mu2>0.5</mu2>
+      <selfCollide>false</selfCollide>
+      <turnGravityOff>false</turnGravityOff>
+  </gazebo>
+  <gazebo reference="RThigh">
+      <mu1>0.5</mu1>
+      <mu2>0.5</mu2>
+      <selfCollide>false</selfCollide>
+      <turnGravityOff>false</turnGravityOff>
+  </gazebo>
+  <gazebo reference="RTibia">
+      <mu1>0.5</mu1>
+      <mu2>0.5</mu2>
+      <selfCollide>false</selfCollide>
+      <turnGravityOff>false</turnGravityOff>
+  </gazebo>
+ <gazebo reference="RAnklePitch">
+    <mu1>0.5</mu1>
+    <mu2>0.5</mu2>
+    <selfCollide>false</selfCollide>
+    <turnGravityOff>false</turnGravityOff>
+  </gazebo>
+  <gazebo reference="r_ankle">
+    <mu1>0.5</mu1>
+    <mu2>0.5</mu2>
+    <selfCollide>false</selfCollide>
+    <turnGravityOff>false</turnGravityOff>
+    <fdir1>1 0 0</fdir1>
+    <maxVel>0.1</maxVel>
+    <minDepth>0.003</minDepth>
+  </gazebo>
+
+    <gazebo reference="RFinger11_link">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>true</turnGravityOff>
+    </gazebo>
+    <gazebo reference="RFinger12_link">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>true</turnGravityOff>
+    </gazebo>
+    <gazebo reference="RFinger13_link">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>true</turnGravityOff>
+    </gazebo>
+    <gazebo reference="RFinger21_link">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>true</turnGravityOff>
+    </gazebo>
+    <gazebo reference="RFinger22_link">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>true</turnGravityOff>
+    </gazebo>
+    <gazebo reference="RFinger23_link">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>true</turnGravityOff>
+    </gazebo>
+    <gazebo reference="RThumb1_link">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>true</turnGravityOff>
+    </gazebo>
+    <gazebo reference="RThumb2_link">
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <selfCollide>false</selfCollide>
+        <turnGravityOff>true</turnGravityOff>
+    </gazebo>
+<!--
+
+        RGB CAMERAS: Working
+-->
+
+ <gazebo reference="CameraTop_frame">
+    <sensor type="camera" name="CameraTop">
+        <update_rate>5.0</update_rate>
+        <camera name="camera_top">
+            <horizontal_fov>1.06290551</horizontal_fov>
+            <image>
+                <width>640</width>
+                <height>480</height>
+                <format>R8G8B8</format>
+            </image>
+            <clip>
+                <near>0.3</near>
+                <far>500</far>
+            </clip>
+            <noise>
+                <type>gaussian</type>
+                <mean>0.0</mean>
+                <stddev>0.007</stddev>
+            </noise>
+        </camera>
+        <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+            <robotNamespace>nao_robot</robotNamespace>
+            <alwaysOn>true</alwaysOn>
+            <updateRate>5.0</updateRate>
+            <cameraName>camera/top</cameraName>
+            <imageTopicName>image_raw</imageTopicName>
+            <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+            <frameName>CameraTop_optical_frame</frameName>
+            <hackBaseline>0.07</hackBaseline>
+            <distortionK1>-0.0545211</distortionK1>
+            <distortionK2>0.06919734</distortionK2>
+            <distortionK3>-0.0241095</distortionK3>
+            <distortionT1>-0.0112245</distortionT1>
+            <distortionT2>0.0</distortionT2>
+        </plugin>
+    </sensor>
+</gazebo>
+
+ <gazebo reference="CameraBottom_frame">
+    <sensor type="camera" name="CameraBottom">
+        <update_rate>5.0</update_rate>
+        <camera name="camera_bottom">
+            <horizontal_fov>1.06290551</horizontal_fov>
+            <image>
+                <width>640</width>
+                <height>480</height>
+                <format>R8G8B8</format>
+            </image>
+            <clip>
+                <near>0.05</near>
+                <far>500</far>
+            </clip>
+            <noise>
+                <type>gaussian</type>
+                <mean>0.0</mean>
+                <stddev>0.007</stddev>
+            </noise>
+        </camera>
+        <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+            <robotNamespace>/nao_robot</robotNamespace>
+            <alwaysOn>true</alwaysOn>
+            <updateRate>5.0</updateRate>
+            <cameraName>camera_bottom</cameraName>
+            <imageTopicName>image_raw</imageTopicName>
+            <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+            <frameName>CameraBottom_optical_frame</frameName>
+            <hackBaseline>0.07</hackBaseline>
+            <distortionK1>-0.0648764</distortionK1>
+            <distortionK2>0.06125202</distortionK2>
+            <distortionK3>0.00382815</distortionK3>
+            <distortionT1>-0.00551104</distortionT1>
+            <distortionT2>0.0</distortionT2>
+        </plugin>
+    </sensor>
+</gazebo>
+
+
+<!--
+
+        CameraDepth : not displayed at the right spot
+
+<gazebo reference="CameraDepth3_frame">
+    <sensor type="depth" name="openni_camera_camera2">
+        <always_on>1</always_on>
+        <visualize>true</visualize>
+        <camera>
+            <horizontal_fov>1.01229</horizontal_fov>
+            <image>
+                <width>320</width>
+                <height>240</height>
+                <format>R8G8B8</format>
+            </image>
+            <depth_camera>
+
+            </depth_camera>
+            <clip>
+                <near>0.1</near>
+                <far>100</far>
+            </clip>
+        </camera>
+        <plugin name="depth_cam_controller2" filename="libgazebo_ros_openni_kinect.so">
+            <baseline>0.2</baseline>
+            <alwaysOn>true</alwaysOn>
+            <updateRate>0.1</updateRate>
+            <cameraName>xtion2</cameraName>
+            <imageTopicName>/xtion2/ir/image_raw</imageTopicName>
+            <cameraInfoTopicName>/xtion2/ir/camera_info</cameraInfoTopicName>
+            <depthImageTopicName>/xtion2/depth/image_raw</depthImageTopicName>
+            <depthImageInfoTopicName>/xtion2/depth/camera_info</depthImageInfoTopicName>
+            <pointCloudTopicName>/xtion2/depth/points</pointCloudTopicName>
+            <frameName>CameraDepth2_frame</frameName>
+            <pointCloudCutoff>0.5</pointCloudCutoff>
+            <distortionK1>0.00000001</distortionK1>
+            <distortionK2>0.00000001</distortionK2>
+            <distortionK3>0.00000001</distortionK3>
+            <distortionT1>0.00000001</distortionT1>
+            <distortionT2>0.00000001</distortionT2>
+            <CxPrime>0</CxPrime>
+            <Cx>0</Cx>
+            <Cy>0</Cy>
+            <focalLength>0</focalLength>
+            <hackBaseline>0</hackBaseline>
+        </plugin>
+    </sensor>
+</gazebo>
+-->
+
+
+<!--
+    BUMPERS + FSR
+libgazebo_ros_bumper.so bugged right now, waiting for new release
+
+
+<gazebo reference="LFootBumper_frame">
+  <sensor type="contact" name="LFootBumper">
+    <update_rate>10</update_rate>
+    <contact>
+      <collision>LFootBumper_frame_collision</collision>
+    </contact>
+    <plugin filename="libgazebo_ros_bumper.so" name="gazebo_nao_ros_bumper">
+      <alwaysOn>true</alwaysOn>
+      <bumperTopicName>LFootBumper</bumperTopicName>
+      <frameName>LFootBumper_frame</frameName>
+    </plugin>
+  </sensor>
+</gazebo>
+-->
+<gazebo reference="RFsrFL_frame">
+  <mu1>0.5</mu1>
+  <mu2>0.5</mu2>
+  <selfCollide>false</selfCollide>
+  <turnGravityOff>false</turnGravityOff>
+  <fdir1>1 0 0</fdir1>
+  <maxVel>0.1</maxVel>
+  <minDepth>0.003</minDepth>
+  <sensor name="RFsrFL" type="contact">
+    <always_on>1</always_on>
+    <update_rate>20</update_rate>
+    <visualize>false</visualize>
+    <contact>
+      <collision>RFsrFL_frame_collision</collision>
+    </contact>
+    <plugin filename="libgazebo_ros_bumper.so" name="gazebo_nao_RFsrFL">
+      <robotNamespace>nao_robot</robotNamespace>
+      <alwaysOn>true</alwaysOn>
+      <bumperTopicName>FSR/RFoot/FrontLeft</bumperTopicName>
+      <frameName>RFsrFL_frame</frameName>
+    </plugin>
+  </sensor>
+</gazebo>
+
+<gazebo reference="RFsrFR_frame">
+  <mu1>0.5</mu1>
+  <mu2>0.5</mu2>
+  <selfCollide>false</selfCollide>
+  <turnGravityOff>false</turnGravityOff>
+  <fdir1>1 0 0</fdir1>
+  <maxVel>0.1</maxVel>
+  <minDepth>0.003</minDepth>
+  <sensor name="RFsrFR" type="contact">
+    <always_on>1</always_on>
+    <update_rate>20</update_rate>
+    <visualize>false</visualize>
+    <contact>
+      <collision>RFsrFR_frame_collision</collision>
+    </contact>
+    <plugin filename="libgazebo_ros_bumper.so" name="gazebo_nao_RFsrFR">
+      <robotNamespace>nao_robot</robotNamespace>
+      <alwaysOn>true</alwaysOn>
+      <bumperTopicName>FSR/RFoot/FrontRight</bumperTopicName>
+      <frameName>RFsrFR_frame</frameName>
+    </plugin>
+  </sensor>
+</gazebo>
+
+<gazebo reference="RFsrRL_frame">
+  <mu1>0.5</mu1>
+  <mu2>0.5</mu2>
+  <selfCollide>false</selfCollide>
+  <turnGravityOff>false</turnGravityOff>
+  <fdir1>1 0 0</fdir1>
+  <maxVel>0.1</maxVel>
+  <minDepth>0.003</minDepth>
+  <sensor name="RFsrRL" type="contact">
+    <always_on>1</always_on>
+    <update_rate>20</update_rate>
+    <visualize>false</visualize>
+    <contact>
+      <collision>RFsrRL_frame_collision</collision>
+    </contact>
+    <plugin filename="libgazebo_ros_bumper.so" name="gazebo_nao_RFsrRL">
+      <robotNamespace>nao_robot</robotNamespace>
+      <alwaysOn>true</alwaysOn>
+      <bumperTopicName>FSR/RFoot/RearLeft</bumperTopicName>
+      <frameName>RFsrRL_frame</frameName>
+    </plugin>
+  </sensor>
+</gazebo>
+
+<gazebo reference="RFsrRR_frame">
+  <mu1>0.5</mu1>
+  <mu2>0.5</mu2>
+  <selfCollide>false</selfCollide>
+  <turnGravityOff>false</turnGravityOff>
+  <fdir1>1 0 0</fdir1>
+  <maxVel>0.1</maxVel>
+  <minDepth>0.003</minDepth>
+  <sensor name="RFsrRR" type="contact">
+    <always_on>1</always_on>
+    <update_rate>20</update_rate>
+    <visualize>false</visualize>
+    <contact>
+      <collision>RFsrRR_frame_collision</collision>
+    </contact>
+    <plugin filename="libgazebo_ros_bumper.so" name="gazebo_nao_RFsrRR">
+      <robotNamespace>nao_robot</robotNamespace>
+      <alwaysOn>true</alwaysOn>
+      <bumperTopicName>FSR/RFoot/RearRight</bumperTopicName>
+      <frameName>RFsrRR_frame</frameName>
+    </plugin>
+  </sensor>
+</gazebo>
+
+<gazebo reference="LFsrFL_frame">
+  <mu1>0.5</mu1>
+  <mu2>0.5</mu2>
+  <selfCollide>false</selfCollide>
+  <turnGravityOff>false</turnGravityOff>
+  <fdir1>1 0 0</fdir1>
+  <maxVel>0.1</maxVel>
+  <minDepth>0.003</minDepth>
+  <sensor name="LFsrFL" type="contact">
+    <always_on>1</always_on>
+    <update_rate>20</update_rate>
+    <visualize>false</visualize>
+    <contact>
+      <collision>LFsrFL_frame_collision</collision>
+    </contact>
+    <plugin filename="libgazebo_ros_bumper.so" name="gazebo_nao_LFsrFL">
+      <robotNamespace>nao_robot</robotNamespace>
+      <alwaysOn>true</alwaysOn>
+      <bumperTopicName>FSR/LFoot/FrontLeft</bumperTopicName>
+      <frameName>LFsrFL_frame</frameName>
+    </plugin>
+  </sensor>
+</gazebo>
+
+<gazebo reference="LFsrFR_frame">
+  <mu1>0.5</mu1>
+  <mu2>0.5</mu2>
+  <selfCollide>false</selfCollide>
+  <turnGravityOff>false</turnGravityOff>
+  <fdir1>1 0 0</fdir1>
+  <maxVel>0.1</maxVel>
+  <minDepth>0.003</minDepth>
+  <sensor name="LFsrFR" type="contact">
+    <always_on>1</always_on>
+    <update_rate>20</update_rate>
+    <visualize>false</visualize>
+    <contact>
+      <collision>LFsrFR_frame_collision</collision>
+    </contact>
+    <plugin filename="libgazebo_ros_bumper.so" name="gazebo_nao_ros_bumper">
+      <robotNamespace>nao_robot</robotNamespace>
+      <alwaysOn>true</alwaysOn>
+      <bumperTopicName>FSR/LFoot/FrontRight</bumperTopicName>
+      <frameName>LFsrFR_frame</frameName>
+    </plugin>
+  </sensor>
+</gazebo>
+
+<gazebo reference="LFsrRL_frame">
+  <mu1>0.5</mu1>
+  <mu2>0.5</mu2>
+  <selfCollide>false</selfCollide>
+  <turnGravityOff>false</turnGravityOff>
+  <fdir1>1 0 0</fdir1>
+  <maxVel>0.1</maxVel>
+  <minDepth>0.003</minDepth>
+  <sensor name="LFsrRL" type="contact">
+    <always_on>1</always_on>
+    <update_rate>20</update_rate>
+    <visualize>false</visualize>
+    <contact>
+      <collision>LFsrRL_frame_collision</collision>
+    </contact>
+    <plugin filename="libgazebo_ros_bumper.so" name="gazebo_nao_ros_bumper">
+      <robotNamespace>nao_robot</robotNamespace>
+      <alwaysOn>true</alwaysOn>
+      <bumperTopicName>FSR/LFoot/RearLeft</bumperTopicName>
+      <frameName>LFsrRL_frame</frameName>
+    </plugin>
+  </sensor>
+</gazebo>
+
+<gazebo reference="LFsrRR_frame">
+  <mu1>0.5</mu1>
+  <mu2>0.5</mu2>
+  <selfCollide>false</selfCollide>
+  <turnGravityOff>false</turnGravityOff>
+  <fdir1>1 0 0</fdir1>
+  <maxVel>0.1</maxVel>
+  <minDepth>0.003</minDepth>
+  <sensor name="LFsrRR" type="contact">
+    <always_on>1</always_on>
+    <update_rate>20</update_rate>
+    <visualize>false</visualize>
+    <contact>
+      <collision>LFsrRR_frame_collision</collision>
+    </contact>
+    <plugin filename="libgazebo_ros_bumper.so" name="gazebo_nao_ros_bumper">
+      <robotNamespace>nao_robot</robotNamespace>
+      <alwaysOn>true</alwaysOn>
+      <bumperTopicName>FSR/LFoot/RearRight</bumperTopicName>
+      <frameName>LFsrRR_frame</frameName>
+    </plugin>
+  </sensor>
+</gazebo>
+<!--
+    Sonars
+-->
+<gazebo reference="LSonar_frame">
+  <sensor type="ray" name="LSonar">
+    <pose>0 0 0 0 0 0</pose>
+    <update_rate>20</update_rate>
+    <visualize>false</visualize>
+    <ray>
+      <scan>
+        <horizontal>
+          <samples>5</samples>
+          <resolution>1</resolution>
+
+          <min_angle>-0.2617993877991494</min_angle>
+          <max_angle>0.2617993877991494</max_angle>
+
+<!--
+          <min_angle>-0.10</min_angle>
+          <max_angle>0.10</max_angle>
+-->
+        </horizontal>
+        <vertical>
+          <samples>5</samples>
+          <resolution>1</resolution>
+
+          <min_angle>-0.13</min_angle>
+          <max_angle>0.13</max_angle>
+
+<!--
+          <min_angle>-0.2617993877991494</min_angle>
+          <max_angle>0.2617993877991494</max_angle>
+-->
+        </vertical>
+      </scan>
+      <range>
+        <min>0.025</min>
+        <max>2.55</max>
+        <resolution>1</resolution>
+      </range>
+    </ray>
+    <plugin filename="libgazebo_ros_range.so" name="gazebo_ros_range">
+      <robotNamespace>nao_robot</robotNamespace>
+      <gaussianNoise>0.05</gaussianNoise>
+      <alwaysOn>true</alwaysOn>
+      <updateRate>20</updateRate>
+      <topicName>sonar_left</topicName>
+      <frameName>LSonar_frame</frameName>
+      <minRange>0.025</minRange>
+      <maxRange>2.55</maxRange>
+      <fov>0.5235987755982988</fov>
+<!--      <fov>0.1</fov> -->
+      <radiation>ultrasound</radiation>
+    </plugin>
+  </sensor>
+</gazebo>
+
+<gazebo reference="RSonar_frame">
+  <sensor type="ray" name="RSonar">
+    <pose>0 0 0 0 0 0</pose>
+    <update_rate>20</update_rate>
+    <visualize>false</visualize>
+    <ray>
+      <scan>
+        <horizontal>
+          <samples>5</samples>
+          <resolution>1</resolution>
+          <min_angle>-0.2617993877991494</min_angle>
+          <max_angle>0.2617993877991494</max_angle>
+        </horizontal>
+        <vertical>
+          <samples>5</samples>
+          <resolution>1</resolution>
+          <min_angle>-0.13</min_angle>
+          <max_angle>0.13</max_angle>
+        </vertical>
+      </scan>
+      <range>
+        <min>0.025</min>
+        <max>2.55</max>
+        <resolution>1</resolution>
+      </range>
+    </ray>
+    <plugin filename="libgazebo_ros_range.so" name="gazebo_ros_range">
+      <robotNamespace>nao_robot</robotNamespace>
+      <gaussianNoise>0.05</gaussianNoise>
+      <alwaysOn>true</alwaysOn>
+      <updateRate>20</updateRate>
+      <topicName>sonar_right</topicName>
+      <frameName>RSonar_frame</frameName>
+      <minRange>0.025</minRange>
+      <maxRange>2.55</maxRange>
+      <fov>0.5235987755982988</fov>
+      <radiation>ultrasound</radiation>
+    </plugin>
+  </sensor>
+</gazebo>
+
+</robot>

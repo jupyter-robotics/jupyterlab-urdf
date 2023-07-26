@@ -1,0 +1,4 @@
+<launch>
+  <arg name="version" default="V40" />
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find nao_description)/urdf/nao$(arg version)_generated_urdf/nao_robot.xacro" />
+</launch>
