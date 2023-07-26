@@ -135,3 +135,6 @@ dmypy.json
 
 # Yarn cache
 .yarn/
+
+# Other
+examples/nao*
