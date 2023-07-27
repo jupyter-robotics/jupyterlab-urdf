@@ -135,6 +135,7 @@ dmypy.json
 
 # Yarn cache
 .yarn/
+yarn.lock
 
 # Other
 examples/nao*
