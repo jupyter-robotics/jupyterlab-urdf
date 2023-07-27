@@ -6,6 +6,6 @@ module.exports = {
     lazyCompilation: true,
     outputModule: true,
     syncWebAssembly: true,
-    topLevelAwait: true,
+    topLevelAwait: true
   }
 };
