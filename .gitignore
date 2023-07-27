@@ -138,3 +138,4 @@ dmypy.json
 
 # Other
 examples/nao*
+.jupyter_releaser_checkout/
