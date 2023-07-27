@@ -113,7 +113,7 @@
   "jupyterlab": {
     "extension": true,
     "outputDir": "jupyterlab_urdf/labextension",
-    "webpackConfig": "./webpack.config-jlab.js"
+    "webpackConfig": "./webpack.config.js"
   },
   "eslintIgnore": [
     "node_modules",
