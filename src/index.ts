@@ -160,6 +160,7 @@ const extension: JupyterFrontEndPlugin<void> = {
 
     if (languageRegistry) {
       // FIXME: Property 'push' does not exist on type 'readonly string[]'.
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       languageRegistry.findByMIME('text/xml')?.extensions?.push('urdf');
     }
