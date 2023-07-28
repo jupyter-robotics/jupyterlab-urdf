@@ -14,7 +14,7 @@ import { ILauncher } from '@jupyterlab/launcher';
 
 import { IMainMenu } from '@jupyterlab/mainmenu';
 
-import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
+import { IDefaultFileBrowser } from '@jupyterlab/filebrowser';
 
 import { Menu } from '@lumino/widgets';
 
@@ -46,7 +46,7 @@ const extension: JupyterFrontEndPlugin<void> = {
   requires: [
     ICommandPalette,
     ILayoutRestorer,
-    IFileBrowserFactory,
+    IDefaultFileBrowser,
     IMainMenu,
     ILauncher
   ],
@@ -54,7 +54,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     app: JupyterFrontEnd,
     palette: ICommandPalette,
     restorer: ILayoutRestorer,
-    browserFactory: IFileBrowserFactory,
+    browserFactory: IDefaultFileBrowser,
     menu: IMainMenu,
     launcher: ILauncher
   ) => {
@@ -123,10 +123,10 @@ const extension: JupyterFrontEndPlugin<void> = {
       iconClass: 'jp-URDFIcon',
       caption: 'Create a new URDF',
       execute: () => {
-        // FIXME: const cwd = browserFactory.defaultBrowser.model.path;
+        const cwd = browserFactory.model.path;
         commands
           .execute('docmanager:new-untitled', {
-            // FIXME: path: cwd,
+            path: cwd,
             type: 'file',
             ext: '.urdf'
           })
