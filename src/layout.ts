@@ -1,15 +1,16 @@
 import { Message } from '@lumino/messaging';
 import { PanelLayout, Widget } from '@lumino/widgets';
-import { ArrayIterator, IIterator } from '@lumino/algorithm';
+// https://github.com/jupyterlab/lumino/pull/346
+// import { ArrayIterator, IIterator } from '@lumino/algorithm';
 
-import ROSLIB from 'roslib';
-import Amphion from 'amphion';
+import ROSLIB from '@robostack/roslib';
+import Amphion from '@robostack/amphion';
 import { DefaultLoadingManager } from 'three';
 import dat from 'dat.gui';
 
 // Modify URLs for the RobotModel:
 //https://github.com/RoboStack/amphion/blob/879045327e879d0bb6fe2c8eac54664de46ef675/src/core/urdf.ts#L22
-DefaultLoadingManager.setURLModifier(url => {
+DefaultLoadingManager.setURLModifier((url: string) => {
   console.debug('THREE MANAGER:', url);
   return '/ros/pkgs' + url;
 });
@@ -55,8 +56,8 @@ export class URDFLayout extends PanelLayout {
   /**
    * Create an iterator over the widgets in the layout
    */
-  iter(): IIterator<Widget> {
-    return new ArrayIterator([]);
+  iter(): Iterator<Widget> {
+    return [][Symbol.iterator]();
   }
 
   /**

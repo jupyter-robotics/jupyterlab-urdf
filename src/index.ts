@@ -14,7 +14,7 @@ import { ILauncher } from '@jupyterlab/launcher';
 
 import { IMainMenu } from '@jupyterlab/mainmenu';
 
-import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
+import { IDefaultFileBrowser } from '@jupyterlab/filebrowser';
 
 import { Menu } from '@lumino/widgets';
 
@@ -27,7 +27,7 @@ import { UrdfWidgetFactory } from './factory';
 import { urdf_icon } from './icons';
 
 // For syntax highlighting
-import { Mode } from '@jupyterlab/codemirror';
+import { IEditorLanguageRegistry } from '@jupyterlab/codemirror';
 
 // Name of the factory that creates the URDF widgets
 const FACTORY = 'URDF Widget Factory';
@@ -46,17 +46,19 @@ const extension: JupyterFrontEndPlugin<void> = {
   requires: [
     ICommandPalette,
     ILayoutRestorer,
-    IFileBrowserFactory,
+    IDefaultFileBrowser,
     IMainMenu,
-    ILauncher
+    ILauncher,
+    IEditorLanguageRegistry
   ],
   activate: (
     app: JupyterFrontEnd,
     palette: ICommandPalette,
     restorer: ILayoutRestorer,
-    browserFactory: IFileBrowserFactory,
+    browserFactory: IDefaultFileBrowser,
     menu: IMainMenu,
-    launcher: ILauncher
+    launcher: ILauncher,
+    languageRegistry: IEditorLanguageRegistry
   ) => {
     console.log('JupyterLab extension URDF is activated!');
     const { commands } = app;
@@ -93,14 +95,6 @@ const extension: JupyterFrontEndPlugin<void> = {
       tracker.add(widget);
     });
 
-    // Syntax highlighting
-    Mode.getModeInfo().push({
-      name: 'URDF',
-      mime: 'text/xml',
-      mode: 'xml',
-      ext: ['urdf', 'xacro']
-    });
-
     // Register widget and model factories
     app.docRegistry.addWidgetFactory(widgetFactory);
 
@@ -123,7 +117,7 @@ const extension: JupyterFrontEndPlugin<void> = {
       iconClass: 'jp-URDFIcon',
       caption: 'Create a new URDF',
       execute: () => {
-        const cwd = browserFactory.defaultBrowser.model.path;
+        const cwd = browserFactory.model.path;
         commands
           .execute('docmanager:new-untitled', {
             path: cwd,
@@ -153,7 +147,7 @@ const extension: JupyterFrontEndPlugin<void> = {
       const urdfMenu: Menu = new Menu({ commands });
       urdfMenu.title.label = 'URDF';
       urdfMenu.addItem({ command: 'urdf:create-new' });
-      menu.addMenu(urdfMenu, { rank: 20 });
+      menu.addMenu(urdfMenu);
     }
 
     // Add palette item if palette is available
@@ -162,6 +156,13 @@ const extension: JupyterFrontEndPlugin<void> = {
         command: 'urdf:create-new',
         category: 'URDF'
       });
+    }
+
+    if (languageRegistry) {
+      // FIXME: Property 'push' does not exist on type 'readonly string[]'.
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      languageRegistry.findByMIME('text/xml')?.extensions?.push('urdf');
     }
   }
 };
