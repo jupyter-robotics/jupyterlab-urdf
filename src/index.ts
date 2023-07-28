@@ -27,7 +27,9 @@ import { UrdfWidgetFactory } from './factory';
 import { urdf_icon } from './icons';
 
 // For syntax highlighting
-// import { Mode } from '@jupyterlab/codemirror'; // FIXME:
+import { 
+  IEditorLanguageRegistry 
+} from '@jupyterlab/codemirror';
 
 // Name of the factory that creates the URDF widgets
 const FACTORY = 'URDF Widget Factory';
@@ -48,7 +50,8 @@ const extension: JupyterFrontEndPlugin<void> = {
     ILayoutRestorer,
     IDefaultFileBrowser,
     IMainMenu,
-    ILauncher
+    ILauncher,
+    IEditorLanguageRegistry
   ],
   activate: (
     app: JupyterFrontEnd,
@@ -56,7 +59,8 @@ const extension: JupyterFrontEndPlugin<void> = {
     restorer: ILayoutRestorer,
     browserFactory: IDefaultFileBrowser,
     menu: IMainMenu,
-    launcher: ILauncher
+    launcher: ILauncher,
+    languageRegistry: IEditorLanguageRegistry
   ) => {
     console.log('JupyterLab extension URDF is activated!');
     const { commands } = app;
@@ -92,14 +96,6 @@ const extension: JupyterFrontEndPlugin<void> = {
       });
       tracker.add(widget);
     });
-
-    // FIXME: // Syntax highlighting
-    // Mode.getModeInfo().push({
-    //   name: 'URDF',
-    //   mime: 'text/xml',
-    //   mode: 'xml',
-    //   ext: ['urdf', 'xacro']
-    // });
 
     // Register widget and model factories
     app.docRegistry.addWidgetFactory(widgetFactory);
@@ -153,7 +149,6 @@ const extension: JupyterFrontEndPlugin<void> = {
       const urdfMenu: Menu = new Menu({ commands });
       urdfMenu.title.label = 'URDF';
       urdfMenu.addItem({ command: 'urdf:create-new' });
-      // FIXME: menu.addMenu(urdfMenu, { rank: 20 });
       menu.addMenu(urdfMenu);
     }
 
@@ -163,6 +158,12 @@ const extension: JupyterFrontEndPlugin<void> = {
         command: 'urdf:create-new',
         category: 'URDF'
       });
+    }
+
+    if (languageRegistry) {
+      // FIXME: Property 'push' does not exist on type 'readonly string[]'.
+      // @ts-ignore
+      languageRegistry.findByMIME('text/xml')?.extensions?.push('urdf');
     }
   }
 };
