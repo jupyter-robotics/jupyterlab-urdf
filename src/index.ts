@@ -27,9 +27,7 @@ import { UrdfWidgetFactory } from './factory';
 import { urdf_icon } from './icons';
 
 // For syntax highlighting
-import { 
-  IEditorLanguageRegistry 
-} from '@jupyterlab/codemirror';
+import { IEditorLanguageRegistry } from '@jupyterlab/codemirror';
 
 // Name of the factory that creates the URDF widgets
 const FACTORY = 'URDF Widget Factory';
