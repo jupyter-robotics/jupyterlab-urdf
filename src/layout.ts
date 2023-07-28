@@ -3,16 +3,24 @@ import { PanelLayout, Widget } from '@lumino/widgets';
 // https://github.com/jupyterlab/lumino/pull/346
 // import { ArrayIterator, IIterator } from '@lumino/algorithm';
 
-import ROSLIB from '@robostack/roslib';
-import Amphion from '@robostack/amphion';
-import { DefaultLoadingManager } from 'three';
+// import ROSLIB from '@robostack/roslib';
+// import Amphion from '@robostack/amphion';
+
+import { 
+  DefaultLoadingManager,
+  LoadingManager,
+  WebGLRenderer,
+  Scene,
+  Color,
+  PerspectiveCamera
+} from 'three';
 import dat from 'dat.gui';
+import URDFLoader from 'urdf-loader';
 
 // Modify URLs for the RobotModel:
-//https://github.com/RoboStack/amphion/blob/879045327e879d0bb6fe2c8eac54664de46ef675/src/core/urdf.ts#L22
 DefaultLoadingManager.setURLModifier((url: string) => {
   console.debug('THREE MANAGER:', url);
-  return '/ros/pkgs' + url;
+  return '/lab/tree' + url;
 });
 
 /**
@@ -23,6 +31,10 @@ export class URDFLayout extends PanelLayout {
   private _viewer: any;
   private _robotModel: any = null;
   private _gui: any;
+  private _manager: LoadingManager;
+  private _loader: URDFLoader;
+  private _scene: Scene;
+  private _camera: PerspectiveCamera;
 
   /**
    * Construct a `URDFLayout`
@@ -33,6 +45,11 @@ export class URDFLayout extends PanelLayout {
     // Creating container for URDF viewer and
     // output area to render execution replies
     this._host = document.createElement('div');
+
+    this._manager = new LoadingManager();
+    this._loader = new URDFLoader(this._manager);
+    this._scene = new Scene();
+    this._camera = new PerspectiveCamera();
   }
 
   /**
@@ -48,6 +65,10 @@ export class URDFLayout extends PanelLayout {
    */
   init(): void {
     super.init();
+
+    this._scene.background = new Color(0x263238);
+    this._camera.position.set(10, 10, 10);
+    this._camera.lookAt(0, 0, 0);
 
     // Add the URDF container into the DOM
     this.addWidget(new Widget({ node: this._host }));
@@ -77,11 +98,12 @@ export class URDFLayout extends PanelLayout {
       this._robotModel.object.parent.remove(this._robotModel.object);
     }
 
+    console.log("[WIP] Loader: ", this._loader);
     // https://github.com/RoboStack/amphion/blob/879045327e879d0bb6fe2c8eac54664de46ef675/src/core/urdf.ts#L46
-    const ros = new ROSLIB.Ros();
-    this._robotModel = new Amphion.RobotModel(ros, 'robot_description');
-    this._robotModel.loadURDF(data, this._robotModel.onComplete, {});
-    this._viewer.addVisualization(this._robotModel);
+    // const ros = new ROSLIB.Ros();
+    // this._robotModel = new Amphion.RobotModel(ros, 'robot_description');
+    // this._robotModel.loadURDF(data, this._robotModel.onComplete, {});
+    // this._viewer.addVisualization(this._robotModel);
 
     // Create controller  panel
     this.setGUI();
@@ -215,8 +237,12 @@ export class URDFLayout extends PanelLayout {
    */
   protected onAfterAttach(msg: Message): void {
     // Inject Amphion
-    this._viewer = new Amphion.Viewer3d();
-    this._viewer.setContainer(this._host);
+    // this._viewer = new Amphion.Viewer3d();
+    // this._viewer.setContainer(this._host);
+    const renderer = new WebGLRenderer({ antialias: true });
+    renderer.shadowMap.enabled = true;
+    renderer.render(this._scene, this._camera);
+    this._host.appendChild(renderer.domElement);
   }
 
   private _resizeWorkspace(): void {
