@@ -7558,6 +7558,7 @@ __metadata:
     stylelint-config-standard: ^34.0.0
     stylelint-prettier: ^4.0.0
     typescript: ~5.0.2
+    urdf-loader: ^0.12.0
     yjs: ^13.5.0
   languageName: unknown
   linkType: soft
@@ -10503,6 +10504,15 @@ __metadata:
   peerDependencies:
     three: ">=0.105.0"
   checksum: df4696886190f64f1a21d4e13ac5a74db9021958cd68bcd8a34effc44fbaee8517b36c46dc6ddd35cb16045341d6be054726da801be29bc014b381d6e5923d3c
+  languageName: node
+  linkType: hard
+
+"urdf-loader@npm:^0.12.0":
+  version: 0.12.0
+  resolution: "urdf-loader@npm:0.12.0"
+  peerDependencies:
+    three: ">=0.152.0"
+  checksum: 5b33d4ca14d0c377f4dc59e15ecc3ee125793e3b38e0806dc57996763745710d44970b78cb2437429ef9c30399baa6def474185da985736f4c9155f3de44fc07
   languageName: node
   linkType: hard
 
