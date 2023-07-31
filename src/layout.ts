@@ -7,13 +7,27 @@ import { PanelLayout, Widget } from '@lumino/widgets';
 // import Amphion from '@robostack/amphion';
 
 import { 
+  DocumentRegistry,
+  DocumentModel
+} from '@jupyterlab/docregistry';
+
+import { 
   DefaultLoadingManager,
   LoadingManager,
   WebGLRenderer,
   Scene,
   Color,
-  PerspectiveCamera
+  Mesh,
+  DirectionalLight,
+  AmbientLight,
+  PerspectiveCamera,
+  sRGBEncoding,
+  PCFSoftShadowMap,
+  PlaneGeometry,
+  ShadowMaterial
 } from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+
 import dat from 'dat.gui';
 import URDFLoader from 'urdf-loader';
 
@@ -35,6 +49,8 @@ export class URDFLayout extends PanelLayout {
   private _loader: URDFLoader;
   private _scene: Scene;
   private _camera: PerspectiveCamera;
+  private _renderer: WebGLRenderer;
+  private _controls: OrbitControls;
 
   /**
    * Construct a `URDFLayout`
@@ -46,10 +62,12 @@ export class URDFLayout extends PanelLayout {
     // output area to render execution replies
     this._host = document.createElement('div');
 
-    this._manager = new LoadingManager();
+    this._manager = DefaultLoadingManager;
     this._loader = new URDFLoader(this._manager);
     this._scene = new Scene();
     this._camera = new PerspectiveCamera();
+    this._renderer = new WebGLRenderer({ antialias: true });
+    this._controls = new OrbitControls(this._camera, this._renderer.domElement);
   }
 
   /**
@@ -66,9 +84,42 @@ export class URDFLayout extends PanelLayout {
   init(): void {
     super.init();
 
+    this._renderer.outputEncoding = sRGBEncoding;
+    this._renderer.shadowMap.enabled = true;
+    this._renderer.shadowMap.type = PCFSoftShadowMap;
+
     this._scene.background = new Color(0x263238);
-    this._camera.position.set(10, 10, 10);
+
+    this._camera.position.set(4, 4, 4);
     this._camera.lookAt(0, 0, 0);
+
+    const directionalLight = new DirectionalLight(0xffffff, 1.0);
+    directionalLight.castShadow = true;
+    directionalLight.shadow.mapSize.setScalar(1024);
+    directionalLight.position.set(5, 30, 5);
+
+    const ground = new Mesh(
+      new PlaneGeometry(), 
+      new ShadowMaterial({ opacity: 0.25 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.scale.setScalar(30);
+    ground.receiveShadow = true;
+    this._scene.add(ground);
+
+    const ambientLight = new AmbientLight(0xffffff, 0.2);
+    this._scene.add(ambientLight);
+    this._scene.add(directionalLight);
+
+    this._controls.minDistance = 4;
+    this._controls.target.y = 1;
+    this._controls.update();
+
+
+    this._renderer.render(this._scene, this._camera);
+
+    // @ts-ignore
+    window['hoss'] = this._host;
 
     // Add the URDF container into the DOM
     this.addWidget(new Widget({ node: this._host }));
@@ -90,7 +141,7 @@ export class URDFLayout extends PanelLayout {
     return;
   }
 
-  setURDF(data: string): void {
+  setURDF(context: DocumentRegistry.IContext<DocumentModel>): void {
     // Load robot model
     if (this._robotModel !== null && this._robotModel.object.parent !== null) {
       // Remove old robot model from visualization
@@ -99,6 +150,42 @@ export class URDFLayout extends PanelLayout {
     }
 
     console.log("[WIP] Loader: ", this._loader);
+
+    this._robotModel = this._loader.parse(context.model.toString());
+    // THREE.js
+    //   Y
+    //   |
+    //   |
+    //   .-----X
+    // ／
+    // Z
+
+    // ROS URDf
+    //       Z
+    //       |   X
+    //       | ／
+    // Y-----.
+    this._robotModel.rotation.x = -Math.PI / 2;
+
+    console.log("REMOVE Got something ", this._robotModel);
+    // @ts-ignore
+    window['roob'] = this._robotModel;
+
+    this._scene.add(this._robotModel);
+    // @ts-ignore
+    window['scee'] = this._scene;
+
+    //   result => {
+    //     console.log("REMOVE Got result ", result);
+    //     this._robotModel = result;
+    //   }
+    // );
+
+    // this._manager.onLoad = () => {
+    //   console.log("REMOVE adding to scene");
+    //   this._scene.add(this._robotModel);
+    // };
+
     // https://github.com/RoboStack/amphion/blob/879045327e879d0bb6fe2c8eac54664de46ef675/src/core/urdf.ts#L46
     // const ros = new ROSLIB.Ros();
     // this._robotModel = new Amphion.RobotModel(ros, 'robot_description');
@@ -107,6 +194,14 @@ export class URDFLayout extends PanelLayout {
 
     // Create controller  panel
     this.setGUI();
+
+    this._renderer.setSize(
+      this._renderer.domElement.clientWidth,
+      this._renderer.domElement.clientHeight
+    );
+    this._renderer.render(this._scene, this._camera);
+
+    this._renderer.render(this._scene, this._camera);
   }
 
   /**
@@ -130,7 +225,7 @@ export class URDFLayout extends PanelLayout {
 
     // Create new folder for the joints
     this._gui.addFolder('Robot Joints').open();
-    Object.keys(this._robotModel.urdfObject.joints).forEach(jointName => {
+    Object.keys(this._robotModel.joints).forEach(jointName => {
       this.createJointSlider(jointName);
     });
   }
@@ -141,7 +236,7 @@ export class URDFLayout extends PanelLayout {
    * @param jointName - The name of the joint to be set
    */
   setJointAngle(jointName: string, newAngle: number): void {
-    this._robotModel.urdfObject.joints[jointName].setAngle(newAngle);
+    this._robotModel.joints[jointName].setAngle(newAngle);
   }
 
   /**
@@ -151,7 +246,7 @@ export class URDFLayout extends PanelLayout {
    */
   createJointSlider(jointName: string): void {
     // Retrieve joint
-    const joint = this._robotModel.urdfObject.joints[jointName];
+    const joint = this._robotModel.joints[jointName];
 
     // Skip joints which should not be moved
     if (joint._jointType === 'fixed') {
@@ -166,8 +261,8 @@ export class URDFLayout extends PanelLayout {
     if (limitMin === 0 && limitMax === 0) {
       limitMin = -Math.PI;
       limitMax = +Math.PI;
-      this._robotModel.urdfObject.joints[jointName].limit.lower = limitMin;
-      this._robotModel.urdfObject.joints[jointName].limit.upper = limitMax;
+      this._robotModel.joints[jointName].limit.lower = limitMin;
+      this._robotModel.joints[jointName].limit.upper = limitMax;
     }
 
     // Step increments for slider
@@ -178,11 +273,13 @@ export class URDFLayout extends PanelLayout {
 
     // Object to be manipulated
     const jointObject = { [jointName]: initValue };
-
+    
     // Add slider to GUI
-    this._gui.__folders['Robot Joints']
-      .add(jointObject, jointName, limitMin, limitMax, stepSize)
-      .onChange((newAngle: any) => this.setJointAngle(jointName, newAngle));
+    // FIXME: controller is null
+    console.log("FIXME: ", stepSize, jointObject);
+    // this._gui.__folders['Robot Joints']
+    //   .add(jointObject, jointName, limitMin, limitMax, stepSize)
+    //   .onChange((newAngle: any) => this.setJointAngle(jointName, newAngle));
   }
 
   /**
@@ -239,10 +336,15 @@ export class URDFLayout extends PanelLayout {
     // Inject Amphion
     // this._viewer = new Amphion.Viewer3d();
     // this._viewer.setContainer(this._host);
-    const renderer = new WebGLRenderer({ antialias: true });
-    renderer.shadowMap.enabled = true;
-    renderer.render(this._scene, this._camera);
-    this._host.appendChild(renderer.domElement);
+    // const renderer = new WebGLRenderer({ antialias: true });
+    this._renderer.shadowMap.enabled = true;
+    this._renderer.render(this._scene, this._camera);
+    // @ts-ignore
+    window['renen'] = this._renderer;
+    // @ts-ignore
+    window['camcam'] = this._camera;
+
+    this._host.appendChild(this._renderer.domElement);
   }
 
   private _resizeWorkspace(): void {
