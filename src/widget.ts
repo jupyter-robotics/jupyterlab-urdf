@@ -45,10 +45,13 @@ export class UrdfPanel extends Panel {
     this._context = context;
 
     this._context.ready.then(value => {
-      (this.layout as URDFLayout).setURDF(this._context.model.toString());
+      // @ts-ignore
+      window['contexx'] = this._context;
+      console.log("CONTEXT");
+      (this.layout as URDFLayout).setURDF(this._context);
       this._context.model.contentChanged.connect((sender, args) => {
         console.log('Model changed.', args);
-        (this.layout as URDFLayout).setURDF(this._context.model.toString());
+        (this.layout as URDFLayout).setURDF(this._context);
       });
     });
   }

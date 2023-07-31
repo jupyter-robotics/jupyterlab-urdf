@@ -3,3 +3,8 @@
 
     https://jupyterlab.readthedocs.io/en/stable/developer/css.html
 */
+
+.jp-urdf-canvas .lm-Widget canvas {
+    width: 100%;
+    height: 100%;
+}
