@@ -16,7 +16,6 @@ import {
   DirectionalLight,
   AmbientLight,
   PerspectiveCamera,
-  sRGBEncoding,
   PCFSoftShadowMap,
   PlaneGeometry,
   ShadowMaterial
@@ -29,7 +28,7 @@ import URDFLoader from 'urdf-loader';
 // Modify URLs for the RobotModel:
 DefaultLoadingManager.setURLModifier((url: string) => {
   console.debug('THREE MANAGER:', url);
-  return '/lab/tree' + url;
+  return '/files/examples/src' + url;
 });
 
 /**
@@ -59,6 +58,7 @@ export class URDFLayout extends PanelLayout {
 
     this._manager = DefaultLoadingManager;
     this._loader = new URDFLoader(this._manager);
+    // this._loader.workingPath = "http://localhost:8888/api/contents/"
     this._scene = new Scene();
     this._camera = new PerspectiveCamera();
     this._renderer = new WebGLRenderer({ antialias: true });
@@ -69,6 +69,7 @@ export class URDFLayout extends PanelLayout {
    * Dispose of the resources held by the widget
    */
   dispose(): void {
+    this._renderer.dispose();
     this._viewer.destroy();
     super.dispose();
   }
@@ -79,7 +80,6 @@ export class URDFLayout extends PanelLayout {
   init(): void {
     super.init();
 
-    this._renderer.outputEncoding = sRGBEncoding;
     this._renderer.shadowMap.enabled = true;
     this._renderer.shadowMap.type = PCFSoftShadowMap;
 
@@ -138,7 +138,7 @@ export class URDFLayout extends PanelLayout {
     if (this._robotModel !== null && this._robotModel.object.parent !== null) {
       // Remove old robot model from visualization
       // Viewer -> Scene -> Group -> Robot Model
-      this._robotModel.object.parent.remove(this._robotModel.object);
+      // TODO: this._robotModel.object.parent.remove(this._robotModel.object);
     }
 
     console.log("[WIP] Loader: ", this._loader);
@@ -163,14 +163,14 @@ export class URDFLayout extends PanelLayout {
     // @ts-ignore
     window['roob'] = this._robotModel; // REMOVE
 
-    this._scene.add(this._robotModel);
     // @ts-ignore
     window['scee'] = this._scene; // REMOVE
 
-    // this._manager.onLoad = () => {
-    //   console.log("REMOVE adding to scene");
-    //   this._scene.add(this._robotModel);
-    // };
+    this._manager.onLoad = () => {
+      console.log("REMOVE adding to scene");
+      this._scene.add(this._robotModel);
+      this._renderer.render(this._scene, this._camera);
+    };
 
     // https://github.com/RoboStack/amphion/blob/879045327e879d0bb6fe2c8eac54664de46ef675/src/core/urdf.ts#L46
     // const ros = new ROSLIB.Ros();
@@ -181,12 +181,13 @@ export class URDFLayout extends PanelLayout {
     // Create controller  panel
     this.setGUI();
 
+    console.log("REMOVE After gui creation");
+
     this._renderer.setSize(
       this._renderer.domElement.clientWidth,
       this._renderer.domElement.clientHeight
     );
-    this._renderer.render(this._scene, this._camera);
-
+    
     this._renderer.render(this._scene, this._camera);
   }
 
@@ -274,7 +275,7 @@ export class URDFLayout extends PanelLayout {
    * @param bgColor - The new background color as RGB array
    */
   setBGColor(bgColor: number[]): void {
-    bgColor = bgColor.map( x => x / 255 );
+    bgColor = bgColor.map( x => x / 255 ); // Range: [0,1]
     this._scene.background = new Color( ...bgColor );
     this._renderer.render(this._scene, this._camera);
   }
