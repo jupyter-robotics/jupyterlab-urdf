@@ -1,10 +1,5 @@
 import { Message } from '@lumino/messaging';
 import { PanelLayout, Widget } from '@lumino/widgets';
-// https://github.com/jupyterlab/lumino/pull/346
-// import { ArrayIterator, IIterator } from '@lumino/algorithm';
-
-// import ROSLIB from '@robostack/roslib';
-// import Amphion from '@robostack/amphion';
 
 import { 
   DocumentRegistry,
@@ -118,9 +113,6 @@ export class URDFLayout extends PanelLayout {
 
     this._renderer.render(this._scene, this._camera);
 
-    // @ts-ignore
-    window['hoss'] = this._host;
-
     // Add the URDF container into the DOM
     this.addWidget(new Widget({ node: this._host }));
   }
@@ -169,17 +161,11 @@ export class URDFLayout extends PanelLayout {
 
     console.log("REMOVE Got something ", this._robotModel);
     // @ts-ignore
-    window['roob'] = this._robotModel;
+    window['roob'] = this._robotModel; // REMOVE
 
     this._scene.add(this._robotModel);
     // @ts-ignore
-    window['scee'] = this._scene;
-
-    //   result => {
-    //     console.log("REMOVE Got result ", result);
-    //     this._robotModel = result;
-    //   }
-    // );
+    window['scee'] = this._scene; // REMOVE
 
     // this._manager.onLoad = () => {
     //   console.log("REMOVE adding to scene");
@@ -287,10 +273,10 @@ export class URDFLayout extends PanelLayout {
    *
    * @param bgColor - The new background color as RGB array
    */
-  setBGColor(bgColor: any[]): void {
-    this._viewer.scene.background.r = bgColor[0] / 255;
-    this._viewer.scene.background.g = bgColor[1] / 255;
-    this._viewer.scene.background.b = bgColor[2] / 255;
+  setBGColor(bgColor: number[]): void {
+    bgColor = bgColor.map( x => x / 255 );
+    this._scene.background = new Color( ...bgColor );
+    this._renderer.render(this._scene, this._camera);
   }
 
   /**
@@ -337,7 +323,6 @@ export class URDFLayout extends PanelLayout {
     // this._viewer = new Amphion.Viewer3d();
     // this._viewer.setContainer(this._host);
     // const renderer = new WebGLRenderer({ antialias: true });
-    this._renderer.shadowMap.enabled = true;
     this._renderer.render(this._scene, this._camera);
     // @ts-ignore
     window['renen'] = this._renderer;
