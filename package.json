@@ -72,8 +72,12 @@
     "@robostack/roslib": "^1.1.1",
     "@types/codemirror": "^5.60.8",
     "@types/dat.gui": "^0.7.10",
+    "@types/three": "^0.155.0",
     "dat.gui": "^0.7.9",
     "urdf-loader": "^0.12.0"
+  },
+  "resolutions": {
+    "three": "0.155.0"
   },
   "devDependencies": {
     "@jupyterlab/builder": "^4.0.0",
