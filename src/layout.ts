@@ -18,7 +18,8 @@ import {
   PerspectiveCamera,
   PCFSoftShadowMap,
   PlaneGeometry,
-  ShadowMaterial
+  ShadowMaterial,
+  Vector3
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
@@ -82,6 +83,7 @@ export class URDFLayout extends PanelLayout {
     this._renderer.shadowMap.type = PCFSoftShadowMap;
 
     this._scene.background = new Color(0x263238);
+    this._scene.up = new Vector3(0, 0, 1); // Z is up
 
     this._camera.position.set(4, 4, 4);
     this._camera.lookAt(0, 0, 0);
@@ -131,6 +133,17 @@ export class URDFLayout extends PanelLayout {
     return;
   }
 
+  updateURDF(context: DocumentRegistry.IContext<DocumentModel>): void {
+    this._robotModel = this._loader.parse(context.model.toString());
+    this._robotModel.rotation.x = -Math.PI / 2;
+
+    const robotIndex = this._scene.children.map(i => { return i.name })
+      .indexOf(this._robotModel.name);
+    this._scene.children[robotIndex] = this._robotModel;
+
+    this._renderer.render(this._scene, this._camera);
+  }
+
   setURDF(context: DocumentRegistry.IContext<DocumentModel>): void {
     // Load robot model
     if (this._robotModel !== null && this._robotModel.object.parent !== null) {
@@ -140,19 +153,14 @@ export class URDFLayout extends PanelLayout {
     }
 
     this._robotModel = this._loader.parse(context.model.toString());
-    // THREE.js
-    //   Y
-    //   |
-    //   |
-    //   .-----X
-    // ／
-    // Z
 
-    // ROS URDf
-    //       Z
-    //       |   X
-    //       | ／
-    // Y-----.
+    // THREE.js          ROS URDF
+    //    Y                Z
+    //    |                |   Y
+    //    |                | ／
+    //    .-----X          .-----X
+    //  ／
+    // Z
     this._robotModel.rotation.x = -Math.PI / 2;
 
     // TODO: redundant but necessary for files without any meshes
