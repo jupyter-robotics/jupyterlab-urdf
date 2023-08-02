@@ -12,6 +12,9 @@
 /* Dat.GUI */
 .jp-urdf-canvas .lm-Widget .dg .folder {
     background: #1A1A1A;
+}
+
+#jointFolder ul{
     max-height: 50vh;
     overflow: scroll;
 }
