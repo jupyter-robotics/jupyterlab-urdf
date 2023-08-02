@@ -24,7 +24,7 @@ import {
   GridHelper,
   SRGBColorSpace,
   Vector2,
-  // HemisphereLight,
+  HemisphereLight
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
@@ -50,7 +50,8 @@ export class URDFLayout extends PanelLayout {
   private _camera: PerspectiveCamera;
   private _renderer: WebGLRenderer;
   private _controls: OrbitControls;
-  private _background: Color;
+  private _skyColor: Color;
+  private _groundColor: Color;
 
   /**
    * Construct a `URDFLayout`
@@ -66,7 +67,8 @@ export class URDFLayout extends PanelLayout {
     this._loader = new URDFLoader(this._manager);
     // this._loader.workingPath = "http://localhost:8888/api/contents/"
     this._scene = new Scene();
-    this._background = new Color(0x263238);
+    this._skyColor = new Color(0x263238);
+    this._groundColor = new Color(0x364248);
     this._camera = new PerspectiveCamera();
     this._renderer = new WebGLRenderer({ antialias: true });
     this._controls = new OrbitControls(this._camera, this._renderer.domElement);
@@ -92,7 +94,7 @@ export class URDFLayout extends PanelLayout {
     this._renderer.shadowMap.enabled = true;
     this._renderer.shadowMap.type = PCFSoftShadowMap;
 
-    this._scene.background = this._background;
+    this._scene.background = this._skyColor;
     this._scene.up = new Vector3(0, 0, 1); // Z is up
 
     this._camera.position.set(4, 4, 4);
@@ -119,7 +121,7 @@ export class URDFLayout extends PanelLayout {
     ground.receiveShadow = true;
     this._scene.add(ground);
 
-    const gridColor = new Color(0x364248);
+    const gridColor = this._groundColor;
     const grid = new GridHelper(50, 50, gridColor, gridColor);
     grid.receiveShadow = true;
     this._scene.add(grid);
@@ -136,22 +138,14 @@ export class URDFLayout extends PanelLayout {
     ambientLight.position.set(0, 5, 0);
     this._scene.add(ambientLight);
 
+    const hemisphereLight = new HemisphereLight(this._skyColor, this._groundColor);
+    hemisphereLight.intensity = 1;
+    this._scene.add(hemisphereLight);
+
     this.redraw();
 
     // Add the URDF container into the DOM
     this.addWidget(new Widget({ node: this._host }));
-
-    // REMOVE all this
-    // @ts-ignore
-    window['renen'] = this._renderer;
-    // @ts-ignore
-    window['scee'] = this._scene;
-    // @ts-ignore
-    window['camcam'] = this._camera;
-    // @ts-ignore
-    window['roob'] = this._robotModel;
-    // @ts-ignore
-    window['concon'] = this._controls;
   }
 
   /**
@@ -245,8 +239,9 @@ export class URDFLayout extends PanelLayout {
     // Create new folder for the joints
     const jointFolder = this._gui.addFolder('Joints');
     jointFolder.open();
+    jointFolder.domElement.setAttribute("id", "jointFolder");
     Object.keys(this._robotModel.joints).forEach(jointName => {
-      this.createJointSlider(jointName, jointFolder);
+      this.createJointSlider(jointName);
     });
   }
 
@@ -265,7 +260,7 @@ export class URDFLayout extends PanelLayout {
    *
    * @param jointName - Name of joint as string
    */
-  createJointSlider(jointName: string, jointFolder: any): void {
+  createJointSlider(jointName: string): void {
     // Retrieve joint
     const joint = this._robotModel.joints[jointName];
 
@@ -298,6 +293,14 @@ export class URDFLayout extends PanelLayout {
       .onChange((newAngle: number) => this.setJointAngle(jointName, newAngle));
   }
 
+  updateLighting(): void {
+    const hemisphereLight = new HemisphereLight(this._skyColor, this._groundColor);
+    hemisphereLight.intensity = 1;
+    const hemisphereIndex = this._scene.children.map( i => {return i.type} )
+      .indexOf("HemisphereLight");
+    this._scene.children[hemisphereIndex] = hemisphereLight;
+  }
+
   /**
    * Change the background color of the scene
    *
@@ -305,7 +308,9 @@ export class URDFLayout extends PanelLayout {
    */
   setBackgroundColor(newColor: number[]): void {
     const bgColor = new Color(...newColor.map( x => x / 255 )); // Range: [0,1]
-    this._scene.background = bgColor;
+    this._skyColor = bgColor;
+    this._scene.background = this._skyColor;
+    this.updateLighting();
     this.redraw();
   }
 
@@ -317,9 +322,11 @@ export class URDFLayout extends PanelLayout {
 
   setGridColor(newColor: number[]): void {
     const gridColor = new Color(...newColor.map( x => x / 255 )); // Range: [0,1]
+    this._groundColor = gridColor;
     const gridIndex = this._scene.children.map(i => { return i.type })
       .indexOf("GridHelper");
     this._scene.children[gridIndex] = new GridHelper(50, 50, gridColor, gridColor);
+    this.updateLighting();
     this.redraw();
   }
 
@@ -374,7 +381,6 @@ export class URDFLayout extends PanelLayout {
     this._host.style.height = rect?.height + 'px';
 
     const currentSize = this._renderer.getSize(new Vector2);
-    console.log("SIZEEE ", currentSize);
     this._renderer.setSize(
       rect?.width || currentSize.width, 
       rect?.height || currentSize.height);
