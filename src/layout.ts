@@ -22,6 +22,8 @@ import {
   Vector3,
   Object3D,
   GridHelper,
+  SRGBColorSpace,
+  Vector2,
   // HemisphereLight,
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -86,6 +88,7 @@ export class URDFLayout extends PanelLayout {
 
     this._renderer.setClearColor(0xffffff);
     this._renderer.setClearAlpha(0);
+    this._renderer.outputColorSpace = SRGBColorSpace;
     this._renderer.shadowMap.enabled = true;
     this._renderer.shadowMap.type = PCFSoftShadowMap;
 
@@ -137,6 +140,18 @@ export class URDFLayout extends PanelLayout {
 
     // Add the URDF container into the DOM
     this.addWidget(new Widget({ node: this._host }));
+
+    // REMOVE all this
+    // @ts-ignore
+    window['renen'] = this._renderer;
+    // @ts-ignore
+    window['scee'] = this._scene;
+    // @ts-ignore
+    window['camcam'] = this._camera;
+    // @ts-ignore
+    window['roob'] = this._robotModel;
+    // @ts-ignore
+    window['concon'] = this._controls;
   }
 
   /**
@@ -228,7 +243,7 @@ export class URDFLayout extends PanelLayout {
     this.createColorControl();
 
     // Create new folder for the joints
-    const jointFolder = this._gui.addFolder('Robot Joints');
+    const jointFolder = this._gui.addFolder('Joints');
     jointFolder.open();
     Object.keys(this._robotModel.joints).forEach(jointName => {
       this.createJointSlider(jointName, jointFolder);
@@ -278,7 +293,7 @@ export class URDFLayout extends PanelLayout {
     const initValue = joint.jointValue[0];
     
     // Add slider to GUI
-    this._gui.__folders['Robot Joints']
+    this._gui.__folders['Joints']
       .add({[jointName]: initValue}, jointName, limitMin, limitMax, stepSize)
       .onChange((newAngle: number) => this.setJointAngle(jointName, newAngle));
   }
@@ -357,5 +372,13 @@ export class URDFLayout extends PanelLayout {
   private _resizeWorkspace(): void {
     const rect = this.parent?.node.getBoundingClientRect();
     this._host.style.height = rect?.height + 'px';
+
+    const currentSize = this._renderer.getSize(new Vector2);
+    console.log("SIZEEE ", currentSize);
+    this._renderer.setSize(
+      rect?.width || currentSize.width, 
+      rect?.height || currentSize.height);
+    
+    this.redraw();
   }
 }
