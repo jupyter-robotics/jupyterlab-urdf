@@ -36,7 +36,6 @@ DefaultLoadingManager.setURLModifier((url: string) => {
  */
 export class URDFLayout extends PanelLayout {
   private _host: HTMLElement;
-  private _viewer: any;
   private _robotModel: any = null;
   private _gui: any;
   private _manager: LoadingManager;
@@ -70,7 +69,6 @@ export class URDFLayout extends PanelLayout {
    */
   dispose(): void {
     this._renderer.dispose();
-    this._viewer.destroy();
     super.dispose();
   }
 
@@ -138,10 +136,8 @@ export class URDFLayout extends PanelLayout {
     if (this._robotModel !== null && this._robotModel.object.parent !== null) {
       // Remove old robot model from visualization
       // Viewer -> Scene -> Group -> Robot Model
-      // TODO: this._robotModel.object.parent.remove(this._robotModel.object);
+      this._robotModel.object.parent.remove(this._robotModel.object);
     }
-
-    console.log("[WIP] Loader: ", this._loader);
 
     this._robotModel = this._loader.parse(context.model.toString());
     // THREE.js
@@ -159,29 +155,13 @@ export class URDFLayout extends PanelLayout {
     // Y-----.
     this._robotModel.rotation.x = -Math.PI / 2;
 
-    console.log("REMOVE Got something ", this._robotModel);
-    // @ts-ignore
-    window['roob'] = this._robotModel; // REMOVE
-
-    // @ts-ignore
-    window['scee'] = this._scene; // REMOVE
+    // TODO: redundant but necessary for files without any meshes
+    this._scene.add(this._robotModel);
 
     this._manager.onLoad = () => {
-      console.log("REMOVE adding to scene");
       this._scene.add(this._robotModel);
       this._renderer.render(this._scene, this._camera);
     };
-
-    // https://github.com/RoboStack/amphion/blob/879045327e879d0bb6fe2c8eac54664de46ef675/src/core/urdf.ts#L46
-    // const ros = new ROSLIB.Ros();
-    // this._robotModel = new Amphion.RobotModel(ros, 'robot_description');
-    // this._robotModel.loadURDF(data, this._robotModel.onComplete, {});
-    // this._viewer.addVisualization(this._robotModel);
-
-    // Create controller  panel
-    this.setGUI();
-
-    console.log("REMOVE After gui creation");
 
     this._renderer.setSize(
       this._renderer.domElement.clientWidth,
@@ -189,6 +169,9 @@ export class URDFLayout extends PanelLayout {
     );
     
     this._renderer.render(this._scene, this._camera);
+
+    // Create controller  panel
+    this.setGUI();
   }
 
   /**
@@ -211,9 +194,10 @@ export class URDFLayout extends PanelLayout {
     this.createColorControl();
 
     // Create new folder for the joints
-    this._gui.addFolder('Robot Joints').open();
+    const jointFolder = this._gui.addFolder('Robot Joints');
+    jointFolder.open();
     Object.keys(this._robotModel.joints).forEach(jointName => {
-      this.createJointSlider(jointName);
+      this.createJointSlider(jointName, jointFolder);
     });
   }
 
@@ -223,7 +207,8 @@ export class URDFLayout extends PanelLayout {
    * @param jointName - The name of the joint to be set
    */
   setJointAngle(jointName: string, newAngle: number): void {
-    this._robotModel.joints[jointName].setAngle(newAngle);
+    this._robotModel.setJointValue(jointName, newAngle);
+    this._renderer.render(this._scene, this._camera);
   }
 
   /**
@@ -231,7 +216,7 @@ export class URDFLayout extends PanelLayout {
    *
    * @param jointName - Name of joint as string
    */
-  createJointSlider(jointName: string): void {
+  createJointSlider(jointName: string, jointFolder: any): void {
     // Retrieve joint
     const joint = this._robotModel.joints[jointName];
 
@@ -256,17 +241,12 @@ export class URDFLayout extends PanelLayout {
     const stepSize = (limitMax - limitMin) / 20;
 
     // Initialize to the position given in URDF file
-    const initValue = joint.jointValue;
-
-    // Object to be manipulated
-    const jointObject = { [jointName]: initValue };
+    const initValue = joint.jointValue[0];
     
     // Add slider to GUI
-    // FIXME: controller is null
-    console.log("FIXME: ", stepSize, jointObject);
-    // this._gui.__folders['Robot Joints']
-    //   .add(jointObject, jointName, limitMin, limitMax, stepSize)
-    //   .onChange((newAngle: any) => this.setJointAngle(jointName, newAngle));
+    this._gui.__folders['Robot Joints']
+      .add({[jointName]: initValue}, jointName, limitMin, limitMax, stepSize)
+      .onChange((newAngle: number) => this.setJointAngle(jointName, newAngle));
   }
 
   /**
@@ -284,7 +264,7 @@ export class URDFLayout extends PanelLayout {
    * Create color controller
    */
   createColorControl(): void {
-    const defaultColor = [240, 240, 240];
+    const defaultColor = [38, 50, 56];
 
     // Object to be manipulated
     const colorObject = { Background: defaultColor };
@@ -320,10 +300,6 @@ export class URDFLayout extends PanelLayout {
    * Handle `after-attach` messages sent to the widget
    */
   protected onAfterAttach(msg: Message): void {
-    // Inject Amphion
-    // this._viewer = new Amphion.Viewer3d();
-    // this._viewer.setContainer(this._host);
-    // const renderer = new WebGLRenderer({ antialias: true });
     this._renderer.render(this._scene, this._camera);
     // @ts-ignore
     window['renen'] = this._renderer;
