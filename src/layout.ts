@@ -18,8 +18,11 @@ import {
   PerspectiveCamera,
   PCFSoftShadowMap,
   PlaneGeometry,
-  ShadowMaterial,
-  Vector3
+  // ShadowMaterial,
+  Vector3,
+  Object3D,
+  MeshStandardMaterial,
+  // HemisphereLight,
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
@@ -79,6 +82,8 @@ export class URDFLayout extends PanelLayout {
   init(): void {
     super.init();
 
+    this._renderer.setClearColor(0xffffff);
+    this._renderer.setClearAlpha(0);
     this._renderer.shadowMap.enabled = true;
     this._renderer.shadowMap.type = PCFSoftShadowMap;
 
@@ -88,28 +93,39 @@ export class URDFLayout extends PanelLayout {
     this._camera.position.set(4, 4, 4);
     this._camera.lookAt(0, 0, 0);
 
+    this._controls.rotateSpeed = 2.0;
+    this._controls.zoomSpeed = 5;
+    this._controls.panSpeed = 2;
+    this._controls.enableZoom = true;
+    this._controls.enableDamping = false;
+    this._controls.maxDistance = 50;
+    this._controls.minDistance = 0.25;
+    this._controls.addEventListener('change', () => this.redraw());
+
+    const world = new Object3D();
+    this._scene.add(world);
+
+    const ground = new Mesh(
+      new PlaneGeometry(40, 40), 
+      new MeshStandardMaterial({ color: "#990000" })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    // ground.scale.setScalar(30);
+    ground.scale.set(10, 10, 10);
+    ground.receiveShadow = true;
+    this._scene.add(ground);
+
     const directionalLight = new DirectionalLight(0xffffff, 1.0);
     directionalLight.castShadow = true;
     directionalLight.shadow.mapSize.setScalar(1024);
     directionalLight.position.set(5, 30, 5);
-
-    const ground = new Mesh(
-      new PlaneGeometry(), 
-      new ShadowMaterial({ opacity: 0.25 })
-    );
-    ground.rotation.x = -Math.PI / 2;
-    ground.scale.setScalar(30);
-    ground.receiveShadow = true;
-    this._scene.add(ground);
-
-    const ambientLight = new AmbientLight(0xffffff, 0.2);
-    this._scene.add(ambientLight);
     this._scene.add(directionalLight);
 
-    this._controls.minDistance = 4;
-    this._controls.target.y = 1;
-    this._controls.update();
-
+    const ambientLight = new AmbientLight('#fff');
+    // ambientLight.groundColor.lerp(ambientLight.color, 0.5);
+    ambientLight.intensity = 0.5;
+    ambientLight.position.set(0, 1, 0);
+    this._scene.add(ambientLight);
 
     this._renderer.render(this._scene, this._camera);
 
@@ -131,6 +147,10 @@ export class URDFLayout extends PanelLayout {
    */
   removeWidget(widget: Widget): void {
     return;
+  }
+
+  redraw(): void {
+    this._renderer.render(this._scene, this._camera);
   }
 
   updateURDF(context: DocumentRegistry.IContext<DocumentModel>): void {
@@ -309,11 +329,6 @@ export class URDFLayout extends PanelLayout {
    */
   protected onAfterAttach(msg: Message): void {
     this._renderer.render(this._scene, this._camera);
-    // @ts-ignore
-    window['renen'] = this._renderer;
-    // @ts-ignore
-    window['camcam'] = this._camera;
-
     this._host.appendChild(this._renderer.domElement);
   }
 
