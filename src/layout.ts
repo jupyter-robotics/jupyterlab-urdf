@@ -7,7 +7,7 @@ import {
 } from '@jupyterlab/docregistry';
 
 import { 
-  DefaultLoadingManager,
+  // DefaultLoadingManager,
   LoadingManager,
   WebGLRenderer,
   Scene,
@@ -66,7 +66,7 @@ export class URDFLayout extends PanelLayout {
     this._host = document.createElement('div');
     this._urdfString = '';
     this._workingPath = '';
-    this._manager = DefaultLoadingManager;
+    this._manager = new LoadingManager;
     this._loader = new URDFLoader(this._manager);
     this._scene = new Scene();
     this._skyColor = new Color(0x263238);
@@ -116,7 +116,7 @@ export class URDFLayout extends PanelLayout {
 
     const ground = new Mesh(
       new PlaneGeometry(40, 40), 
-      new ShadowMaterial({ opacity: 0.25 })
+      new ShadowMaterial({ opacity: 0.5 })
     );
     ground.rotation.x = -Math.PI / 2;
     ground.scale.setScalar(30);
@@ -128,10 +128,16 @@ export class URDFLayout extends PanelLayout {
     grid.receiveShadow = true;
     this._scene.add(grid);
 
-    const directionalLight = new DirectionalLight(0xffffff, 1.0);
+    const directionalLight = new DirectionalLight(0xffffff, 2.0);
     directionalLight.castShadow = true;
-    directionalLight.shadow.mapSize.setScalar(1024);
-    directionalLight.position.set(5, 20, 5);
+    // directionalLight.shadow.mapSize.setScalar(1024);
+    directionalLight.position.set(3, 10, 3);
+    directionalLight.shadow.camera.top = 2;
+    directionalLight.shadow.camera.bottom = -2;
+    directionalLight.shadow.camera.left = -2;
+    directionalLight.shadow.camera.right = 2;
+    directionalLight.shadow.camera.near = 0.1;
+    directionalLight.shadow.camera.far = 40;
     this._scene.add(directionalLight);
 
     const ambientLight = new AmbientLight('#fff');
@@ -173,7 +179,7 @@ export class URDFLayout extends PanelLayout {
     this._robotModel = this._loader.parse(urdfString);
     this._robotModel.rotation.x = -Math.PI / 2;
 
-    const robotIndex = this._scene.children.map(i => { return i.name })
+    const robotIndex = this._scene.children.map(i => i.name)
       .indexOf(this._robotModel.name);
     this._scene.children[robotIndex] = this._robotModel;
 
@@ -317,7 +323,7 @@ export class URDFLayout extends PanelLayout {
   updateLighting(): void {
     const hemisphereLight = new HemisphereLight(this._skyColor, this._groundColor);
     hemisphereLight.intensity = 1;
-    const hemisphereIndex = this._scene.children.map( i => {return i.type} )
+    const hemisphereIndex = this._scene.children.map( i => i.type )
       .indexOf("HemisphereLight");
     this._scene.children[hemisphereIndex] = hemisphereLight;
   }
@@ -343,7 +349,7 @@ export class URDFLayout extends PanelLayout {
   setGridColor(newColor: number[]): void {
     const gridColor = new Color(...newColor.map( x => x / 255 )); // Range: [0,1]
     this._groundColor = gridColor;
-    const gridIndex = this._scene.children.map(i => { return i.type })
+    const gridIndex = this._scene.children.map( i => i.type )
       .indexOf("GridHelper");
     this._scene.children[gridIndex] = new GridHelper(50, 50, gridColor, gridColor);
     this.updateLighting();
@@ -375,16 +381,23 @@ export class URDFLayout extends PanelLayout {
   changeWorkingPath(workingPath: string): void {
     if (!workingPath) return;
 
-    workingPath = (workingPath[0] === '/') ? workingPath.substring(1) : workingPath;
+    // To match '/this/format/path'
+    workingPath = (workingPath[0] !== '/') ? ('/' + workingPath) : workingPath;
     workingPath = (workingPath[workingPath.length - 1] === '/') ?
                    workingPath.slice(0, -1) : workingPath;
+
     console.debug('[Manager]: Modify URL with prefix ', workingPath);
     this._workingPath = workingPath;
 
     this._manager.setURLModifier((url: string) => {
-      const modifiedURL = '/files/' + workingPath + url;
-      console.debug('[Loader]: ', url);
-      return modifiedURL;
+      if (url.startsWith(workingPath)) {
+        console.debug('[Loader]:', url);
+        return '/files' + url;
+      } else {
+        const modifiedURL = '/files' + workingPath + url;
+        console.debug('[Loader]:', modifiedURL);
+        return modifiedURL;
+      }
     });
   }
 

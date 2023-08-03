@@ -72,7 +72,10 @@ const extension: JupyterFrontEndPlugin<void> = {
       restorer.restore(tracker, {
         command: 'docmanager:open',
         args: widget => ({ path: widget.context.path, factory: FACTORY }),
-        name: widget => widget.context.path
+        name: widget => {
+          console.debug('[Restorer]: Re-opening', widget.context.path);
+          return widget.context.path;
+        }
       });
     }
 
