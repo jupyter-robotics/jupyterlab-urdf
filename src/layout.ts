@@ -147,8 +147,6 @@ export class URDFLayout extends PanelLayout {
 
     // Add the URDF container into the DOM
     this.addWidget(new Widget({ node: this._host }));
-
-
   }
 
   /**
@@ -254,9 +252,6 @@ export class URDFLayout extends PanelLayout {
         this.updateURDF(this._urdfString);
         this.redraw();
       });
-
-    // @ts-ignore
-    window['sett'] = settingsFolder;
 
     // Add option for configuring the scene background and grid
     this._gui.addFolder('Scene').open();
@@ -378,18 +373,17 @@ export class URDFLayout extends PanelLayout {
    * @param workingPath Directory path containing robot description folders
    */
   changeWorkingPath(workingPath: string): void {
-    console.log("WHAT S THIS ", workingPath);
     if (!workingPath) return;
 
     workingPath = (workingPath[0] === '/') ? workingPath.substring(1) : workingPath;
     workingPath = (workingPath[workingPath.length - 1] === '/') ?
                    workingPath.slice(0, -1) : workingPath;
-    console.log('Modify URL with prefix ', workingPath);
+    console.debug('[Manager]: Modify URL with prefix ', workingPath);
     this._workingPath = workingPath;
 
     this._manager.setURLModifier((url: string) => {
       const modifiedURL = '/files/' + workingPath + url;
-      console.debug('THREE MANAGER:', url);
+      console.debug('[Loader]: ', url);
       return modifiedURL;
     });
   }
