@@ -179,10 +179,7 @@ export class URDFLayout extends PanelLayout {
     this._robotModel = this._loader.parse(urdfString);
     this._robotModel.rotation.x = -Math.PI / 2;
 
-    const robotIndex = this._scene.children.map(i => i.name)
-      .indexOf(this._robotModel.name);
-    this._scene.children[robotIndex] = this._robotModel;
-
+    this.addRobot();
     this.redraw();
   }
 
@@ -209,11 +206,11 @@ export class URDFLayout extends PanelLayout {
     this._robotModel.rotation.x = -Math.PI / 2;
 
     // TODO: redundant but necessary for files without any meshes
-    this._scene.add(this._robotModel);
+    this.addRobot();
 
     this._manager.onLoad = () => {
-      this._scene.add(this._robotModel);
-      this._renderer.render(this._scene, this._camera);
+      this.addRobot();
+      this.redraw();
     };
 
     this._renderer.setSize(
@@ -225,6 +222,20 @@ export class URDFLayout extends PanelLayout {
 
     // Create controller  panel
     if (!this._gui) this.setGUI();
+  }
+
+  addRobot(): void {
+    if (!this._robotModel || !this._scene) return; 
+
+    // Check if scene already has robot
+    const robotIndex = this._scene.children.map(i => i.name)
+      .indexOf(this._robotModel.name);
+
+    if (robotIndex < 0) {
+      this._scene.add(this._robotModel);
+    } else {
+      this._scene.children[robotIndex] = this._robotModel;
+    }
   }
 
   /**
