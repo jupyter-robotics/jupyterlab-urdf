@@ -48,7 +48,7 @@ export class UrdfPanel extends Panel {
       (this.layout as URDFLayout).setURDF(this._context);
       this._context.model.contentChanged.connect((sender, args) => {
         console.log('Model changed.', args);
-        (this.layout as URDFLayout).updateURDF(this._context);
+        (this.layout as URDFLayout).updateURDF(this._context.model.toString());
       });
     });
   }

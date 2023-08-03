@@ -32,10 +32,10 @@ import dat from 'dat.gui';
 import URDFLoader from 'urdf-loader';
 
 // Modify URLs for the RobotModel:
-DefaultLoadingManager.setURLModifier((url: string) => {
-  console.debug('THREE MANAGER:', url);
-  return '/files/examples/src' + url;
-});
+// DefaultLoadingManager.setURLModifier((url: string) => {
+//   console.debug('THREE MANAGER:', url);
+//   return '/files/examples/src' + url;
+// });
 
 /**
  * A URDF layout to host the URDF viewer
@@ -52,6 +52,8 @@ export class URDFLayout extends PanelLayout {
   private _controls: OrbitControls;
   private _skyColor: Color;
   private _groundColor: Color;
+  private _workingPath: string;
+  private _urdfString: string;
 
   /**
    * Construct a `URDFLayout`
@@ -62,10 +64,10 @@ export class URDFLayout extends PanelLayout {
     // Creating container for URDF viewer and
     // output area to render execution replies
     this._host = document.createElement('div');
-
+    this._urdfString = '';
+    this._workingPath = '';
     this._manager = DefaultLoadingManager;
     this._loader = new URDFLoader(this._manager);
-    // this._loader.workingPath = "http://localhost:8888/api/contents/"
     this._scene = new Scene();
     this._skyColor = new Color(0x263238);
     this._groundColor = new Color(0x364248);
@@ -133,7 +135,6 @@ export class URDFLayout extends PanelLayout {
     this._scene.add(directionalLight);
 
     const ambientLight = new AmbientLight('#fff');
-    // ambientLight.groundColor.lerp(ambientLight.color, 0.5);
     ambientLight.intensity = 0.5;
     ambientLight.position.set(0, 5, 0);
     this._scene.add(ambientLight);
@@ -146,6 +147,8 @@ export class URDFLayout extends PanelLayout {
 
     // Add the URDF container into the DOM
     this.addWidget(new Widget({ node: this._host }));
+
+
   }
 
   /**
@@ -168,8 +171,8 @@ export class URDFLayout extends PanelLayout {
     this._renderer.render(this._scene, this._camera);
   }
 
-  updateURDF(context: DocumentRegistry.IContext<DocumentModel>): void {
-    this._robotModel = this._loader.parse(context.model.toString());
+  updateURDF(urdfString: string): void {
+    this._robotModel = this._loader.parse(urdfString);
     this._robotModel.rotation.x = -Math.PI / 2;
 
     const robotIndex = this._scene.children.map(i => { return i.name })
@@ -180,13 +183,16 @@ export class URDFLayout extends PanelLayout {
   }
 
   setURDF(context: DocumentRegistry.IContext<DocumentModel>): void {
-    // Load robot model
-    if (this._robotModel !== null && this._robotModel.object.parent !== null) {
-      // Remove old robot model from visualization
-      // Viewer -> Scene -> Group -> Robot Model
-      this._robotModel.object.parent.remove(this._robotModel.object);
+    // Default to parent directory of URDF file
+    if (!this._workingPath) {
+      const filePath = context.path;
+      const parentDir = filePath.substring(0, filePath.lastIndexOf('/'));
+      this.changeWorkingPath(parentDir);
     }
 
+    this._urdfString = context.model.toString();
+
+    // Load robot model
     this._robotModel = this._loader.parse(context.model.toString());
 
     // THREE.js          ROS URDF
@@ -214,7 +220,7 @@ export class URDFLayout extends PanelLayout {
     this.redraw();
 
     // Create controller  panel
-    this.setGUI();
+    if (!this._gui) this.setGUI();
   }
 
   /**
@@ -232,14 +238,34 @@ export class URDFLayout extends PanelLayout {
     this._gui.domElement.style.right = 0;
     this._host.appendChild(this._gui.domElement);
 
-    // Add option for configuring the scene background
+    let settings = {
+      'Working Path': this._workingPath,
+      'set path': this.changeWorkingPath
+    }
+
+    const settingsFolder = this._gui.addFolder('Settings');
+    settingsFolder.domElement.setAttribute("id", "settingsFolder");
+    settingsFolder.open();
+    settingsFolder.add(settings, 'Working Path');
+    settingsFolder.add(settings, 'set path')
+      .onChange(() => {
+        console.log("Settings ", settings);
+        this.changeWorkingPath(settings['Working Path']);
+        this.updateURDF(this._urdfString);
+        this.redraw();
+      });
+
+    // @ts-ignore
+    window['sett'] = settingsFolder;
+
+    // Add option for configuring the scene background and grid
     this._gui.addFolder('Scene').open();
     this.createColorControl();
 
-    // Create new folder for the joints
+    // Create new folder for controlling the joints
     const jointFolder = this._gui.addFolder('Joints');
-    jointFolder.open();
     jointFolder.domElement.setAttribute("id", "jointFolder");
+    jointFolder.open();
     Object.keys(this._robotModel.joints).forEach(jointName => {
       this.createJointSlider(jointName);
     });
@@ -319,7 +345,6 @@ export class URDFLayout extends PanelLayout {
    *
    * @param newColor - The new grid color as RGB array [0,255]
    */
-
   setGridColor(newColor: number[]): void {
     const gridColor = new Color(...newColor.map( x => x / 255 )); // Range: [0,1]
     this._groundColor = gridColor;
@@ -345,6 +370,28 @@ export class URDFLayout extends PanelLayout {
     this._gui.__folders['Scene']
       .addColor(gridObject, 'Grid')
       .onChange((newColor: number[]) => this.setGridColor(newColor));
+  }
+
+  /**
+   * Changes the path to find mesh files described in the URDF
+   * 
+   * @param workingPath Directory path containing robot description folders
+   */
+  changeWorkingPath(workingPath: string): void {
+    console.log("WHAT S THIS ", workingPath);
+    if (!workingPath) return;
+
+    workingPath = (workingPath[0] === '/') ? workingPath.substring(1) : workingPath;
+    workingPath = (workingPath[workingPath.length - 1] === '/') ?
+                   workingPath.slice(0, -1) : workingPath;
+    console.log('Modify URL with prefix ', workingPath);
+    this._workingPath = workingPath;
+
+    this._manager.setURLModifier((url: string) => {
+      const modifiedURL = '/files/' + workingPath + url;
+      console.debug('THREE MANAGER:', url);
+      return modifiedURL;
+    });
   }
 
   /**
