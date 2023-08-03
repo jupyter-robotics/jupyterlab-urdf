@@ -43,11 +43,23 @@ export class UrdfPanel extends Panel {
 
     this.addClass('jp-urdf-canvas'); // for css styling
     this._context = context;
+    this._context.model.fromString(
+'<?xml version="1.0"?> \n \
+<robot name="robot"> \n \
+    <link name="sphere"> \n \
+        <visual> \n \
+            <geometry> \n \
+                <sphere radius="0.5"/> \n \
+            </geometry> \n \
+            <origin rpy="0 0 0" xyz="0 0 0.5"/> \n \
+        </visual> \n \
+    </link> \n \
+</robot>'
+    );
 
     this._context.ready.then(value => {
       (this.layout as URDFLayout).setURDF(this._context);
       this._context.model.contentChanged.connect((sender, args) => {
-        console.log('Model changed.', args);
         (this.layout as URDFLayout).updateURDF(this._context.model.toString());
       });
     });
