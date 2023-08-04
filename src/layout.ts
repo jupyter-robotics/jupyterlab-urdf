@@ -30,6 +30,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import dat from 'dat.gui';
 import URDFLoader from 'urdf-loader';
+import { XacroLoader } from 'xacro-parser';
 
 // Modify URLs for the RobotModel:
 // DefaultLoadingManager.setURLModifier((url: string) => {
@@ -153,6 +154,18 @@ export class URDFLayout extends PanelLayout {
 
     // Add the URDF container into the DOM
     this.addWidget(new Widget({ node: this._host }));
+
+        // REMOVE all this
+    // @ts-ignore
+    window['renen'] = this._renderer;
+    // @ts-ignore
+    window['scee'] = this._scene;
+    // @ts-ignore
+    window['camcam'] = this._camera;
+    // @ts-ignore
+    window['roob'] = this._robotModel;
+    // @ts-ignore
+    window['concon'] = this._controls;
   }
 
   /**
@@ -175,6 +188,17 @@ export class URDFLayout extends PanelLayout {
     this._renderer.render(this._scene, this._camera);
   }
 
+  // TODO: must handle errors first
+  // refresh(): void {
+  //   // Remove robot
+  //   const robotIndex = this._scene.children.map(i => i.name).indexOf(this._robotModel.name);
+  //   if (robotIndex >= 0) {
+  //     this._scene.children.splice(robotIndex, 1);
+  //   }
+  //   this.updateURDF(this._urdfString);
+  //   this.redraw();
+  // }
+
   updateURDF(urdfString: string): void {
     this._robotModel = this._loader.parse(urdfString);
     this._robotModel.rotation.x = -Math.PI / 2;
@@ -193,35 +217,64 @@ export class URDFLayout extends PanelLayout {
 
     this._urdfString = context.model.toString();
 
-    // Load robot model
-    this._robotModel = this._loader.parse(context.model.toString());
-
-    // THREE.js          ROS URDF
-    //    Y                Z
-    //    |                |   Y
-    //    |                | ／
-    //    .-----X          .-----X
-    //  ／
-    // Z
-    this._robotModel.rotation.x = -Math.PI / 2;
-
-    // TODO: redundant but necessary for files without any meshes
-    this.addRobot();
-
-    this._manager.onLoad = () => {
-      this.addRobot();
-      this.redraw();
-    };
-
-    this._renderer.setSize(
-      this._renderer.domElement.clientWidth,
-      this._renderer.domElement.clientHeight
-    );
+    // Check if xacro
+    // console.log("IS THIS XACRO: ", context.path);
     
-    this.redraw();
+    let robotXML;
 
-    // Create controller  panel
-    if (!this._gui) this.setGUI();
+    if (context.path.endsWith('xacro')) {
+      const xacroLoader = new XacroLoader();
+      
+      xacroLoader.parse(
+        context.model.toString(),
+        xml => { 
+          robotXML = xml; 
+          console.log("XML", xml);
+          this._robotModel = this._loader.parse(robotXML);
+          // @ts-ignore
+          window['xmlro'] = robotXML;
+          // @ts-ignore
+          window['roob'] = this._robotModel;
+
+          this.addRobot();
+          this.redraw();
+          this.setGUI();
+
+        },
+        error => console.log(error)
+        );      
+    } else {
+
+      // Load robot model
+      this._robotModel = this._loader.parse(context.model.toString());
+
+      // THREE.js          ROS URDF
+      //    Y                Z
+      //    |                |   Y
+      //    |                | ／
+      //    .-----X          .-----X
+      //  ／
+      // Z
+      this._robotModel.rotation.x = -Math.PI / 2;
+
+      // TODO: redundant but necessary for files without any meshes
+      this.addRobot();
+
+      this._manager.onLoad = () => {
+        this.addRobot();
+        this.redraw();
+      };
+
+      this._renderer.setSize(
+        this._renderer.domElement.clientWidth,
+        this._renderer.domElement.clientHeight
+      );
+      
+      this.redraw();
+
+      // Create controller  panel
+      if (!this._gui) this.setGUI();
+    }
   }
 
   addRobot(): void {
@@ -242,6 +295,8 @@ export class URDFLayout extends PanelLayout {
    * Create a GUI to set the joint angles / positions
    */
   setGUI(): void {
+    if (!this._robotModel) return;
+
     this._gui = new dat.GUI({
       width: 310,
       autoPlace: false
@@ -255,7 +310,7 @@ export class URDFLayout extends PanelLayout {
 
     let settings = {
       'Working Path': this._workingPath,
-      'set path': this.changeWorkingPath
+      'set path': () => {}
     }
 
     const settingsFolder = this._gui.addFolder('Settings');
@@ -264,11 +319,16 @@ export class URDFLayout extends PanelLayout {
     settingsFolder.add(settings, 'Working Path');
     settingsFolder.add(settings, 'set path')
       .onChange(() => {
-        console.log("Settings ", settings);
         this.changeWorkingPath(settings['Working Path']);
         this.updateURDF(this._urdfString);
         this.redraw();
       });
+    
+    // TODO:
+    // settingsFolder.add(settings, 'refresh') 
+    //   .onChange(() => {
+    //     this.refresh();
+    //   });
 
     // Add option for configuring the scene background and grid
     this._gui.addFolder('Scene').open();
