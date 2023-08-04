@@ -272,7 +272,7 @@ export class URDFLayout extends PanelLayout {
 
     // Add option for configuring the scene background and grid
     this._gui.addFolder('Scene').open();
-    this.createColorControl();
+    this.createSceneControl();
 
     // Create new folder for controlling the joints
     const jointFolder = this._gui.addFolder('Joints');
@@ -370,7 +370,7 @@ export class URDFLayout extends PanelLayout {
   /**
    * Create color controller
    */
-  createColorControl(): void {
+  createSceneControl(): void {
     const backgroundObject = { Background: [38, 50, 56] };
     const gridObject = { Grid: [54, 66, 72] };
 
@@ -382,6 +382,19 @@ export class URDFLayout extends PanelLayout {
     this._gui.__folders['Scene']
       .addColor(gridObject, 'Grid')
       .onChange((newColor: number[]) => this.setGridColor(newColor));
+
+    const minHeight = -2;
+    const maxHeight = 5;
+    const stepSize = 0.1;
+    this._gui.__folders['Scene']
+      .add({ height: 0 }, 'height', minHeight, maxHeight, stepSize)
+      .onChange((newHeight: number) => this.changeGridHeight(newHeight));
+  }
+
+  changeGridHeight(height: number = 0): void {
+    const gridIndex = this._scene.children.map(i => i.type).indexOf("GridHelper");
+    this._scene.children[gridIndex].position.y = height;
+    this.redraw();
   }
 
   /**
