@@ -34,6 +34,7 @@ import URDFLoader from 'urdf-loader';
 import { XacroLoader } from 'xacro-parser';
 
 import { URDFControls } from './controls';
+import { URDFRenderer } from './renderer';
 
 
 /**
@@ -43,11 +44,12 @@ export class URDFLayout extends PanelLayout {
   private _host: HTMLElement;
   private _robotModel: any = null;
   private _controlsPanel: URDFControls;
+  private _renderer: URDFRenderer;
   private _manager: LoadingManager;
   private _loader: URDFLoader;
   private _scene: Scene;
   private _camera: PerspectiveCamera;
-  private _renderer: WebGLRenderer;
+  private _OLDRENDERER: WebGLRenderer;
   private _controls: OrbitControls;
   private _skyColor: Color;
   private _groundColor: Color;
@@ -63,9 +65,11 @@ export class URDFLayout extends PanelLayout {
     // Creating container for URDF viewer and
     // output area to render execution replies
     this._host = document.createElement('div');
-    this._controlsPanel = new URDFControls();
 
+    this._controlsPanel = new URDFControls();
     this._host.appendChild(this._controlsPanel.domElement);
+
+    this._renderer = new URDFRenderer();
 
     this._urdfString = '';
     this._workingPath = '';
@@ -75,15 +79,16 @@ export class URDFLayout extends PanelLayout {
     this._skyColor = new Color(0x263238);
     this._groundColor = new Color(0x364248);
     this._camera = new PerspectiveCamera();
-    this._renderer = new WebGLRenderer({ antialias: true });
-    this._controls = new OrbitControls(this._camera, this._renderer.domElement);
+    this._OLDRENDERER = new WebGLRenderer({ antialias: true });
+    this._controls = new OrbitControls(this._camera, this._OLDRENDERER.domElement);
+    console.log("REMOVE ", this._controls);
   }
 
   /**
    * Dispose of the resources held by the widget
    */
   dispose(): void {
-    this._renderer.dispose();
+    this._OLDRENDERER.dispose();
     super.dispose();
   }
 
@@ -93,11 +98,11 @@ export class URDFLayout extends PanelLayout {
   init(): void {
     super.init();
 
-    this._renderer.setClearColor(0xffffff);
-    this._renderer.setClearAlpha(0);
-    this._renderer.outputColorSpace = SRGBColorSpace;
-    this._renderer.shadowMap.enabled = true;
-    this._renderer.shadowMap.type = PCFSoftShadowMap;
+    this._OLDRENDERER.setClearColor(0xffffff);
+    this._OLDRENDERER.setClearAlpha(0);
+    this._OLDRENDERER.outputColorSpace = SRGBColorSpace;
+    this._OLDRENDERER.shadowMap.enabled = true;
+    this._OLDRENDERER.shadowMap.type = PCFSoftShadowMap;
 
     this._scene.background = this._skyColor;
     this._scene.up = new Vector3(0, 0, 1); // Z is up
@@ -105,14 +110,7 @@ export class URDFLayout extends PanelLayout {
     this._camera.position.set(4, 4, 4);
     this._camera.lookAt(0, 0, 0);
 
-    this._controls.rotateSpeed = 2.0;
-    this._controls.zoomSpeed = 5;
-    this._controls.panSpeed = 2;
-    this._controls.enableZoom = true;
-    this._controls.enableDamping = false;
-    this._controls.maxDistance = 50;
-    this._controls.minDistance = 0.25;
-    this._controls.addEventListener('change', () => this.redraw());
+    
 
     const world = new Object3D();
     this._scene.add(world);
@@ -175,7 +173,7 @@ export class URDFLayout extends PanelLayout {
   }
 
   redraw(): void {
-    this._renderer.render(this._scene, this._camera);
+    this._OLDRENDERER.render(this._scene, this._camera);
   }
 
   updateURDF(urdfString: string): void {
@@ -240,9 +238,9 @@ export class URDFLayout extends PanelLayout {
         this.redraw();
       };
 
-      this._renderer.setSize(
-        this._renderer.domElement.clientWidth,
-        this._renderer.domElement.clientHeight
+      this._OLDRENDERER.setSize(
+        this._OLDRENDERER.domElement.clientWidth,
+        this._OLDRENDERER.domElement.clientHeight
       );
       
       this.redraw();
@@ -425,6 +423,7 @@ export class URDFLayout extends PanelLayout {
    */
   protected onAfterAttach(msg: Message): void {
     this.redraw();
+    // this._host.appendChild(this._OLDRENDERER.domElement);
     this._host.appendChild(this._renderer.domElement);
   }
 
@@ -432,8 +431,8 @@ export class URDFLayout extends PanelLayout {
     const rect = this.parent?.node.getBoundingClientRect();
     this._host.style.height = rect?.height + 'px';
 
-    const currentSize = this._renderer.getSize(new Vector2);
-    this._renderer.setSize(
+    const currentSize = this._OLDRENDERER.getSize(new Vector2);
+    this._OLDRENDERER.setSize(
       rect?.width || currentSize.width, 
       rect?.height || currentSize.height);
     
