@@ -30,17 +30,11 @@ import {
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-import dat from 'dat.gui';
 import URDFLoader from 'urdf-loader';
 import { XacroLoader } from 'xacro-parser';
 
 import { URDFControls } from './controls';
 
-// Modify URLs for the RobotModel:
-// DefaultLoadingManager.setURLModifier((url: string) => {
-//   console.debug('THREE MANAGER:', url);
-//   return '/files/examples/src' + url;
-// });
 
 /**
  * A URDF layout to host the URDF viewer
@@ -48,8 +42,7 @@ import { URDFControls } from './controls';
 export class URDFLayout extends PanelLayout {
   private _host: HTMLElement;
   private _robotModel: any = null;
-  private _gui: any;
-  private _newGui: URDFControls;
+  private _controlsPanel: URDFControls;
   private _manager: LoadingManager;
   private _loader: URDFLoader;
   private _scene: Scene;
@@ -70,9 +63,9 @@ export class URDFLayout extends PanelLayout {
     // Creating container for URDF viewer and
     // output area to render execution replies
     this._host = document.createElement('div');
-    this._newGui = new URDFControls("empty path");
+    this._controlsPanel = new URDFControls();
 
-    this._host.appendChild(this._newGui.domElement);
+    this._host.appendChild(this._controlsPanel.domElement);
 
     this._urdfString = '';
     this._workingPath = '';
@@ -99,15 +92,6 @@ export class URDFLayout extends PanelLayout {
    */
   init(): void {
     super.init();
-
-    // TESTING STUFF
-    const pathControl = this._newGui.controls.path;
-    pathControl.onChange((newPath: string = pathControl.object['Path']) => {
-      console.log("TODO: set new path", newPath);
-    });
-
-    // @ts-ignore
-    window['googoo'] = this._newGui;
 
     this._renderer.setClearColor(0xffffff);
     this._renderer.setClearAlpha(0);
@@ -194,17 +178,6 @@ export class URDFLayout extends PanelLayout {
     this._renderer.render(this._scene, this._camera);
   }
 
-  // TODO: must handle errors first
-  // refresh(): void {
-  //   // Remove robot
-  //   const robotIndex = this._scene.children.map(i => i.name).indexOf(this._robotModel.name);
-  //   if (robotIndex >= 0) {
-  //     this._scene.children.splice(robotIndex, 1);
-  //   }
-  //   this.updateURDF(this._urdfString);
-  //   this.redraw();
-  // }
-
   updateURDF(urdfString: string): void {
     this._robotModel = this._loader.parse(urdfString);
     this._robotModel.rotation.x = -Math.PI / 2;
@@ -240,7 +213,7 @@ export class URDFLayout extends PanelLayout {
 
           this.addRobot();
           this.redraw();
-          this.setGUI();
+          this._setControls();
 
         },
         (error: Error) => console.log(error)
@@ -274,8 +247,7 @@ export class URDFLayout extends PanelLayout {
       
       this.redraw();
 
-      // Create controller  panel
-      if (!this._gui) this.setGUI();
+      this._setControls();
     }
   }
 
@@ -294,110 +266,68 @@ export class URDFLayout extends PanelLayout {
   }
 
   /**
-   * Create a GUI to set the joint angles / positions
+   * Set the callback functions for each of item in the controls panel
    */
-  setGUI(): void {
+  private _setControls(): void {
     if (!this._robotModel) return;
 
-    this._gui = new dat.GUI({
-      width: 310,
-      autoPlace: false
-    });
-
-    // Adjust position so that it's attached to viewer
-    this._gui.domElement.style.position = 'absolute';
-    this._gui.domElement.style.top = 0;
-    this._gui.domElement.style.left = 0;
-    this._host.appendChild(this._gui.domElement);
-
-    let settings = {
-      'Working Path': this._workingPath,
-      'set path': () => {}
-    }
-
-    const settingsFolder = this._gui.addFolder('Settings');
-    settingsFolder.domElement.setAttribute("id", "settingsFolder");
-    settingsFolder.open();
-    settingsFolder.add(settings, 'Working Path');
-    settingsFolder.add(settings, 'set path')
-      .onChange(() => {
-        this.changeWorkingPath(settings['Working Path']);
-        this.updateURDF(this._urdfString);
-        this.redraw();
-      });
-    
-    // TODO:
-    // settingsFolder.add(settings, 'refresh') 
-    //   .onChange(() => {
-    //     this.refresh();
-    //   });
-
-    // Add option for configuring the scene background and grid
-    this._gui.addFolder('Scene').open();
-    this.createSceneControl();
-
-    // Create new folder for controlling the joints
-    const jointFolder = this._gui.addFolder('Joints');
-    jointFolder.domElement.setAttribute("id", "jointFolder");
-    jointFolder.open();
-
-
-    // TESTING STUFF
-    this._newGui.createJointControls(this._robotModel.joints);
-
-
-    Object.keys(this._robotModel.joints).forEach(jointName => {
-      this.createJointSlider(jointName);
-    });
+    this._setPathControls();
+    this._setSceneControls();
+    this._setJointControls();
   }
 
   /**
-   * Set angle for revolute joints
+   * Set callback for changing working directory to given user input and 
+   * render again.
+   */
+  private _setPathControls(): void {
+    const pathControl = this._controlsPanel.createWorkspaceControls(this._workingPath);
+    pathControl.onChange(
+      (newPath: string = pathControl.object['Path']) => {
+        this.changeWorkingPath(newPath);
+        this.updateURDF(this._urdfString);
+        this.redraw();
+      }
+    );
+  }
+
+  /**
+   * Call renderer when scene colors are changed in the controls panel.
+   */
+  private _setSceneControls(): void {
+    const sceneControl = this._controlsPanel.createSceneControls();
+    sceneControl.background.onChange(
+      (newColor: number[]) => this.setBackgroundColor(newColor));
+    sceneControl.grid.onChange(
+      (newColor: number[]) => this.setGridColor(newColor));
+    sceneControl.height.onChange(
+      (newHeight: number) => this.setGridHeight(newHeight));
+  }
+
+  /**
+   * Set callback for each joint when the value changes in the controls panel.
+   */
+  private _setJointControls(): void {
+    const jointControl = this._controlsPanel.createJointControls(this._robotModel.joints);
+    Object.keys(jointControl).forEach(
+      (jointName: string) => {
+        jointControl[jointName].onChange(
+          (newValue = 0) => { this._setJointValue(jointName, newValue); }
+        );
+      }
+    );
+  }
+
+  /**
+   * Set value for robot joint
    *
    * @param jointName - The name of the joint to be set
    */
-  setJointAngle(jointName: string, newAngle: number): void {
-    this._robotModel.setJointValue(jointName, newAngle);
+  private _setJointValue(jointName: string, newValue: number): void {
+    this._robotModel.setJointValue(jointName, newValue);
     this.redraw();
   }
 
-  /**
-   * Creates a slider for each movable joint
-   *
-   * @param jointName - Name of joint as string
-   */
-  createJointSlider(jointName: string): void {
-    // Retrieve joint
-    const joint = this._robotModel.joints[jointName];
-
-    // Skip joints which should not be moved
-    if (joint._jointType === 'fixed') {
-      return;
-    }
-
-    // Obtain joint limits
-    let limitMin = joint.limit.lower;
-    let limitMax = joint.limit.upper;
-
-    // If the limits are not defined, set defaults to +/- 180 degrees
-    if (limitMin === 0 && limitMax === 0) {
-      limitMin = -Math.PI;
-      limitMax = +Math.PI;
-      this._robotModel.joints[jointName].limit.lower = limitMin;
-      this._robotModel.joints[jointName].limit.upper = limitMax;
-    }
-
-    // Step increments for slider
-    const stepSize = (limitMax - limitMin) / 20;
-
-    // Initialize to the position given in URDF file
-    const initValue = joint.jointValue[0];
-    
-    // Add slider to GUI
-    this._gui.__folders['Joints']
-      .add({[jointName]: initValue}, jointName, limitMin, limitMax, stepSize)
-      .onChange((newAngle: number) => this.setJointAngle(jointName, newAngle));
-  }
 
   updateLighting(): void {
     const hemisphereLight = new HemisphereLight(this._skyColor, this._groundColor);
@@ -435,31 +365,7 @@ export class URDFLayout extends PanelLayout {
     this.redraw();
   }
 
-  /**
-   * Create color controller
-   */
-  createSceneControl(): void {
-    const backgroundObject = { Background: [38, 50, 56] };
-    const gridObject = { Grid: [54, 66, 72] };
-
-    // Add controller to GUI
-    this._gui.__folders['Scene']
-      .addColor(backgroundObject, 'Background')
-      .onChange((newColor: number[]) => this.setBackgroundColor(newColor));
-
-    this._gui.__folders['Scene']
-      .addColor(gridObject, 'Grid')
-      .onChange((newColor: number[]) => this.setGridColor(newColor));
-
-    const minHeight = -2;
-    const maxHeight = 5;
-    const stepSize = 0.1;
-    this._gui.__folders['Scene']
-      .add({ height: 0 }, 'height', minHeight, maxHeight, stepSize)
-      .onChange((newHeight: number) => this.changeGridHeight(newHeight));
-  }
-
-  changeGridHeight(height: number = 0): void {
+  setGridHeight(height: number = 0): void {
     const gridIndex = this._scene.children.map(i => i.type).indexOf("GridHelper");
     this._scene.children[gridIndex].position.y = height;
     this.redraw();

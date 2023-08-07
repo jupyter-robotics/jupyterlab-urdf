@@ -16,35 +16,29 @@ export class URDFControls extends GUI {
     private _workspaceFolder: any;
     private _sceneFolder: any;
     private _jointsFolder: any;
-    private _workingPath: string;
+    private _workingPath: string = '';
 
     controls: any = {
         path: {},
-        background: {},
-        grid: {},
-        gridHeight: {},
+        scene: {
+            background: {},
+            grid: {},
+            height: {}
+        },
         joints: {}
     };
 
-    constructor(workingPath: string) {
+    constructor() {
         super({autoPlace: false});
 
         this.width = 310;
-
         this.domElement.style.position = 'absolute';
         this.domElement.style.top = '0';
         this.domElement.style.right = '0';
 
-        this._workingPath = workingPath;
-
         this._workspaceFolder = this.addFolder('Workspace');
-        this._createWorkspaceControls();
-
         this._sceneFolder = this.addFolder('Scene');
-        this._createSceneControls();
-
         this._jointsFolder = this.addFolder('Joints');
-        // Joint controls are updated once robot loads
     }
 
     get workspaceFolder() {
@@ -59,7 +53,12 @@ export class URDFControls extends GUI {
         return this._jointsFolder;
     }
 
-    private _createWorkspaceControls() {
+    createWorkspaceControls(workingPath: string) {
+        if (!workingPath) {
+            return;
+        }
+
+        this._workingPath = workingPath;
         const workspaceSettings = {
             'Path': this._workingPath,
             'set path': () => {}
@@ -67,9 +66,10 @@ export class URDFControls extends GUI {
         this._workspaceFolder.add(workspaceSettings, 'Path');
         this.controls.path = this._workspaceFolder.add(workspaceSettings, 'set path');
         this._workspaceFolder.open();
+        return this.controls.path;
     }
 
-    private _createSceneControls(
+    createSceneControls(
         bgColor = [38, 50, 56], 
         gridColor = [54, 66, 72]
     ) {
@@ -79,16 +79,17 @@ export class URDFControls extends GUI {
             'Height': 0
         };
 
-        this.controls.background = this._sceneFolder.addColor(sceneSettings, 'Background');
-        this.controls.grid = this._sceneFolder.addColor(sceneSettings, 'Grid');
+        this.controls.scene.background = this._sceneFolder.addColor(sceneSettings, 'Background');
+        this.controls.scene.grid = this._sceneFolder.addColor(sceneSettings, 'Grid');
 
         const minHeight = -2;
         const maxHeight = 5;
         const stepSize = 0.1;
-        this.controls.gridHeight = this._sceneFolder.add(
+        this.controls.scene.height = this._sceneFolder.add(
             sceneSettings, 'Height', minHeight, maxHeight, stepSize);
 
         this._sceneFolder.open();
+        return this.controls.scene;
     }
 
     createJointControls(joints: Joints) {
@@ -113,5 +114,6 @@ export class URDFControls extends GUI {
                 {[name]: initValue}, name, limitMin, limitMax, stepSize);
         });
         this._jointsFolder.open();
+        return this.controls.joints;
     }
 }
