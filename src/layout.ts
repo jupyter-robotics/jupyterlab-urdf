@@ -34,6 +34,8 @@ import dat from 'dat.gui';
 import URDFLoader from 'urdf-loader';
 import { XacroLoader } from 'xacro-parser';
 
+import { URDFControls } from './controls';
+
 // Modify URLs for the RobotModel:
 // DefaultLoadingManager.setURLModifier((url: string) => {
 //   console.debug('THREE MANAGER:', url);
@@ -47,6 +49,7 @@ export class URDFLayout extends PanelLayout {
   private _host: HTMLElement;
   private _robotModel: any = null;
   private _gui: any;
+  private _newGui: URDFControls;
   private _manager: LoadingManager;
   private _loader: URDFLoader;
   private _scene: Scene;
@@ -67,6 +70,10 @@ export class URDFLayout extends PanelLayout {
     // Creating container for URDF viewer and
     // output area to render execution replies
     this._host = document.createElement('div');
+    this._newGui = new URDFControls("empty path");
+
+    this._host.appendChild(this._newGui.domElement);
+
     this._urdfString = '';
     this._workingPath = '';
     this._manager = new LoadingManager;
@@ -92,6 +99,15 @@ export class URDFLayout extends PanelLayout {
    */
   init(): void {
     super.init();
+
+    // TESTING STUFF
+    const pathControl = this._newGui.controls.path;
+    pathControl.onChange((newPath: string = pathControl.object['Path']) => {
+      console.log("TODO: set new path", newPath);
+    });
+
+    // @ts-ignore
+    window['googoo'] = this._newGui;
 
     this._renderer.setClearColor(0xffffff);
     this._renderer.setClearAlpha(0);
@@ -291,7 +307,7 @@ export class URDFLayout extends PanelLayout {
     // Adjust position so that it's attached to viewer
     this._gui.domElement.style.position = 'absolute';
     this._gui.domElement.style.top = 0;
-    this._gui.domElement.style.right = 0;
+    this._gui.domElement.style.left = 0;
     this._host.appendChild(this._gui.domElement);
 
     let settings = {
@@ -324,6 +340,12 @@ export class URDFLayout extends PanelLayout {
     const jointFolder = this._gui.addFolder('Joints');
     jointFolder.domElement.setAttribute("id", "jointFolder");
     jointFolder.open();
+
+
+    // TESTING STUFF
+    this._newGui.createJointControls(this._robotModel.joints);
+
+
     Object.keys(this._robotModel.joints).forEach(jointName => {
       this.createJointSlider(jointName);
     });
