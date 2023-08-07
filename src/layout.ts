@@ -6,6 +6,8 @@ import {
   DocumentModel
 } from '@jupyterlab/docregistry';
 
+import { PageConfig } from '@jupyterlab/coreutils';
+
 import { 
   // DefaultLoadingManager,
   LoadingManager,
@@ -154,18 +156,6 @@ export class URDFLayout extends PanelLayout {
 
     // Add the URDF container into the DOM
     this.addWidget(new Widget({ node: this._host }));
-
-        // REMOVE all this
-    // @ts-ignore
-    window['renen'] = this._renderer;
-    // @ts-ignore
-    window['scee'] = this._scene;
-    // @ts-ignore
-    window['camcam'] = this._camera;
-    // @ts-ignore
-    window['roob'] = this._robotModel;
-    // @ts-ignore
-    window['concon'] = this._controls;
   }
 
   /**
@@ -216,19 +206,17 @@ export class URDFLayout extends PanelLayout {
     }
 
     this._urdfString = context.model.toString();
-
-    // Check if xacro
-    // console.log("IS THIS XACRO: ", context.path);
     
     let robotXML;
 
+
     if (context.path.endsWith('xacro')) {
-      const xacroLoader = new XacroLoader();
-      
-      
+      const xacroLoader: any = new XacroLoader();
+      xacroLoader.workingPath = PageConfig.getBaseUrl() + 'files/';
+     
       xacroLoader.parse(
         context.model.toString(),
-        xml => { 
+        (xml: XMLDocument) => { 
           robotXML = xml; 
           console.log("XML", xml);
           this._robotModel = this._loader.parse(robotXML);
@@ -239,7 +227,7 @@ export class URDFLayout extends PanelLayout {
           this.setGUI();
 
         },
-        error => console.log(error)
+        (error: Error) => console.log(error)
         );      
     } else {
 
