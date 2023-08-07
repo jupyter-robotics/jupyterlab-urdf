@@ -225,16 +225,14 @@ export class URDFLayout extends PanelLayout {
     if (context.path.endsWith('xacro')) {
       const xacroLoader = new XacroLoader();
       
+      
       xacroLoader.parse(
         context.model.toString(),
         xml => { 
           robotXML = xml; 
           console.log("XML", xml);
           this._robotModel = this._loader.parse(robotXML);
-          // @ts-ignore
-          window['xmlro'] = robotXML;
-          // @ts-ignore
-          window['roob'] = this._robotModel;
+          this._robotModel.rotation.x = -Math.PI / 2;
 
           this.addRobot();
           this.redraw();
