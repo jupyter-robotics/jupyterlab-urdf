@@ -1,4 +1,5 @@
 import { GUI } from "dat.gui";
+import { Color } from "three";
 
 interface Joints {
     [name: string]: {
@@ -70,12 +71,13 @@ export class URDFControls extends GUI {
     }
 
     createSceneControls(
-        bgColor = [38, 50, 56], 
-        gridColor = [54, 66, 72]
+        bgColor = new Color(0x263238), 
+        gridColor = new Color(0x263238)
     ) {
+        
         const sceneSettings = {
-            'Background': bgColor,
-            'Grid': gridColor,
+            'Background': this._convertColor2Array(bgColor),
+            'Grid': this._convertColor2Array(gridColor),
             'Height': 0
         };
 
@@ -90,6 +92,18 @@ export class URDFControls extends GUI {
 
         this._sceneFolder.open();
         return this.controls.scene;
+    }
+
+    private _convertColor2Array(color: THREE.Color): number[] {
+        // Note: using hex value instead of the RGB values in Color because
+        // those are dependant on the color space
+        const hexColor = color.getHexString();
+        const colorArray = [
+            parseInt(hexColor.slice(0,2), 16),
+            parseInt(hexColor.slice(2,4), 16),
+            parseInt(hexColor.slice(4,6), 16)
+        ]
+        return colorArray;
     }
 
     createJointControls(joints: Joints) {
