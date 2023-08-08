@@ -9,12 +9,9 @@ import {
 import { PageConfig } from '@jupyterlab/coreutils';
 
 import { 
-  // DefaultLoadingManager,
   LoadingManager,
-  WebGLRenderer,
-  Scene,
-  PerspectiveCamera,
   Vector2,
+  Color
 } from 'three';
 
 import URDFLoader from 'urdf-loader';
@@ -34,9 +31,6 @@ export class URDFLayout extends PanelLayout {
   private _renderer: URDFRenderer;
   private _manager: LoadingManager;
   private _loader: URDFLoader;
-  private _scene: Scene;
-  private _camera: PerspectiveCamera;
-  private _OLDRENDERER: WebGLRenderer;
   private _workingPath: string;
   private _urdfString: string;
 
@@ -52,15 +46,14 @@ export class URDFLayout extends PanelLayout {
 
     this._controlsPanel = new URDFControls();
 
-    this._renderer = new URDFRenderer();
+    const colorSky = this._getThemeColor('--jp-layout-color1') || new Color(0x263238);
+    const colorGround = this._getThemeColor('--jp-layout-color2') || new Color(0x263238);
+    this._renderer = new URDFRenderer(colorSky, colorGround);
 
     this._urdfString = '';
     this._workingPath = '';
     this._manager = new LoadingManager;
     this._loader = new URDFLoader(this._manager);
-    this._scene = new Scene();
-    this._camera = new PerspectiveCamera();
-    this._OLDRENDERER = new WebGLRenderer({ antialias: true });
   }
 
   /**
@@ -97,16 +90,10 @@ export class URDFLayout extends PanelLayout {
     return;
   }
 
-  redraw(): void {
-    this._OLDRENDERER.render(this._scene, this._camera);
-  }
-
   updateURDF(urdfString: string): void {
     this._robotModel = this._loader.parse(urdfString);
     this._robotModel.rotation.x = -Math.PI / 2;
-
-    this.addRobot();
-    this.redraw();
+    this._renderer.setRobot(this._robotModel);
   }
 
   setURDF(context: DocumentRegistry.IContext<DocumentModel>): void {
@@ -134,8 +121,7 @@ export class URDFLayout extends PanelLayout {
           this._robotModel = this._loader.parse(robotXML);
           this._robotModel.rotation.x = -Math.PI / 2;
 
-          this.addRobot();
-          this.redraw();
+          this._renderer.setRobot(this._robotModel);
           this._setControls();
 
         },
@@ -150,36 +136,45 @@ export class URDFLayout extends PanelLayout {
       this._robotModel.rotation.x = -Math.PI / 2;
 
       // TODO: redundant but necessary for files without any meshes
-      this.addRobot();
+      this._renderer.setRobot(this._robotModel);
 
       this._manager.onLoad = () => {
-        this.addRobot();
-        this.redraw();
+        this._renderer.setRobot(this._robotModel);
       };
 
       this._renderer.setSize(
         this._renderer.domElement.clientWidth,
         this._renderer.domElement.clientHeight
       );
-      
-      this.redraw();
 
       this._setControls();
     }
   }
 
-  addRobot(): void {
-    if (!this._robotModel || !this._scene) return; 
+  private _getThemeColor(colorName: string): Color | void {
+    const colorString = window.getComputedStyle(document.documentElement)
+      .getPropertyValue(colorName);
+    return this._parseColor(colorString);
+  }
 
-    // Check if scene already has robot
-    const robotIndex = this._scene.children.map(i => i.name)
-      .indexOf(this._robotModel.name);
-
-    if (robotIndex < 0) {
-      this._scene.add(this._robotModel);
+  private _parseColor(color: string): Color | void {
+    let parsedColor;
+    if (color[0] !== '#') {
+      // Color name such as 'white'
+      parsedColor = new Color(color);
     } else {
-      this._scene.children[robotIndex] = this._robotModel;
+      if (color.length === 4) {
+        // Shorthand hex value such as '#eee'
+        const expandedColor = color[1] + color[1] +
+          color[2] + color[2] +
+          color[3] + color[3];
+        parsedColor = new Color(Number('0x' + expandedColor));
+      } else if (color.length === 7) {
+        // Long hex value such as '#ffffff'
+        parsedColor = new Color(Number('0x' + color.substring(1)));
+      }
     }
+    return parsedColor;
   }
 
   /**
@@ -203,7 +198,7 @@ export class URDFLayout extends PanelLayout {
       (newPath: string = pathControl.object['Path']) => {
         this.changeWorkingPath(newPath);
         this.updateURDF(this._urdfString);
-        this.redraw();
+        this._renderer.redraw();
       }
     );
   }
@@ -242,7 +237,7 @@ export class URDFLayout extends PanelLayout {
    */
   private _setJointValue(jointName: string, newValue: number): void {
     this._robotModel.setJointValue(jointName, newValue);
-    this.redraw();
+    this._renderer.redraw();
   }
 
   /**
@@ -298,7 +293,7 @@ export class URDFLayout extends PanelLayout {
    * Handle `after-attach` messages sent to the widget
    */
   protected onAfterAttach(msg: Message): void {
-    this.redraw();
+    this._renderer.redraw();
     this._host.appendChild(this._renderer.domElement);
     this._host.appendChild(this._controlsPanel.domElement);
   }
