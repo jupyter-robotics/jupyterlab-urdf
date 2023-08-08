@@ -20,6 +20,10 @@ import { XacroLoader } from 'xacro-parser';
 import { URDFControls } from './controls';
 import { URDFRenderer } from './renderer';
 
+interface URDFColors {
+  sky: Color,
+  ground: Color
+}
 
 /**
  * A URDF layout to host the URDF viewer
@@ -29,6 +33,7 @@ export class URDFLayout extends PanelLayout {
   private _robotModel: any = null;
   private _controlsPanel: URDFControls;
   private _renderer: URDFRenderer;
+  private _colors: URDFColors;
   private _manager: LoadingManager;
   private _loader: URDFLoader;
   private _workingPath: string;
@@ -44,11 +49,13 @@ export class URDFLayout extends PanelLayout {
     // output area to render execution replies
     this._host = document.createElement('div');
 
+    this._colors = {
+      sky:    this._getThemeColor('--jp-layout-color1') || new Color(0x263238),
+      ground: this._getThemeColor('--jp-layout-color2') || new Color(0x263238)
+    };
+    
+    this._renderer = new URDFRenderer(this._colors.sky, this._colors.ground);
     this._controlsPanel = new URDFControls();
-
-    const colorSky = this._getThemeColor('--jp-layout-color1') || new Color(0x263238);
-    const colorGround = this._getThemeColor('--jp-layout-color2') || new Color(0x263238);
-    this._renderer = new URDFRenderer(colorSky, colorGround);
 
     this._urdfString = '';
     this._workingPath = '';
@@ -207,7 +214,8 @@ export class URDFLayout extends PanelLayout {
    * Call renderer when scene colors are changed in the controls panel.
    */
   private _setSceneControls(): void {
-    const sceneControl = this._controlsPanel.createSceneControls();
+    const sceneControl = this._controlsPanel.createSceneControls(
+      this._colors.sky, this._colors.ground);
     sceneControl.background.onChange(
       (newColor: number[]) => this._renderer.setSkyColor(newColor));
     sceneControl.grid.onChange(
