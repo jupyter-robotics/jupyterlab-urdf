@@ -48,19 +48,21 @@ export class URDFControls extends GUI {
         return this._jointsFolder;
     }
 
-    createWorkspaceControls(workingPath: string) {
-        if (!workingPath) {
-            return;
-        }
+    private _isEmpty(obj: Object): Boolean {
+        return Object.keys(obj).length === 0;
+    }
 
-        this._workingPath = workingPath;
-        const workspaceSettings = {
-            'Path': this._workingPath,
-            'set path': () => {}
+    createWorkspaceControls(workingPath: string = '') {
+        if (this._isEmpty(this.controls.path)) {
+            this._workingPath = workingPath;
+            const workspaceSettings = {
+                'Path': this._workingPath,
+                'set path': () => {}
+            }
+            this._workspaceFolder.add(workspaceSettings, 'Path');
+            this.controls.path = this._workspaceFolder.add(workspaceSettings, 'set path');
+            this._workspaceFolder.open();
         }
-        this._workspaceFolder.add(workspaceSettings, 'Path');
-        this.controls.path = this._workspaceFolder.add(workspaceSettings, 'set path');
-        this._workspaceFolder.open();
         return this.controls.path;
     }
 
@@ -68,23 +70,24 @@ export class URDFControls extends GUI {
         bgColor = new Color(0x263238), 
         gridColor = new Color(0x263238)
     ) {
-        
-        const sceneSettings = {
-            'Background': this._convertColor2Array(bgColor),
-            'Grid': this._convertColor2Array(gridColor),
-            'Height': 0
-        };
+        if (this._isEmpty(this.controls.scene.background)) {
+            const sceneSettings = {
+                'Background': this._convertColor2Array(bgColor),
+                'Grid': this._convertColor2Array(gridColor),
+                'Height': 0
+            };
 
-        this.controls.scene.background = this._sceneFolder.addColor(sceneSettings, 'Background');
-        this.controls.scene.grid = this._sceneFolder.addColor(sceneSettings, 'Grid');
+            this.controls.scene.background = this._sceneFolder.addColor(sceneSettings, 'Background');
+            this.controls.scene.grid = this._sceneFolder.addColor(sceneSettings, 'Grid');
 
-        const minHeight = -2;
-        const maxHeight = 5;
-        const stepSize = 0.1;
-        this.controls.scene.height = this._sceneFolder.add(
-            sceneSettings, 'Height', minHeight, maxHeight, stepSize);
+            const minHeight = -2;
+            const maxHeight = 5;
+            const stepSize = 0.1;
+            this.controls.scene.height = this._sceneFolder.add(
+                sceneSettings, 'Height', minHeight, maxHeight, stepSize);
 
-        this._sceneFolder.open();
+            this._sceneFolder.open();
+        }
         return this.controls.scene;
     }
 
@@ -101,27 +104,29 @@ export class URDFControls extends GUI {
     }
 
     createJointControls(joints: Joints) {
-        Object.keys(joints).forEach((name: string) => {
-            // Skip joints which should not be moved
-            if (joints[name].jointType === 'fixed') {
-                return;
-            }
+        if (this._isEmpty(this.controls.joints)) {
+            Object.keys(joints).forEach((name: string) => {
+                // Skip joints which should not be moved
+                if (joints[name].jointType === 'fixed') {
+                    return;
+                }
 
-            const limitMin = Number(joints[name].limit.lower);
-            const limitMax = Number(joints[name].limit.upper);
+                const limitMin = Number(joints[name].limit.lower);
+                const limitMax = Number(joints[name].limit.upper);
 
-            // Skip joint if the limits are not defined
-            if ( limitMin === 0 &&  limitMax === 0 ) {
-                return;
-            }
+                // Skip joint if the limits are not defined
+                if ( limitMin === 0 &&  limitMax === 0 ) {
+                    return;
+                }
 
-            const stepSize = ( limitMax - limitMin ) / 20;
-            const initValue = joints[name].jointValue[0];
+                const stepSize = ( limitMax - limitMin ) / 20;
+                const initValue = joints[name].jointValue[0];
 
-            this.controls.joints[name] = this._jointsFolder.add(
-                {[name]: initValue}, name, limitMin, limitMax, stepSize);
-        });
-        this._jointsFolder.open();
+                this.controls.joints[name] = this._jointsFolder.add(
+                    {[name]: initValue}, name, limitMin, limitMax, stepSize);
+            });
+            this._jointsFolder.open();
+        }
         return this.controls.joints;
     }
 }
