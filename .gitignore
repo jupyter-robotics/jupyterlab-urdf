@@ -138,5 +138,6 @@ dmypy.json
 
 # Other
 examples/nao*
+examples/src/nao*
 examples/tst*
 .jupyter_releaser_checkout/
