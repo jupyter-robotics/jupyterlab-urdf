@@ -55,7 +55,6 @@ export class URDFLoadingManager extends LoadingManager {
         }
         });
 
-        // TODO: needs review
         this._xacroLoader.workingPath = PageConfig.getBaseUrl() 
             + '/files' + this._workingPath; 
     }
