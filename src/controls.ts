@@ -1,15 +1,9 @@
 import { GUI } from "dat.gui";
 import { Color } from "three";
+import { URDFJoint } from "urdf-loader";
 
 interface Joints {
-    [name: string]: {
-        limit: {
-            lower: number,
-            upper: number
-        },
-        jointType: string,
-        jointValue: Array<1>
-    }
+    [name: string]: URDFJoint
 }
 
 export class URDFControls extends GUI {
@@ -113,8 +107,8 @@ export class URDFControls extends GUI {
                 return;
             }
 
-            const limitMin = joints[name].limit.lower;
-            const limitMax = joints[name].limit.upper;
+            const limitMin = Number(joints[name].limit.lower);
+            const limitMax = Number(joints[name].limit.upper);
 
             // Skip joint if the limits are not defined
             if ( limitMin === 0 &&  limitMax === 0 ) {

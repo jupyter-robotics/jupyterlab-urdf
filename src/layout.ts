@@ -1,24 +1,11 @@
 import { Message } from '@lumino/messaging';
 import { PanelLayout, Widget } from '@lumino/widgets';
+import { DocumentRegistry, DocumentModel } from '@jupyterlab/docregistry';
 
-import { 
-  DocumentRegistry,
-  DocumentModel
-} from '@jupyterlab/docregistry';
-
-import { PageConfig } from '@jupyterlab/coreutils';
-
-import { 
-  LoadingManager,
-  Vector2,
-  Color
-} from 'three';
-
-import URDFLoader from 'urdf-loader';
-import { XacroLoader } from 'xacro-parser';
-
+import { Vector2, Color } from 'three';
 import { URDFControls } from './controls';
 import { URDFRenderer } from './renderer';
+import { URDFLoadingManager } from './robot';
 
 interface URDFColors {
   sky: Color,
@@ -30,14 +17,10 @@ interface URDFColors {
  */
 export class URDFLayout extends PanelLayout {
   private _host: HTMLElement;
-  private _robotModel: any = null;
   private _controlsPanel: URDFControls;
   private _renderer: URDFRenderer;
   private _colors: URDFColors;
-  private _manager: LoadingManager;
-  private _loader: URDFLoader;
-  private _workingPath: string;
-  private _urdfString: string;
+  private _loader: URDFLoadingManager;
 
   /**
    * Construct a `URDFLayout`
@@ -56,11 +39,7 @@ export class URDFLayout extends PanelLayout {
     
     this._renderer = new URDFRenderer(this._colors.sky, this._colors.ground);
     this._controlsPanel = new URDFControls();
-
-    this._urdfString = '';
-    this._workingPath = '';
-    this._manager = new LoadingManager;
-    this._loader = new URDFLoader(this._manager);
+    this._loader = new URDFLoadingManager();
   }
 
   /**
@@ -98,62 +77,25 @@ export class URDFLayout extends PanelLayout {
   }
 
   updateURDF(urdfString: string): void {
-    this._robotModel = this._loader.parse(urdfString);
-    this._robotModel.rotation.x = -Math.PI / 2;
-    this._renderer.setRobot(this._robotModel);
+    this._loader.setRobot(urdfString);
+    this._renderer.setRobot(this._loader.robotModel);
   }
 
   setURDF(context: DocumentRegistry.IContext<DocumentModel>): void {
     // Default to parent directory of URDF file
-    if (!this._workingPath) {
-      const filePath = context.path;
-      const parentDir = filePath.substring(0, filePath.lastIndexOf('/'));
-      this.changeWorkingPath(parentDir);
-    }
+    const filePath = context.path;
+    const parentDir = filePath.substring(0, filePath.lastIndexOf('/'));
+    this._loader.setWorkingPath(parentDir);
 
-    this._urdfString = context.model.toString();
-    
-    let robotXML;
+    this._loader.onLoad = () => {
+      this._renderer.setRobot(this._loader.robotModel);
+      this._setControls();
+    };
 
-
-    if (context.path.endsWith('xacro')) {
-      const xacroLoader: any = new XacroLoader();
-      xacroLoader.workingPath = PageConfig.getBaseUrl() + 'files/';
-     
-      xacroLoader.parse(
-        context.model.toString(),
-        (xml: XMLDocument) => { 
-          robotXML = xml; 
-          console.log("XML", xml);
-          this._robotModel = this._loader.parse(robotXML);
-          this._robotModel.rotation.x = -Math.PI / 2;
-
-          this._renderer.setRobot(this._robotModel);
-          this._setControls();
-
-        },
-        (error: Error) => console.log(error)
-        );      
-    } else {
-
-      // Load robot model
-      this._robotModel = this._loader.parse(context.model.toString());
-
-
-      this._robotModel.rotation.x = -Math.PI / 2;
-
-      // TODO: redundant but necessary for files without any meshes
-      this._renderer.setRobot(this._robotModel);
-
-      this._manager.onLoad = () => {
-        this._renderer.setRobot(this._robotModel);
-      };
-
-      this._renderer.setSize(
-        this._renderer.domElement.clientWidth,
-        this._renderer.domElement.clientHeight
-      );
-
+    this._loader.setRobot(context.model.toString());
+  
+    if (this._loader.isReady) {
+      this._renderer.setRobot(this._loader.robotModel);
       this._setControls();
     }
   }
@@ -188,7 +130,7 @@ export class URDFLayout extends PanelLayout {
    * Set the callback functions for each of item in the controls panel
    */
   private _setControls(): void {
-    if (!this._robotModel) return;
+    if (!this._loader.isReady) return;
 
     this._setPathControls();
     this._setSceneControls();
@@ -200,12 +142,12 @@ export class URDFLayout extends PanelLayout {
    * render again.
    */
   private _setPathControls(): void {
-    const pathControl = this._controlsPanel.createWorkspaceControls(this._workingPath);
+    const pathControl = this._controlsPanel
+      .createWorkspaceControls(this._loader.workingPath);
     pathControl.onChange(
       (newPath: string = pathControl.object['Path']) => {
-        this.changeWorkingPath(newPath);
-        this.updateURDF(this._urdfString);
-        this._renderer.redraw();
+        this._loader.setWorkingPath(newPath);
+        this.updateURDF('');
       }
     );
   }
@@ -228,7 +170,8 @@ export class URDFLayout extends PanelLayout {
    * Set callback for each joint when the value changes in the controls panel.
    */
   private _setJointControls(): void {
-    const jointControl = this._controlsPanel.createJointControls(this._robotModel.joints);
+    const jointControl = this._controlsPanel
+      .createJointControls(this._loader.robotModel.joints);
     Object.keys(jointControl).forEach(
       (jointName: string) => {
         jointControl[jointName].onChange(
@@ -244,36 +187,8 @@ export class URDFLayout extends PanelLayout {
    * @param jointName - The name of the joint to be set
    */
   private _setJointValue(jointName: string, newValue: number): void {
-    this._robotModel.setJointValue(jointName, newValue);
-    this._renderer.redraw();
-  }
-
-  /**
-   * Changes the path to find mesh files described in the URDF
-   * 
-   * @param workingPath Directory path containing robot description folders
-   */
-  changeWorkingPath(workingPath: string): void {
-    if (!workingPath) return;
-
-    // To match '/this/format/path'
-    workingPath = (workingPath[0] !== '/') ? ('/' + workingPath) : workingPath;
-    workingPath = (workingPath[workingPath.length - 1] === '/') ?
-                   workingPath.slice(0, -1) : workingPath;
-
-    console.debug('[Manager]: Modify URL with prefix ', workingPath);
-    this._workingPath = workingPath;
-
-    this._manager.setURLModifier((url: string) => {
-      if (url.startsWith(workingPath)) {
-        console.debug('[Loader]:', url);
-        return '/files' + url;
-      } else {
-        const modifiedURL = '/files' + workingPath + url;
-        console.debug('[Loader]:', modifiedURL);
-        return modifiedURL;
-      }
-    });
+    this._loader.robotModel.setJointValue(jointName, newValue);
+    this._renderer.setRobot(this._loader.robotModel);
   }
 
   /**
@@ -303,6 +218,10 @@ export class URDFLayout extends PanelLayout {
   protected onAfterAttach(msg: Message): void {
     this._renderer.redraw();
     this._host.appendChild(this._renderer.domElement);
+    this._renderer.setSize(
+      this._renderer.domElement.clientWidth,
+      this._renderer.domElement.clientHeight
+    );
     this._host.appendChild(this._controlsPanel.domElement);
   }
 
