@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { URDFRobot } from 'urdf-loader';
 
 /**
  *   THREE.js          ROS URDF
@@ -146,7 +147,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
         this.redraw();
     }
 
-    setRobot(robot: any): void {
+    setRobot(robot: URDFRobot): void {
         if (this._robotIndex < 0) {
             this._scene.add(robot);
             this._robotIndex = this._scene.children.map(i => i.name).indexOf(robot.name);
