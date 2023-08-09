@@ -8,8 +8,8 @@ import { URDFRenderer } from './renderer';
 import { URDFLoadingManager } from './robot';
 
 interface URDFColors {
-  sky: Color,
-  ground: Color
+  sky: Color;
+  ground: Color;
 }
 
 /**
@@ -33,10 +33,10 @@ export class URDFLayout extends PanelLayout {
     this._host = document.createElement('div');
 
     this._colors = {
-      sky:    this._getThemeColor('--jp-layout-color1') || new Color(0x263238),
+      sky: this._getThemeColor('--jp-layout-color1') || new Color(0x263238),
       ground: this._getThemeColor('--jp-layout-color2') || new Color(0x263238)
     };
-    
+
     this._renderer = new URDFRenderer(this._colors.sky, this._colors.ground);
     this._controlsPanel = new URDFControls();
     this._loader = new URDFLoadingManager();
@@ -93,7 +93,7 @@ export class URDFLayout extends PanelLayout {
     };
 
     this._loader.setRobot(context.model.toString());
-  
+
     if (this._loader.isReady) {
       this._renderer.setRobot(this._loader.robotModel);
       this._setControls();
@@ -101,7 +101,8 @@ export class URDFLayout extends PanelLayout {
   }
 
   private _getThemeColor(colorName: string): Color | void {
-    const colorString = window.getComputedStyle(document.documentElement)
+    const colorString = window
+      .getComputedStyle(document.documentElement)
       .getPropertyValue(colorName);
     return this._parseColor(colorString);
   }
@@ -114,9 +115,8 @@ export class URDFLayout extends PanelLayout {
     } else {
       if (color.length === 4) {
         // Shorthand hex value such as '#eee'
-        const expandedColor = color[1] + color[1] +
-          color[2] + color[2] +
-          color[3] + color[3];
+        const expandedColor =
+          color[1] + color[1] + color[2] + color[2] + color[3] + color[3];
         parsedColor = new Color(Number('0x' + expandedColor));
       } else if (color.length === 7) {
         // Long hex value such as '#ffffff'
@@ -138,18 +138,17 @@ export class URDFLayout extends PanelLayout {
   }
 
   /**
-   * Set callback for changing working directory to given user input and 
+   * Set callback for changing working directory to given user input and
    * render again.
    */
   private _setPathControls(): void {
-    const pathControl = this._controlsPanel
-      .createWorkspaceControls(this._loader.workingPath);
-    pathControl.onChange(
-      (newPath: string = pathControl.object['Path']) => {
-        this._loader.setWorkingPath(newPath);
-        this.updateURDF('');
-      }
+    const pathControl = this._controlsPanel.createWorkspaceControls(
+      this._loader.workingPath
     );
+    pathControl.onChange((newPath: string = pathControl.object['Path']) => {
+      this._loader.setWorkingPath(newPath);
+      this.updateURDF('');
+    });
   }
 
   /**
@@ -157,28 +156,32 @@ export class URDFLayout extends PanelLayout {
    */
   private _setSceneControls(): void {
     const sceneControl = this._controlsPanel.createSceneControls(
-      this._colors.sky, this._colors.ground);
-    sceneControl.background.onChange(
-      (newColor: number[]) => this._renderer.setSkyColor(newColor));
-    sceneControl.grid.onChange(
-      (newColor: number[]) => this._renderer.setGroundColor(newColor));
-    sceneControl.height.onChange(
-      (newHeight: number) => this._renderer.setGridHeight(newHeight));
+      this._colors.sky,
+      this._colors.ground
+    );
+    sceneControl.background.onChange((newColor: number[]) =>
+      this._renderer.setSkyColor(newColor)
+    );
+    sceneControl.grid.onChange((newColor: number[]) =>
+      this._renderer.setGroundColor(newColor)
+    );
+    sceneControl.height.onChange((newHeight: number) =>
+      this._renderer.setGridHeight(newHeight)
+    );
   }
 
   /**
    * Set callback for each joint when the value changes in the controls panel.
    */
   private _setJointControls(): void {
-    const jointControl = this._controlsPanel
-      .createJointControls(this._loader.robotModel.joints);
-    Object.keys(jointControl).forEach(
-      (jointName: string) => {
-        jointControl[jointName].onChange(
-          (newValue = 0) => { this._setJointValue(jointName, newValue); }
-        );
-      }
+    const jointControl = this._controlsPanel.createJointControls(
+      this._loader.robotModel.joints
     );
+    Object.keys(jointControl).forEach((jointName: string) => {
+      jointControl[jointName].onChange((newValue = 0) => {
+        this._setJointValue(jointName, newValue);
+      });
+    });
   }
 
   /**
@@ -229,11 +232,12 @@ export class URDFLayout extends PanelLayout {
     const rect = this.parent?.node.getBoundingClientRect();
     this._host.style.height = rect?.height + 'px';
 
-    const currentSize = this._renderer.getSize(new Vector2);
+    const currentSize = this._renderer.getSize(new Vector2());
     this._renderer.setSize(
-      rect?.width || currentSize.width, 
-      rect?.height || currentSize.height);
-    
+      rect?.width || currentSize.width,
+      rect?.height || currentSize.height
+    );
+
     this._renderer.redraw();
   }
 }

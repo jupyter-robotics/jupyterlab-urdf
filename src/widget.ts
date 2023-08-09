@@ -46,7 +46,7 @@ export class UrdfPanel extends Panel {
 
     if (!this._context.model.toString()) {
       this._context.model.fromString(
-'<?xml version="1.0"?> \n \
+        '<?xml version="1.0"?> \n \
 <robot name="robot"> \n \
     <link name="sphere"> \n \
         <visual> \n \
