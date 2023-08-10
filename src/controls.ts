@@ -32,11 +32,14 @@ export class URDFControls extends GUI {
     this.domElement.setAttribute('class', 'dg main urdf-gui');
 
     this._workspaceFolder = this.addFolder('Workspace');
-    this._workspaceFolder.domElement.setAttribute('class', 'dg workspace-folder');
-    
+    this._workspaceFolder.domElement.setAttribute(
+      'class',
+      'dg workspace-folder'
+    );
+
     this._sceneFolder = this.addFolder('Scene');
     this._sceneFolder.domElement.setAttribute('class', 'dg scene-folder');
-    
+
     this._jointsFolder = this.addFolder('Joints');
     this._jointsFolder.domElement.setAttribute('class', 'dg joints-folder');
   }
