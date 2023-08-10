@@ -24,8 +24,8 @@ class XacroLoaderWithPath extends XacroLoader {
 export class URDFLoadingManager extends LoadingManager {
   private _urdfLoader: URDFLoader;
   private _xacroLoader: XacroLoaderWithPath;
-  private _workingPath: string = '';
-  private _robotString: string = '';
+  private _workingPath = '';
+  private _robotString = '';
   private _robotModel = {} as URDFRobot;
   private _isReady = false;
 
@@ -61,7 +61,7 @@ export class URDFLoadingManager extends LoadingManager {
       PageConfig.getBaseUrl() + '/files' + this._workingPath;
   }
 
-  setRobot(robotString: string = ''): void {
+  setRobot(robotString = ''): void {
     this._robotString = robotString || this._robotString;
 
     if (robotString.includes('xacro')) {

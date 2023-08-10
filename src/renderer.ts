@@ -18,7 +18,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   private _controls: OrbitControls;
   private _colorSky = new THREE.Color();
   private _colorGround = new THREE.Color();
-  private _robotIndex: number = -1;
+  private _robotIndex = -1;
 
   constructor(
     colorSky = new THREE.Color(0x263238),
@@ -160,7 +160,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     this.redraw();
   }
 
-  setGridHeight(height: number = 0): void {
+  setGridHeight(height = 0): void {
     const gridIndex = this._scene.children
       .map(i => i.type)
       .indexOf('GridHelper');

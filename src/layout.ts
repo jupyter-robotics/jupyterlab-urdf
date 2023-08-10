@@ -7,7 +7,7 @@ import { URDFControls } from './controls';
 import { URDFRenderer } from './renderer';
 import { URDFLoadingManager } from './robot';
 
-interface URDFColors {
+interface IURDFColors {
   sky: Color;
   ground: Color;
 }
@@ -19,7 +19,7 @@ export class URDFLayout extends PanelLayout {
   private _host: HTMLElement;
   private _controlsPanel: URDFControls;
   private _renderer: URDFRenderer;
-  private _colors: URDFColors;
+  private _colors: IURDFColors;
   private _loader: URDFLoadingManager;
 
   /**
@@ -130,7 +130,9 @@ export class URDFLayout extends PanelLayout {
    * Set the callback functions for each of item in the controls panel
    */
   private _setControls(): void {
-    if (!this._loader.isReady) return;
+    if (!this._loader.isReady) {
+      return;
+    }
 
     this._setPathControls();
     this._setSceneControls();
