@@ -2,7 +2,7 @@ import { GUI } from 'dat.gui';
 import { Color } from 'three';
 import { URDFJoint } from 'urdf-loader';
 
-interface Joints {
+interface IJoints {
   [name: string]: URDFJoint;
 }
 
@@ -10,7 +10,7 @@ export class URDFControls extends GUI {
   private _workspaceFolder: any;
   private _sceneFolder: any;
   private _jointsFolder: any;
-  private _workingPath: string = '';
+  private _workingPath = '';
 
   controls: any = {
     path: {},
@@ -56,16 +56,18 @@ export class URDFControls extends GUI {
     return this._jointsFolder;
   }
 
-  private _isEmpty(obj: Object): Boolean {
+  private _isEmpty(obj: object): boolean {
     return Object.keys(obj).length === 0;
   }
 
-  createWorkspaceControls(workingPath: string = '') {
+  createWorkspaceControls(workingPath = '') {
     if (this._isEmpty(this.controls.path)) {
       this._workingPath = workingPath;
       const workspaceSettings = {
         Path: this._workingPath,
-        'set path': () => {}
+        'set path': () => {
+          console.debug('set path');
+        }
       };
       this._workspaceFolder.add(workspaceSettings, 'Path');
       this.controls.path = this._workspaceFolder.add(
@@ -125,7 +127,7 @@ export class URDFControls extends GUI {
     return colorArray;
   }
 
-  createJointControls(joints: Joints) {
+  createJointControls(joints: IJoints) {
     if (this._isEmpty(this.controls.joints)) {
       Object.keys(joints).forEach((name: string) => {
         // Skip joints which should not be moved
