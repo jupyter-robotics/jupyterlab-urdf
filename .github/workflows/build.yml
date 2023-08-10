@@ -108,7 +108,8 @@ jobs:
     - name: Install the extension
       run: |
         set -eux
-        python -m pip install "jupyterlab>=4.0.0,<5" jupyterlab_urdf*.whl
+        python -m pip install "jupyterlab==4.0.2" jupyterlab_urdf*.whl
+        pip list | grep jupyter
         jupyter labextension list
 
     - name: Install dependencies
