@@ -5,122 +5,126 @@
 */
 
 :root {
-    --gui-color-background: var(--jp-layout-color2);
-    --gui-color-title-bg: var(--jp-layout-color3);
-    --gui-color-input-bg: color-mix(in hsl, var(--jp-layout-color1), var(--jp-layout-color2));
-    --gui-color-font: var(--jp-ui-font-color1);
-    --gui-color-accent: var(--jp-brand-color0);
-    --gui-transparent: rgba(0, 0, 0, 0);
+  --gui-color-background: var(--jp-layout-color2);
+  --gui-color-title-bg: var(--jp-layout-color3);
+  --gui-color-input-bg: color-mix(
+    in hsl,
+    var(--jp-layout-color1),
+    var(--jp-layout-color2)
+  );
+  --gui-color-font: var(--jp-ui-font-color1);
+  --gui-color-accent: var(--jp-brand-color0);
+  --gui-transparent: rgba(0, 0, 0, 0);
 }
 
 .jp-urdf-canvas .lm-Widget canvas {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 /* Dat.GUI */
 .urdf-gui {
-    background: var(--gui-color-background);
-    color: var(--gui-color-font);
-    border: none;
-    box-sizing: border-box;
+  background: var(--gui-color-background);
+  color: var(--gui-color-font);
+  border: none;
+  box-sizing: border-box;
 }
 
 .urdf-gui li.folder {
-    /* border: 0.4em solid var(--gui-transparent) !important; */
-    border-left: 0.4em solid black !important;
-    border-right: 0.4em solid black;
+  /* border: 0.4em solid var(--gui-transparent) !important; */
+  border-left: 0.4em solid black !important;
+  border-right: 0.4em solid black;
 }
 
 .urdf-gui li.title {
-    margin: 0 0 0.5em 0 !important;
+  margin: 0 0 0.5em 0 !important;
 }
 
 .urdf-gui .cr.function:hover {
-    background: var(--gui-transparent) !important;
+  background: var(--gui-transparent) !important;
 }
 
 .urdf-gui .cr.function .property-name {
-    background: var(--gui-color-input-bg);
-    border: 1px solid var(--gui-color-title-bg);
-    border-radius: 3px;
-    text-align: center;
-    max-height: 2em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  background: var(--gui-color-input-bg);
+  border: 1px solid var(--gui-color-title-bg);
+  border-radius: 3px;
+  text-align: center;
+  max-height: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .urdf-gui .cr.function .property-name:hover {
-    background: var(--gui-color-accent);
-    border: 1px solid var(--gui-color-accent);
+  background: var(--gui-color-accent);
+  border: 1px solid var(--gui-color-accent);
 }
 
 .urdf-gui .cr.color,
 .urdf-gui .cr.number,
 .urdf-gui .cr.function,
 .urdf-gui .cr.string {
-    background: var(--gui-color-background);
-    color: var(--gui-color-font);
-    border: none !important;
-    text-shadow: none;
-    padding: 0.2em 0.4em 0.2em 0.4em;
+  background: var(--gui-color-background);
+  color: var(--gui-color-font);
+  border: none !important;
+  text-shadow: none;
+  padding: 0.2em 0.4em 0.2em 0.4em;
 }
 
-.urdf-gui .cr.string input[type="text"],
-.urdf-gui .cr.number input[type="text"],
-.urdf-gui .cr.color input[type="text"] {
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 1px solid var(--gui-color-title-bg) !important;
-    border-radius: 3px;
-    background: var(--gui-color-input-bg);
-    text-align: center;
-    text-shadow: none;
+.urdf-gui .cr.string input[type='text'],
+.urdf-gui .cr.number input[type='text'],
+.urdf-gui .cr.color input[type='text'] {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 1px solid var(--gui-color-title-bg) !important;
+  border-radius: 3px;
+  background: var(--gui-color-input-bg);
+  text-align: center;
+  text-shadow: none;
 }
 
-.urdf-gui .cr.string input[type="text"],
-.urdf-gui .cr.number input[type="text"] {
-    color: var(--gui-color-font) !important;
+.urdf-gui .cr.string input[type='text'],
+.urdf-gui .cr.number input[type='text'] {
+  color: var(--gui-color-font) !important;
 }
 
-.urdf-gui .cr.string input[type="text"]:hover,
-.urdf-gui .cr.number input[type="text"]:hover,
-.urdf-gui .cr.string input[type="text"]:focus,
-.urdf-gui .cr.number input[type="text"]:focus {
-    background: var(--gui-color-title-bg);
+.urdf-gui .cr.string input[type='text']:hover,
+.urdf-gui .cr.number input[type='text']:hover,
+.urdf-gui .cr.string input[type='text']:focus,
+.urdf-gui .cr.number input[type='text']:focus {
+  background: var(--gui-color-title-bg);
 }
 
 .urdf-gui .closed li:not(.title) {
-    padding: 0;
+  padding: 0;
 }
 
 .urdf-gui .c .slider {
-    margin: 0.5em 0 0 0;
-    height: 1em;
-    background: var(--gui-color-background) !important;
-    border: 1px solid var(--gui-color-title-bg);
-    border-radius: 3px;
-    box-sizing: border-box;
+  margin: 0.5em 0 0 0;
+  height: 1em;
+  background: var(--gui-color-background) !important;
+  border: 1px solid var(--gui-color-title-bg);
+  border-radius: 3px;
+  box-sizing: border-box;
 }
 
 .urdf-gui .c .slider:hover {
-    background: var(--gui-color-background) !important;
+  background: var(--gui-color-background) !important;
 }
 
 .urdf-gui .c .slider-fg {
-    background: var(--gui-color-font) !important;
-    border: 1px solid var(--gui-color-font);
-    border-radius: 3px;
-    margin: -1px;
-    opacity: 50%;
+  background: var(--gui-color-font) !important;
+  border: 1px solid var(--gui-color-font);
+  border-radius: 3px;
+  margin: -1px;
+  opacity: 50%;
 }
 
 .urdf-gui .joints-folder {
-    border-top: 0.4em solid black;
+  border-top: 0.4em solid black;
 }
 
-.urdf-gui .joints-folder ul{
-    max-height: 50vh;
-    overflow: scroll;
+.urdf-gui .joints-folder ul {
+  max-height: 50vh;
+  overflow: scroll;
 }
