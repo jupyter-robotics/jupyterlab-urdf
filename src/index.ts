@@ -20,9 +20,9 @@ import { Menu } from '@lumino/widgets';
 
 import { Token } from '@lumino/coreutils';
 
-import { UrdfWidget } from './widget';
+import { URDFWidget } from './widget';
 
-import { UrdfWidgetFactory } from './factory';
+import { URDFWidgetFactory } from './factory';
 
 import { urdf_icon } from './icons';
 
@@ -33,7 +33,7 @@ import { IEditorLanguageRegistry } from '@jupyterlab/codemirror';
 const FACTORY = 'URDF Widget Factory';
 
 // Export token so other extensions can require it
-export const IUrdfTracker = new Token<IWidgetTracker<UrdfWidget>>(
+export const IURDFTracker = new Token<IWidgetTracker<URDFWidget>>(
   'urdf-tracker'
 );
 
@@ -65,7 +65,7 @@ const extension: JupyterFrontEndPlugin<void> = {
 
     // Tracker
     const namespace = 'jupyterlab-urdf';
-    const tracker = new WidgetTracker<UrdfWidget>({ namespace });
+    const tracker = new WidgetTracker<URDFWidget>({ namespace });
 
     // State restoration: reopen document if it was open previously
     if (restorer) {
@@ -80,7 +80,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     }
 
     // Create widget factory so that manager knows about widget
-    const widgetFactory = new UrdfWidgetFactory({
+    const widgetFactory = new URDFWidgetFactory({
       name: FACTORY,
       fileTypes: ['urdf'],
       defaultFor: ['urdf']

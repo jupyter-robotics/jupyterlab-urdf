@@ -13,10 +13,10 @@ import { Signal } from '@lumino/signaling';
 import { URDFLayout } from './layout';
 
 /**
- * UrdfWidget: widget that represents the view for a urdf (file).
+ * URDFWidget: widget that represents the view for a urdf (file).
  */
-export class UrdfWidget extends DocumentWidget<UrdfPanel, DocumentModel> {
-  constructor(options: DocumentWidget.IOptions<UrdfPanel, DocumentModel>) {
+export class URDFWidget extends DocumentWidget<URDFPanel, DocumentModel> {
+  constructor(options: DocumentWidget.IOptions<URDFPanel, DocumentModel>) {
     super(options);
   }
 
@@ -28,13 +28,13 @@ export class UrdfWidget extends DocumentWidget<UrdfPanel, DocumentModel> {
 }
 
 /**
- * UrdfPanel: widget that contains the main view of the UrdfWidget.
+ * URDFPanel: widget that contains the main view of the URDFWidget.
  */
-export class UrdfPanel extends Panel {
+export class URDFPanel extends Panel {
   private _context: DocumentRegistry.IContext<DocumentModel>;
 
   /**
-   * Construct a UrdfPanel
+   * Construct a URDFPanel
    *
    * @param context - The documents context
    */

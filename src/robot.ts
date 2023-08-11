@@ -79,6 +79,10 @@ export class URDFLoadingManager extends LoadingManager {
     }
   }
 
+  dispose(): void {
+    this._robotModel = {} as URDFRobot;
+  }
+
   get robotModel() {
     return this._robotModel;
   }

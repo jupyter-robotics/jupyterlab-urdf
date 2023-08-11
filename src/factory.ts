@@ -4,26 +4,26 @@ import {
   DocumentModel
 } from '@jupyterlab/docregistry';
 
-import { UrdfWidget, UrdfPanel } from './widget';
+import { URDFWidget, URDFPanel } from './widget';
 
 /**
- * A widget factory to create new instances of UrdfWidgets
+ * A widget factory to create new instances of URDFWidgets
  */
-export class UrdfWidgetFactory extends ABCWidgetFactory<
-  UrdfWidget,
+export class URDFWidgetFactory extends ABCWidgetFactory<
+  URDFWidget,
   DocumentModel
 > {
   constructor(options: DocumentRegistry.IWidgetFactoryOptions) {
     super(options);
   }
 
-  // Create new UrdfWidget given a context (file info)
+  // Create new URDFWidget given a context (file info)
   protected createNewWidget(
     context: DocumentRegistry.IContext<DocumentModel>
-  ): UrdfWidget {
-    return new UrdfWidget({
+  ): URDFWidget {
+    return new URDFWidget({
       context,
-      content: new UrdfPanel(context)
+      content: new URDFPanel(context)
     });
   }
 }
