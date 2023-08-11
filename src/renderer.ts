@@ -27,9 +27,9 @@ export class URDFRenderer extends THREE.WebGLRenderer {
 
   /**
    * Creates a renderer to manage the scene elements
-   * 
+   *
    * @param colorSky - The color of the scene background
-   * @param colorGround - The color of the ground (grid) 
+   * @param colorGround - The color of the ground (grid)
    */
   constructor(
     colorSky = new THREE.Color(0x263238),
@@ -57,7 +57,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   }
 
   /**
-   * Initializes the camera 
+   * Initializes the camera
    */
   private _initCamera(): void {
     this._camera.position.set(4, 4, 4);
@@ -195,7 +195,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
 
   /**
    * Changes the height of the grid in the vertical axis (y-axis for three.js)
-   * 
+   *
    * @param height - The height to shift the grid to
    */
   setGridHeight(height = 0): void {
@@ -208,8 +208,8 @@ export class URDFRenderer extends THREE.WebGLRenderer {
 
   /**
    * Adds a robot to the scene or updates the existing robot
-   * 
-   * @param robot 
+   *
+   * @param robot
    */
   setRobot(robot: URDFRobot): void {
     if (this._robotIndex < 0) {

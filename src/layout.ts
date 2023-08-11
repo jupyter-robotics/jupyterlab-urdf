@@ -84,7 +84,7 @@ export class URDFLayout extends PanelLayout {
 
   /**
    * Updates the viewer with any new changes on the file
-   * 
+   *
    * @param urdfString - The contents of the file with the new changes
    */
   updateURDF(urdfString: string): void {
@@ -94,7 +94,7 @@ export class URDFLayout extends PanelLayout {
 
   /**
    * Sets the robot model initially and configures loader with default values
-   * 
+   *
    * @param context - Contains the URDF file and its parameters
    */
   setURDF(context: DocumentRegistry.IContext<DocumentModel>): void {
@@ -118,7 +118,7 @@ export class URDFLayout extends PanelLayout {
 
   /**
    * Retrieves the values for any color variable declared in CSS
-   * 
+   *
    * @param colorName - The variable name of the color. Ex: '--jp-layout-color1'
    * @returns - The values of the color as a three.js Color
    */
@@ -131,7 +131,7 @@ export class URDFLayout extends PanelLayout {
 
   /**
    * Converts keyword or hex color definitions into three.js Color
-   * 
+   *
    * @param color - A color string such as: 'red', '#aaa', or '#232323'
    * @returns - The same color transformed to a three.js Color
    */
