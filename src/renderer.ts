@@ -1,5 +1,7 @@
 import * as THREE from 'three';
+
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+
 import { URDFRobot } from 'urdf-loader';
 
 /**
@@ -12,6 +14,9 @@ import { URDFRobot } from 'urdf-loader';
  *   Z
  */
 
+/**
+ * URDFRenderer: a renderer to manage the view of a scene with a robot
+ */
 export class URDFRenderer extends THREE.WebGLRenderer {
   private _scene: THREE.Scene;
   private _camera: THREE.PerspectiveCamera;
@@ -20,6 +25,12 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   private _colorGround = new THREE.Color();
   private _robotIndex = -1;
 
+  /**
+   * Creates a renderer to manage the scene elements
+   * 
+   * @param colorSky - The color of the scene background
+   * @param colorGround - The color of the ground (grid) 
+   */
   constructor(
     colorSky = new THREE.Color(0x263238),
     colorGround = new THREE.Color(0x263238)
@@ -45,11 +56,17 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     this._initControls();
   }
 
+  /**
+   * Initializes the camera 
+   */
   private _initCamera(): void {
     this._camera.position.set(4, 4, 4);
     this._camera.lookAt(0, 0, 0);
   }
 
+  /**
+   * Initializes the orbital controls
+   */
   private _initControls(): void {
     this._controls.rotateSpeed = 2.0;
     this._controls.zoomSpeed = 5;
@@ -61,6 +78,9 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     this._controls.addEventListener('change', () => this.redraw());
   }
 
+  /**
+   * Initializes the scene
+   */
   private _initScene(): void {
     this._scene.background = this._colorSky;
     this._scene.up = new THREE.Vector3(0, 0, 1); // Z is up
@@ -69,7 +89,11 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     this._addLights();
   }
 
+  /**
+   * Adds a plane representing the ground to the scene
+   */
   private _addGround(): void {
+    // TODO: fix shadows
     const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(40, 40),
       new THREE.ShadowMaterial({ opacity: 0.5 })
@@ -80,6 +104,9 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     this._scene.add(ground);
   }
 
+  /**
+   * Adds a grid to the scene with ground color given to the constructor()
+   */
   private _addGrid(): void {
     const grid = new THREE.GridHelper(
       50,
@@ -91,6 +118,9 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     this._scene.add(grid);
   }
 
+  /**
+   * Adds three lights to the scene
+   */
   private _addLights(): void {
     const directionalLight = new THREE.DirectionalLight(0xffffff, 2.0);
     directionalLight.castShadow = true;
@@ -116,6 +146,9 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     this._scene.add(hemisphereLight);
   }
 
+  /**
+   * Updates the hemisphere light to reflect the sky and ground colors
+   */
   private _updateLights(): void {
     const hemisphereLight = new THREE.HemisphereLight(
       this._colorSky,
@@ -160,6 +193,11 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     this.redraw();
   }
 
+  /**
+   * Changes the height of the grid in the vertical axis (y-axis for three.js)
+   * 
+   * @param height - The height to shift the grid to
+   */
   setGridHeight(height = 0): void {
     const gridIndex = this._scene.children
       .map(i => i.type)
@@ -168,6 +206,11 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     this.redraw();
   }
 
+  /**
+   * Adds a robot to the scene or updates the existing robot
+   * 
+   * @param robot 
+   */
   setRobot(robot: URDFRobot): void {
     if (this._robotIndex < 0) {
       this._scene.add(robot);
@@ -180,6 +223,9 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     this.redraw();
   }
 
+  /**
+   * Refreshes the viewer by re-rendering the scene and its elements
+   */
   redraw(): void {
     this.render(this._scene, this._camera);
   }
