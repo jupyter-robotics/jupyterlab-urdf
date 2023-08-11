@@ -1,10 +1,15 @@
 import { Message } from '@lumino/messaging';
+
 import { PanelLayout, Widget } from '@lumino/widgets';
+
 import { DocumentRegistry, DocumentModel } from '@jupyterlab/docregistry';
 
 import { Vector2, Color } from 'three';
+
 import { URDFControls } from './controls';
+
 import { URDFRenderer } from './renderer';
+
 import { URDFLoadingManager } from './robot';
 
 interface IURDFColors {
@@ -13,7 +18,7 @@ interface IURDFColors {
 }
 
 /**
- * A URDF layout to host the URDF viewer
+ * URDFLayout: A layout panel to host the URDF viewer
  */
 export class URDFLayout extends PanelLayout {
   private _host: HTMLElement;
@@ -47,6 +52,7 @@ export class URDFLayout extends PanelLayout {
    */
   dispose(): void {
     this._renderer.dispose();
+    this._loader.dispose();
     super.dispose();
   }
 
@@ -76,11 +82,21 @@ export class URDFLayout extends PanelLayout {
     return;
   }
 
+  /**
+   * Updates the viewer with any new changes on the file
+   * 
+   * @param urdfString - The contents of the file with the new changes
+   */
   updateURDF(urdfString: string): void {
     this._loader.setRobot(urdfString);
     this._renderer.setRobot(this._loader.robotModel);
   }
 
+  /**
+   * Sets the robot model initially and configures loader with default values
+   * 
+   * @param context - Contains the URDF file and its parameters
+   */
   setURDF(context: DocumentRegistry.IContext<DocumentModel>): void {
     // Default to parent directory of URDF file
     const filePath = context.path;
@@ -100,6 +116,12 @@ export class URDFLayout extends PanelLayout {
     }
   }
 
+  /**
+   * Retrieves the values for any color variable declared in CSS
+   * 
+   * @param colorName - The variable name of the color. Ex: '--jp-layout-color1'
+   * @returns - The values of the color as a three.js Color
+   */
   private _getThemeColor(colorName: string): Color | void {
     const colorString = window
       .getComputedStyle(document.documentElement)
@@ -107,6 +129,12 @@ export class URDFLayout extends PanelLayout {
     return this._parseColor(colorString);
   }
 
+  /**
+   * Converts keyword or hex color definitions into three.js Color
+   * 
+   * @param color - A color string such as: 'red', '#aaa', or '#232323'
+   * @returns - The same color transformed to a three.js Color
+   */
   private _parseColor(color: string): Color | void {
     let parsedColor;
     if (color[0] !== '#') {
@@ -230,6 +258,9 @@ export class URDFLayout extends PanelLayout {
     this._host.appendChild(this._controlsPanel.domElement);
   }
 
+  /**
+   * Sets the size of the rendered view to match the host window size
+   */
   private _resizeWorkspace(): void {
     const rect = this.parent?.node.getBoundingClientRect();
     this._host.style.height = rect?.height + 'px';

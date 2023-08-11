@@ -7,7 +7,7 @@ import {
 import { URDFWidget, URDFPanel } from './widget';
 
 /**
- * A widget factory to create new instances of URDFWidgets
+ * URDFWidgetFactory: a widget factory to create new instances of URDFWidgets
  */
 export class URDFWidgetFactory extends ABCWidgetFactory<
   URDFWidget,
@@ -17,7 +17,9 @@ export class URDFWidgetFactory extends ABCWidgetFactory<
     super(options);
   }
 
-  // Create new URDFWidget given a context (file info)
+  /**
+   * Create new URDFWidget given a context (file info)
+   */
   protected createNewWidget(
     context: DocumentRegistry.IContext<DocumentModel>
   ): URDFWidget {

@@ -44,6 +44,7 @@ export class URDFPanel extends Panel {
     this.addClass('jp-urdf-canvas'); // for css styling
     this._context = context;
 
+    // Add a basic robot template for new files
     if (!this._context.model.toString()) {
       this._context.model.fromString(
         '<?xml version="1.0"?> \n \
@@ -68,7 +69,9 @@ export class URDFPanel extends Panel {
     });
   }
 
-  // Dispose of resources held by widget
+  /**
+   * Dispose of resources held by widget
+   */
   dispose(): void {
     if (this.isDisposed) {
       return;

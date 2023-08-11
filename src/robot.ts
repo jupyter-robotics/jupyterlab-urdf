@@ -1,6 +1,9 @@
 import URDFLoader, { URDFRobot } from 'urdf-loader';
+
 import { XacroLoader } from 'xacro-parser';
+
 import { PageConfig } from '@jupyterlab/coreutils';
+
 import { LoadingManager } from 'three';
 
 /**
@@ -13,6 +16,13 @@ import { LoadingManager } from 'three';
  *   Z
  */
 
+/**
+ * XacroLoaderWithPath: a XacroLoader with a workingPath property
+ * 
+ * Note: XacroLoader already has a workingPath property because it is derived
+ * from XacroParser, but it is not possible to modify directly. Thus, 
+ * workingPath is overwritten with this class.
+ */
 class XacroLoaderWithPath extends XacroLoader {
   workingPath = '';
 
@@ -21,6 +31,9 @@ class XacroLoaderWithPath extends XacroLoader {
   }
 }
 
+/**
+ * URDFLoadingManager: a loading manager for URDF files
+ */
 export class URDFLoadingManager extends LoadingManager {
   private _urdfLoader: URDFLoader;
   private _xacroLoader: XacroLoaderWithPath;
@@ -29,12 +42,20 @@ export class URDFLoadingManager extends LoadingManager {
   private _robotModel = {} as URDFRobot;
   private _isReady = false;
 
+  /**
+   * Creates the manager and initializes the URDF and XACRO loaders
+   */
   constructor() {
     super();
     this._urdfLoader = new URDFLoader(this);
     this._xacroLoader = new XacroLoaderWithPath();
   }
 
+  /**
+   * Sets the path where the loaders will search for robot description files
+   * 
+   * @param workingPath - The path to the robot files
+   */
   setWorkingPath(workingPath: string): void {
     // To match '/this/format/path'
     workingPath = workingPath[0] !== '/' ? '/' + workingPath : workingPath;
@@ -61,6 +82,11 @@ export class URDFLoadingManager extends LoadingManager {
       PageConfig.getBaseUrl() + '/files' + this._workingPath;
   }
 
+  /**
+   * Creates a robot model from a given URDF 
+   * 
+   * @param robotString - The robot description in the URDF file
+   */
   setRobot(robotString = ''): void {
     this._robotString = robotString || this._robotString;
 
@@ -79,18 +105,30 @@ export class URDFLoadingManager extends LoadingManager {
     }
   }
 
+  /**
+   * Resets the robot model
+   */
   dispose(): void {
     this._robotModel = {} as URDFRobot;
   }
 
+  /**
+   * Retrieves the robot model
+   */
   get robotModel() {
     return this._robotModel;
   }
 
+  /**
+   * Retrieves the working path
+   */
   get workingPath() {
     return this._workingPath;
   }
 
+  /**
+   * Checks if the robot model has finished loading
+   */
   get isReady() {
     this._isReady = !(Object.keys(this._robotModel).length === 0);
     return this._isReady;
