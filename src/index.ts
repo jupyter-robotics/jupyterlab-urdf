@@ -32,7 +32,7 @@ import { IEditorLanguageRegistry } from '@jupyterlab/codemirror';
 // Name of the factory that creates the URDF widgets
 const FACTORY = 'URDF Widget Factory';
 
-/** 
+/**
  * Export token so other extensions can require it
  */
 export const IURDFTracker = new Token<IWidgetTracker<URDFWidget>>(

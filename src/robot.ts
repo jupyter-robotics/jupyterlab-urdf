@@ -18,9 +18,9 @@ import { LoadingManager } from 'three';
 
 /**
  * XacroLoaderWithPath: a XacroLoader with a workingPath property
- * 
+ *
  * Note: XacroLoader already has a workingPath property because it is derived
- * from XacroParser, but it is not possible to modify directly. Thus, 
+ * from XacroParser, but it is not possible to modify directly. Thus,
  * workingPath is overwritten with this class.
  */
 class XacroLoaderWithPath extends XacroLoader {
@@ -53,7 +53,7 @@ export class URDFLoadingManager extends LoadingManager {
 
   /**
    * Sets the path where the loaders will search for robot description files
-   * 
+   *
    * @param workingPath - The path to the robot files
    */
   setWorkingPath(workingPath: string): void {
@@ -83,8 +83,8 @@ export class URDFLoadingManager extends LoadingManager {
   }
 
   /**
-   * Creates a robot model from a given URDF 
-   * 
+   * Creates a robot model from a given URDF
+   *
    * @param robotString - The robot description in the URDF file
    */
   setRobot(robotString = ''): void {

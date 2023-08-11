@@ -9,7 +9,7 @@ interface IJoints {
 }
 
 /**
- * URDFControls: a GUI panel for controlling the viewer settings and 
+ * URDFControls: a GUI panel for controlling the viewer settings and
  * the robot joints
  */
 export class URDFControls extends GUI {
@@ -76,7 +76,7 @@ export class URDFControls extends GUI {
 
   /**
    * Checks if a given object is empty {}
-   * 
+   *
    * @param obj - The object to check
    * @returns - True when the object is empty, or false when it is not empty
    */
@@ -86,7 +86,7 @@ export class URDFControls extends GUI {
 
   /**
    * Creates an input box and a button to modify the working path
-   * 
+   *
    * @param workingPath - The path where the loader looks for mesh files
    * @returns - The controls to trigger callbacks when the path is changed
    */
@@ -111,7 +111,7 @@ export class URDFControls extends GUI {
 
   /**
    * Creates color selectors to modify the scene background and grid
-   * 
+   *
    * @param bgColor - The background color as a three.js Color
    * @param gridColor - The grid color as a three.js Color
    * @returns - The controls to trigger callbacks when the colors are changed
@@ -154,7 +154,7 @@ export class URDFControls extends GUI {
 
   /**
    * Converts a three.js Color to an RGB Array
-   * 
+   *
    * @param color - The three.js Color to convert
    * @returns - The [R, G, B] Array with range [0, 255]
    */
@@ -172,7 +172,7 @@ export class URDFControls extends GUI {
 
   /**
    * Creates number sliders for each movable robot joint
-   * 
+   *
    * @param joints - An object containing all of the robot's joints
    * @returns - The controls to trigger callbacks when any joint value changes
    */
