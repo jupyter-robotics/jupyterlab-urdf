@@ -185,7 +185,7 @@
     <link name="left_finger_link">
         <visual>
             <geometry>
-                <mesh filename="package://urdf_tutorial/meshes/l_finger.dae"/>
+                <mesh filename="package://ned_description/meshes/l_finger.dae"/>
             </geometry>
             <origin xyz="0.01 0.02 0"/>
         </visual>
@@ -202,7 +202,7 @@
     <link name="right_finger_link">
         <visual>
             <geometry>
-                <mesh filename="package://urdf_tutorial/meshes/l_finger.dae"/>
+                <mesh filename="package://ned_description/meshes/l_finger.dae"/>
             </geometry>
             <origin rpy="3.141593 0 0" xyz="0.01 -0.02 0"/>
         </visual>
