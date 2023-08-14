@@ -122,7 +122,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
    * Adds three lights to the scene
    */
   private _addLights(): void {
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 2.0);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
     directionalLight.castShadow = true;
     directionalLight.position.set(3, 10, 3);
     directionalLight.shadow.camera.top = 2;
