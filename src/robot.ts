@@ -49,6 +49,7 @@ export class URDFLoadingManager extends LoadingManager {
     super();
     this._urdfLoader = new URDFLoader(this);
     this._xacroLoader = new XacroLoaderWithPath();
+    this.setWorkingPath();
   }
 
   /**
@@ -56,7 +57,7 @@ export class URDFLoadingManager extends LoadingManager {
    *
    * @param workingPath - The path to the robot files
    */
-  setWorkingPath(workingPath: string): void {
+  setWorkingPath(workingPath = ''): void {
     // To match '/this/format/path'
     workingPath = workingPath[0] !== '/' ? '/' + workingPath : workingPath;
     workingPath =
@@ -79,7 +80,8 @@ export class URDFLoadingManager extends LoadingManager {
     });
 
     this._xacroLoader.workingPath =
-      PageConfig.getBaseUrl() + '/files' + this._workingPath;
+      PageConfig.getBaseUrl() + 'files' + this._workingPath;
+    console.debug('[Xacro]: Modify URL with prefix', this._xacroLoader.workingPath);
   }
 
   /**
