@@ -1,18 +1,17 @@
-# Building Jupyter-ROS Documentation
+# Building JupyterLab-URDF Documentation
 
 1. Clone the repository and create a new environment for development
 
-1. From the root directory, install the extension in editable mode
+1. From the root directory, install the dependencies
 
    ```sh
-   pip install -e .[docs]
+   jlpm run install:docs
    ```
 
 1. Build the documents
 
    ```sh
-   cd jupyter-ros/docs/
-   make html
+   jlpm run build:docs
    ```
 
 1. Open the documentation locally
