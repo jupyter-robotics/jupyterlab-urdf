@@ -1,3 +1,4 @@
 myst_parser==0.18.0
 jupyterlite-sphinx
 sphinx
+sphinx-rtd-theme
