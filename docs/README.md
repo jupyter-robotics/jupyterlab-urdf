@@ -17,8 +17,7 @@
 1. Open the documentation locally
 
    ```sh
-   cd _build/html/
-   python -m http.server
+   jlpm run serve:docs
    ```
 
 1. From a web browser, navigate to `localhost:8000`
