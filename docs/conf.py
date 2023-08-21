@@ -20,7 +20,7 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = 'jupyterlab-urdf'
-copyright = '2022, Isabel Paredes'
+copyright = '2023, Isabel Paredes'
 author = 'Isabel Paredes'
 
 # The full version, including alpha/beta/rc tags

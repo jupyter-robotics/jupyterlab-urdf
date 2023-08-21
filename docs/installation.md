@@ -2,30 +2,21 @@
 
 ## Requirements
 
-- JupyterLab >= 3.0
-
-For running the examples and interfacing with ROS, the following packages are also required:
-
-- `ros-noetic-urdf-tutorial`
-- `ros-noetic-turtlebot3-description`
-
-These packages can be installed with `conda` from the RoboStack channel.
+- JupyterLab >= 4.0
 
 ## Install
 
 To install the extension, execute:
 
-1. `conda install jupyterlab-urdf -c conda-forge` or
-2. `pip install jupyterlab-urdf` or
-3. `npm i jupyterlab_urdf`
+- `micromamba install jupyterlab-urdf -c conda-forge` or
+- `pip install jupyterlab-urdf`
 
 ## Uninstall
 
 To remove the extension, execute:
 
-1. `conda remove jupyterlab-urdf` or
-2. `pip uninstall jupyterlab-urdf` or
-3. `npm uninstall jupyterlab_urdf`
+- `micromamba remove jupyterlab-urdf` or
+- `pip uninstall jupyterlab-urdf`
 
 ## Development install
 
@@ -37,13 +28,25 @@ The `jlpm` command is JupyterLab's pinned version of
 
 ```bash
 # Clone the repo to your local environment
-# Change directory to the jupyterlab_urdf directory
+# Change directory to the jupyterlab-urdf directory
 # Install package in development mode
 pip install -e .
 # Link your development version of the extension with JupyterLab
 jupyter labextension develop . --overwrite
 # Rebuild extension Typescript source after making changes
 jlpm build
+```
+
+... note::
+  ### Troubleshooting
+
+  If you encounter the following error, install `yarn=1.21`
+
+  ```sh
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+  error: metadata-generation-failed
+
+  × Encountered error while generating package metadata.
 ```
 
 You can watch the source directory and run JupyterLab at the same time in different terminals to watch for changes in the extension's source and automatically rebuild the extension.
