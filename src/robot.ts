@@ -81,7 +81,10 @@ export class URDFLoadingManager extends LoadingManager {
 
     this._xacroLoader.workingPath =
       PageConfig.getBaseUrl() + 'files' + this._workingPath;
-    console.debug('[Xacro]: Modify URL with prefix', this._xacroLoader.workingPath);
+    console.debug(
+      '[Xacro]: Modify URL with prefix',
+      this._xacroLoader.workingPath
+    );
   }
 
   /**
