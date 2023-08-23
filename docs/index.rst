@@ -21,17 +21,25 @@ Try it with JupyterLite!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: General:
 
-   installation
+   gen_getting_started
 
 .. toctree::
    :maxdepth: 2
    :caption: Usage:
 
-   urdf_editor
-   urdf_viewer
-   examples
+   use_editor
+   use_viewer
+   use_examples
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Development:
+
+   dev_contribute
+   dev_install
+   dev_docs
 
 
 Indices and tables
