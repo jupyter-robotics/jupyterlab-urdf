@@ -1,4 +1,4 @@
-myst_parser==0.18.0
+myst_parser
 jupyterlite-sphinx
 sphinx
 sphinx-rtd-theme
