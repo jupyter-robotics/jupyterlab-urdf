@@ -2,6 +2,37 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.3.0
+
+([Full Changelog](https://github.com/jupyter-robotics/jupyterlab-urdf/compare/v0.2.1...cc8f20317ae5fdbeea9f280270ad4f5d6034639f))
+
+### Enhancements made
+
+- Replace Amphion with URDF Loaders and Three.js [#30](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/30) ([@ihuicatl](https://github.com/ihuicatl))
+- Migrate to JupyterLab 4 [#29](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/29) ([@ihuicatl](https://github.com/ihuicatl))
+
+### Bugs fixed
+
+- Replace Amphion with URDF Loaders and Three.js [#30](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/30) ([@ihuicatl](https://github.com/ihuicatl))
+
+### Documentation improvements
+
+- Troubleshoot readthedocs build [#35](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/35) ([@ihuicatl](https://github.com/ihuicatl))
+- Fix readthedocs build [#34](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/34) ([@ihuicatl](https://github.com/ihuicatl))
+- Update Documentation [#32](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/32) ([@ihuicatl](https://github.com/ihuicatl))
+
+### Other merged PRs
+
+- Update homepage links to reflect transfer [#28](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/28) ([@ihuicatl](https://github.com/ihuicatl))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyter-robotics/jupyterlab-urdf/graphs/contributors?from=2022-10-11&to=2023-08-24&type=c))
+
+[@github-actions](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3Agithub-actions+updated%3A2022-10-11..2023-08-24&type=Issues) | [@ihuicatl](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3Aihuicatl+updated%3A2022-10-11..2023-08-24&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.2.1
 
 ([Full Changelog](https://github.com/jupyter-robotics/jupyterlab-urdf/compare/v0.2.0...3602f83946e864c522863ffec0ef78a6b8612d24))
@@ -19,8 +50,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyter-robotics/jupyterlab-urdf/graphs/contributors?from=2022-09-22&to=2022-10-11&type=c))
 
 [@ihuicatl](https://github.com/search?q=repo%3Aihuicatl%2Fjupyterlab-urdf+involves%3Aihuicatl+updated%3A2022-09-22..2022-10-11&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.2.0
 
