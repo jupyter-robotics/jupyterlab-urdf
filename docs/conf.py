@@ -56,7 +56,6 @@ master_doc = 'index'
 # a list of builtin themes.
 #
 html_theme = 'renku'
-# html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_favicon = 'favicon.ico'
 html_logo = 'logo.svg'
 
