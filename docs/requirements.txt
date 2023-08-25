@@ -1,4 +1,4 @@
 myst_parser
 jupyterlite-sphinx
 sphinx
-sphinx-rtd-theme
+renku-sphinx-theme
