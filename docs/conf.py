@@ -14,7 +14,7 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
-import sphinx_rtd_theme
+import renku_sphinx_theme
 
 
 # -- Project information -----------------------------------------------------
@@ -55,8 +55,8 @@ master_doc = 'index'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_theme = 'renku'
+# html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_favicon = 'favicon.ico'
 html_logo = 'logo.svg'
 
