@@ -2,6 +2,28 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.3.1
+
+([Full Changelog](https://github.com/jupyter-robotics/jupyterlab-urdf/compare/v0.3.0...3f4f652a927fabd73e503b4d17b4228a4bd15923))
+
+### Bugs fixed
+
+- Fix grid height resetting [#42](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/42) ([@ihuicatl](https://github.com/ihuicatl))
+
+### Documentation improvements
+
+- Revert "Update extension version for JupyterLite" [#38](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/38) ([@ihuicatl](https://github.com/ihuicatl))
+- Update extension version for JupyterLite [#37](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/37) ([@ihuicatl](https://github.com/ihuicatl))
+- Change docs theme to renku [#36](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/36) ([@ihuicatl](https://github.com/ihuicatl))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyter-robotics/jupyterlab-urdf/graphs/contributors?from=2023-08-24&to=2023-11-17&type=c))
+
+[@github-actions](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3Agithub-actions+updated%3A2023-08-24..2023-11-17&type=Issues) | [@ihuicatl](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3Aihuicatl+updated%3A2023-08-24..2023-11-17&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.3.0
 
 ([Full Changelog](https://github.com/jupyter-robotics/jupyterlab-urdf/compare/v0.2.1...cc8f20317ae5fdbeea9f280270ad4f5d6034639f))
@@ -30,8 +52,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyter-robotics/jupyterlab-urdf/graphs/contributors?from=2022-10-11&to=2023-08-24&type=c))
 
 [@github-actions](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3Agithub-actions+updated%3A2022-10-11..2023-08-24&type=Issues) | [@ihuicatl](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3Aihuicatl+updated%3A2022-10-11..2023-08-24&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.2.1
 
