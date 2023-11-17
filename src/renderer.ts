@@ -23,6 +23,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   private _controls: OrbitControls;
   private _colorSky = new THREE.Color();
   private _colorGround = new THREE.Color();
+  private _gridHeight = 0;
   private _robotIndex = -1;
 
   /**
@@ -190,6 +191,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
       this._colorGround
     );
     this._updateLights();
+    this.setGridHeight(this._gridHeight);
     this.redraw();
   }
 
@@ -203,6 +205,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
       .map(i => i.type)
       .indexOf('GridHelper');
     this._scene.children[gridIndex].position.y = height;
+    this._gridHeight = height;
     this.redraw();
   }
 
