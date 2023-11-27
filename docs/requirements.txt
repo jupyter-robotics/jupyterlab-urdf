@@ -2,3 +2,4 @@ myst_parser
 jupyterlite-sphinx
 sphinx
 renku-sphinx-theme
+jupyterlab-night
