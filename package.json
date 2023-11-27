@@ -1,6 +1,6 @@
 {
     "name": "jupyterlab-urdf",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "description": "A URDF viewer and editor extension for JupyterLab.",
     "keywords": [
         "jupyter",
