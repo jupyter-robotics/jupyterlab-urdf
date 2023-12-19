@@ -61,8 +61,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
     - name: Install Python
       uses: actions/setup-python@v4
       with:
@@ -108,7 +106,7 @@ jobs:
     - name: Install the extension
       run: |
         set -eux
-        python -m pip install "jupyterlab==4.0.3" jupyterlab_urdf*.whl
+        python -m pip install "jupyterlab>=4.0.5" jupyterlab_urdf*.whl
         jupyter labextension list
 
     - name: Install dependencies
