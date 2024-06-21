@@ -14,19 +14,23 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Base Setup
-      uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
-
-    - name: Install dependencies
-      run: |
-        python -m pip install -U "jupyterlab>=4.0.0,<5"
-        python -m pip install hatch-jupyter-builder
+    - name: Set up environment
+      uses: mamba-org/setup-micromamba@v1
+      with:
+        environment-name: urdf
+        init-shell: bash
+        create-args: >-
+          python
+          jupyterlab>=4.0
+          hatch-jupyter-builder
+          nodejs
 
     - name: Lint the extension
       run: |
         set -eux
         jlpm
         jlpm run lint:check
+
     - name: Test the extension
       run: |
         set -eux
@@ -44,7 +48,6 @@ jobs:
     - name: Package the extension
       run: |
         set -eux
-
         pip install build
         python -m build
         pip uninstall -y "jupyterlab_urdf" jupyterlab
