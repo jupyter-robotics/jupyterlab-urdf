@@ -100,8 +100,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Base Setup
-      uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
+    - name: Set up environment
+      uses: mamba-org/setup-micromamba@v1
+      with:
+        environment-name: urdf-integration
+        init-shell: bash
+        create-args: >-
+          python
+          jupyterlab>=4.0
 
     - name: Download extension package
       uses: actions/download-artifact@v4
@@ -110,8 +116,7 @@ jobs:
 
     - name: Install the extension
       run: |
-        set -eux
-        python -m pip install "jupyterlab==4.0.3" jupyterlab_urdf*.whl
+        pip install jupyterlab_urdf*.whl
         jupyter labextension list
 
     - name: Install dependencies
