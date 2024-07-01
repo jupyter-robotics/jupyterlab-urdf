@@ -26,6 +26,7 @@ jobs:
           nodejs
 
     - name: Lint the extension
+      shell: bash -el {0}
       run: |
         micromamba info
         micromamba activate urdf
