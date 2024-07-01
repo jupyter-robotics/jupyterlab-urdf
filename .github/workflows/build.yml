@@ -25,6 +25,7 @@ jobs:
         init-shell: bash
         create-args: >-
           python
+          python-build
           jupyterlab>=4.0
           hatch-jupyter-builder
           nodejs
@@ -46,7 +47,6 @@ jobs:
 
     - name: Package the extension
       run: |
-        pip install build
         python -m build
         pip uninstall -y "jupyterlab_urdf" jupyterlab
 
