@@ -27,6 +27,8 @@ jobs:
 
     - name: Lint the extension
       run: |
+        micromamba info
+        micromamba activate urdf
         set -eux
         jlpm
         jlpm run lint:check
