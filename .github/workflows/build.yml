@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: '*'
 
+defaults:
+  run:
+    shell: bash -el {0}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,31 +30,22 @@ jobs:
           nodejs
 
     - name: Lint the extension
-      shell: bash -el {0}
       run: |
-        micromamba info
-        micromamba activate urdf
-        set -eux
         jlpm
         jlpm run lint:check
 
     - name: Test the extension
-      run: |
-        set -eux
-        jlpm run test
+      run: jlpm run test
 
     - name: Build the extension
       run: |
-        set -eux
         python -m pip install .[test]
-
         jupyter labextension list
         jupyter labextension list 2>&1 | grep -ie "jupyterlab-urdf.*OK"
         python -m jupyterlab.browser_check
 
     - name: Package the extension
       run: |
-        set -eux
         pip install build
         python -m build
         pip uninstall -y "jupyterlab_urdf" jupyterlab
