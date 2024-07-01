@@ -107,7 +107,7 @@ jobs:
         init-shell: bash
         create-args: >-
           python
-          jupyterlab>=4.0
+          jupyterlab==4.0.3
 
     - name: Download extension package
       uses: actions/download-artifact@v4
@@ -126,10 +126,9 @@ jobs:
       run: jlpm install
 
     - name: Set up browser cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
-        path: |
-          ${{ github.workspace }}/pw-browsers
+        path: ${{ github.workspace }}/pw-browsers
         key: ${{ runner.os }}-${{ hashFiles('ui-tests/yarn.lock') }}
 
     - name: Install browser
@@ -138,10 +137,9 @@ jobs:
 
     - name: Execute integration tests
       working-directory: ui-tests
-      run: |
-        jlpm playwright test
+      run: jlpm playwright test
 
-    - name: Upload Playwright Test report
+    - name: Upload playwright test report
       if: always()
       uses: actions/upload-artifact@v4
       with:
@@ -151,7 +149,7 @@ jobs:
           ui-tests/playwright-report
 
   check_links:
-    name: Check Links
+    name: Check links
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
