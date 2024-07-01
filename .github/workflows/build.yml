@@ -12,6 +12,7 @@ defaults:
 
 jobs:
   build:
+    name: Build and test
     runs-on: ubuntu-latest
 
     steps:
@@ -57,7 +58,8 @@ jobs:
         path: dist/jupyterlab_urdf*
         if-no-files-found: error
 
-  test_isolated:
+  test-isolated:
+    name: Isolated tests
     needs: build
     runs-on: ubuntu-latest
 
@@ -68,12 +70,11 @@ jobs:
     - name: Set up environment
       uses: mamba-org/setup-micromamba@v1
       with:
-        environment-name: test_isolated
+        environment-name: urdf-isolated
         init-shell: bash
         create-args: >-
           python
           jupyterlab>=4.0
-          nodejs
 
     - name: Download extension package
       uses: actions/download-artifact@v4
@@ -82,17 +83,12 @@ jobs:
 
     - name: Install and test
       run: |
-        # Remove NodeJS, twice to take care of system and locally installed node versions.
-        sudo rm -rf $(which node)
-        sudo rm -rf $(which node)
-
         pip install jupyterlab_urdf*.whl
-
         jupyter labextension list
         jupyter labextension list 2>&1 | grep -ie "jupyterlab-urdf.*OK"
         python -m jupyterlab.browser_check --no-browser-test
 
-  integration-tests:
+  test-integration:
     name: Integration tests
     needs: build
     runs-on: ubuntu-latest
