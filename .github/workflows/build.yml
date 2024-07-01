@@ -65,23 +65,28 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Install Python
-      uses: actions/setup-python@v4
+    - name: Set up environment
+      uses: mamba-org/setup-micromamba@v1
       with:
-        python-version: '3.9'
-        architecture: 'x64'
-    - uses: actions/download-artifact@v3
+        environment-name: test_isolated
+        init-shell: bash
+        create-args: >-
+          python
+          jupyterlab>=4.0
+          nodejs
+
+    - name: Download extension package
+      uses: actions/download-artifact@v4
       with:
         name: extension-artifacts
-    - name: Install and Test
+
+    - name: Install and test
       run: |
-        set -eux
         # Remove NodeJS, twice to take care of system and locally installed node versions.
         sudo rm -rf $(which node)
         sudo rm -rf $(which node)
 
-        pip install "jupyterlab>=4.0.0,<5" jupyterlab_urdf*.whl
-
+        pip install jupyterlab_urdf*.whl
 
         jupyter labextension list
         jupyter labextension list 2>&1 | grep -ie "jupyterlab-urdf.*OK"
@@ -103,7 +108,7 @@ jobs:
       uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
 
     - name: Download extension package
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: extension-artifacts
 
