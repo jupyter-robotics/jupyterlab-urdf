@@ -230,6 +230,9 @@ export class URDFRenderer extends THREE.WebGLRenderer {
    * Refreshes the viewer by re-rendering the scene and its elements
    */
   redraw(): void {
+    const renderSize = this.getSize(new THREE.Vector2());
+    this._camera.aspect = renderSize.width / renderSize.height;
+    this._camera.updateProjectionMatrix();
     this.render(this._scene, this._camera);
   }
 }
