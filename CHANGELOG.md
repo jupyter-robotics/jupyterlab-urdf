@@ -6,37 +6,37 @@
 
 ### Bugs fixed
 
-* Fix window scaling #45 by @yxzhan in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/63
+- Fix window scaling #45 by @yxzhan in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/63
 
 ### Documentation improvements
 
-* Update documentation by @IsabelParedes in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/44
-* Update links by @IsabelParedes in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/50
+- Update documentation by @IsabelParedes in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/44
+- Update links by @IsabelParedes in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/50
 
 ### Maintenance and upkeep improvements
 
-* Bump systeminformation from 5.18.9 to 5.21.20 in /ui-tests by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/46
-* Bump postcss from 8.4.27 to 8.4.32 in /ui-tests by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/49
-* Bump postcss from 8.4.28 to 8.4.32 by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/47
-* Bump @babel/traverse from 7.22.10 to 7.23.6 by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/48
-* Bump ip from 2.0.0 to 2.0.1 in /ui-tests by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/52
-* Bump ip from 2.0.0 to 2.0.1 by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/53
-* Bump tar from 6.1.15 to 6.2.1 in /ui-tests by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/54
-* Bump tar from 6.1.15 to 6.2.1 by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/55
-* Add publish self release workflow by @IsabelParedes in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/56
-* Bump ws from 8.13.0 to 8.17.1 by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/59
-* Bump braces from 3.0.2 to 3.0.3 by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/60
-* Update CI by @IsabelParedes in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/62
-* Bump ws from 8.13.0 to 8.17.1 in /ui-tests by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/61
+- Bump systeminformation from 5.18.9 to 5.21.20 in /ui-tests by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/46
+- Bump postcss from 8.4.27 to 8.4.32 in /ui-tests by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/49
+- Bump postcss from 8.4.28 to 8.4.32 by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/47
+- Bump @babel/traverse from 7.22.10 to 7.23.6 by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/48
+- Bump ip from 2.0.0 to 2.0.1 in /ui-tests by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/52
+- Bump ip from 2.0.0 to 2.0.1 by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/53
+- Bump tar from 6.1.15 to 6.2.1 in /ui-tests by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/54
+- Bump tar from 6.1.15 to 6.2.1 by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/55
+- Add publish self release workflow by @IsabelParedes in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/56
+- Bump ws from 8.13.0 to 8.17.1 by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/59
+- Bump braces from 3.0.2 to 3.0.3 by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/60
+- Update CI by @IsabelParedes in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/62
+- Bump ws from 8.13.0 to 8.17.1 in /ui-tests by @dependabot in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/61
 
 ### New Contributors
-* @dependabot made their first contribution in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/46
-* @yxzhan made their first contribution in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/63
+
+- @dependabot made their first contribution in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/46
+- @yxzhan made their first contribution in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/63
 
 **Full Changelog**: https://github.com/jupyter-robotics/jupyterlab-urdf/compare/v0.3.2...v0.4.0
 
 <!-- <END NEW CHANGELOG ENTRY> -->
-
 
 ## 0.3.2
 
@@ -51,7 +51,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyter-robotics/jupyterlab-urdf/graphs/contributors?from=2023-08-24&to=2023-11-27&type=c))
 
 [@github-actions](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3Agithub-actions+updated%3A2023-08-24..2023-11-27&type=Issues) | [@IsabelParedes](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3AIsabelParedes+updated%3A2023-08-24..2023-11-27&type=Issues)
-
 
 ## 0.3.1
 
