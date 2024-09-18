@@ -1,5 +1,5 @@
 myst_parser
 jupyterlite-sphinx
-sphinx
+sphinx<7
 renku-sphinx-theme
 jupyterlab-night
