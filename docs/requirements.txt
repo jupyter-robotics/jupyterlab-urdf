@@ -1,5 +1,5 @@
 myst_parser
 jupyterlite-sphinx
-sphinx
-renku-sphinx-theme
+sphinx<7
+sphinx-conestack-theme
 jupyterlab-night
