@@ -35,7 +35,6 @@ Your First Contribution
 Working on your first Pull Request? Here are some resources to help you get started:
 
 * `First Timers Only <https://www.firsttimersonly.com/>`_
-* `Make a Pull Request <https://makeapullrequest.com/>`_
 * `How to Contribute to an Open Source Project on GitHub <https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github>`_
 
 At this point, you're ready to make your changes! Feel free to ask for help;
