@@ -27,16 +27,9 @@
   color: var(--gui-color-font);
   border: none;
   box-sizing: border-box;
-  position: absolute;
-  top: 0;
-  right: 5px;
-  min-width: 250px;
+  min-width: 150px;
   max-width: 500px;
-  border-left: 3px solid var(--gui-color-title-bg);
-  z-index: 1;
-  overflow-x: hidden;  /* Hide horizontal scrollbar only */
-  overflow-y: visible; /* Allow vertical overflow for Dat.GUI elements */
-  padding-bottom: 20px; /* Add space for the toggle button */
+  padding-bottom: 20px; 
 }
 
 /* Add a resize handle on the left border */
@@ -45,7 +38,7 @@
   position: absolute;
   left: -3px;        /* Align with the left border */
   top: 0;
-  width: 6px;        /* Wider hit area for easier grabbing */
+  width: 12px;        /* Wider hit area for easier grabbing */
   height: 100%;
   cursor: ew-resize;  /* Show resize cursor on the left edge */
 }
