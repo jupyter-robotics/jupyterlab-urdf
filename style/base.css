@@ -32,7 +32,6 @@
   right: 5px;
   min-width: 250px;
   max-width: 500px;
-  height: 100%;
   border-left: 3px solid var(--gui-color-title-bg);
   z-index: 1;
   overflow-x: hidden;  /* Hide horizontal scrollbar only */
@@ -149,4 +148,18 @@
 .urdf-gui .joints-folder ul {
   max-height: 50vh;
   overflow: scroll;
+}
+
+/* Style for Dat.GUI's close button */
+.urdf-gui .close-button {
+  width: 100% !important;
+  color: white !important; /* This doesn't used a predefined color */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+/* Style for when panel is closed */
+.urdf-gui.closed .close-button {
+  position: relative;  /* Reset position when panel is closed */
 }
