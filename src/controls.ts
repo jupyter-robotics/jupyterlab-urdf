@@ -40,6 +40,35 @@ export class URDFControls extends GUI {
     this.domElement.style.right = '5px';
     this.domElement.setAttribute('class', 'dg main urdf-gui');
 
+    // Add resize functionality
+    let isResizing = false;
+    let startX: number;
+    let startWidth: number;
+
+    this.domElement.addEventListener('mousedown', (e: MouseEvent) => {
+      // Only trigger on left border
+      if (e.clientX < this.domElement.getBoundingClientRect().left + 6) {
+        isResizing = true;
+        startX = e.clientX;
+        startWidth = parseInt(getComputedStyle(this.domElement).width, 10);
+      }
+    });
+
+    document.addEventListener('mousemove', (e: MouseEvent) => {
+      if (!isResizing) return;
+      
+      const width = startWidth - (e.clientX - startX);
+      if (width >= 250 && width <= 500) {
+        this.domElement.style.width = `${width}px`;
+      }
+    });
+
+    document.addEventListener('mouseup', () => {
+      isResizing = false;
+    });
+
+    //
+    
     this._workspaceFolder = this.addFolder('Workspace');
     this._workspaceFolder.domElement.setAttribute(
       'class',

@@ -27,6 +27,28 @@
   color: var(--gui-color-font);
   border: none;
   box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  right: 5px;
+  min-width: 250px;
+  max-width: 500px;
+  height: 100%;
+  border-left: 3px solid var(--gui-color-title-bg);
+  z-index: 1;
+  overflow-x: hidden;  /* Hide horizontal scrollbar only */
+  overflow-y: visible; /* Allow vertical overflow for Dat.GUI elements */
+  padding-bottom: 20px; /* Add space for the toggle button */
+}
+
+/* Add a resize handle on the left border */
+.urdf-gui::before {
+  content: "";
+  position: absolute;
+  left: -3px;        /* Align with the left border */
+  top: 0;
+  width: 6px;        /* Wider hit area for easier grabbing */
+  height: 100%;
+  cursor: ew-resize;  /* Show resize cursor on the left edge */
 }
 
 .urdf-gui li.folder {
