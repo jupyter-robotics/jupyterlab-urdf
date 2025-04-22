@@ -98,6 +98,13 @@ const extension: JupyterFrontEndPlugin<void> = {
         tracker.save(widget);
       });
       tracker.add(widget);
+
+      // Open editor alongside viewer
+      commands.execute('docmanager:open', {
+      path: widget.context.path,
+      factory: 'Editor'
+      });
+
     });
 
     // Register widget and model factories
@@ -121,20 +128,23 @@ const extension: JupyterFrontEndPlugin<void> = {
       icon: urdf_icon,
       iconClass: 'jp-URDFIcon',
       caption: 'Create a new URDF',
-      execute: () => {
+      execute: async () => {
         const cwd = browserFactory.model.path;
-        commands
-          .execute('docmanager:new-untitled', {
-            path: cwd,
-            type: 'file',
-            ext: '.urdf'
-          })
-          .then(model =>
-            commands.execute('docmanager:open', {
-              path: model.path,
-              factory: FACTORY
-            })
-          );
+        const model = await commands.execute('docmanager:new-untitled', {
+          path: cwd,
+          type: 'file',
+          ext: '.urdf'
+        });
+      
+        await commands.execute('docmanager:open', {
+          path: model.path,
+          factory: FACTORY
+        });
+      
+        await commands.execute('docmanager:open', {
+          path: model.path,
+          factory: 'Editor'
+        });
       }
     });
 
