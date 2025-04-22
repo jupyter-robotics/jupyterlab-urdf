@@ -36,11 +36,9 @@
 .urdf-gui::before {
   content: "";
   position: absolute;
-  left: -3px;        /* Align with the left border */
-  top: 0;
-  width: 12px;        /* Wider hit area for easier grabbing */
+  width: 12px;        
   height: 100%;
-  cursor: ew-resize;  /* Show resize cursor on the left edge */
+  cursor: ew-resize;  
 }
 
 .urdf-gui li.folder {
@@ -148,11 +146,4 @@
   width: 100% !important;
   color: white !important; /* This doesn't used a predefined color */
   position: absolute;
-  bottom: 0;
-  left: 0;
-}
-
-/* Style for when panel is closed */
-.urdf-gui.closed .close-button {
-  position: relative;  /* Reset position when panel is closed */
 }

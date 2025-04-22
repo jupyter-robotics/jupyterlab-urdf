@@ -41,34 +41,13 @@ export class URDFControls extends GUI {
     this.domElement.setAttribute('class', 'dg main urdf-gui');
 
     // Add resize functionality
-    let isResizing = false;
-    let startX: number;
-    let startWidth: number;
-
-    this.domElement.addEventListener('mousedown', (e: MouseEvent) => {
-      // Only trigger on left border
-      if (e.clientX < this.domElement.getBoundingClientRect().left + 6) {
-        isResizing = true;
-        startX = e.clientX;
-        startWidth = parseInt(getComputedStyle(this.domElement).width, 10);
-      }
+    this._setupResizeHandling({
+      minWidth: 150,
+      maxWidth: 500,
+      grabZoneWidth: 12
     });
 
-    document.addEventListener('mousemove', (e: MouseEvent) => {
-      if (!isResizing) return;
-      
-      const width = startWidth - (e.clientX - startX);
-      if (width >= 250 && width <= 500) {
-        this.domElement.style.width = `${width}px`;
-      }
-    });
-
-    document.addEventListener('mouseup', () => {
-      isResizing = false;
-    });
-
-    //
-    
+    // Create folders
     this._workspaceFolder = this.addFolder('Workspace');
     this._workspaceFolder.domElement.setAttribute(
       'class',
@@ -236,4 +215,48 @@ export class URDFControls extends GUI {
     }
     return this.controls.joints;
   }
+
+  /**
+   * Sets up panel resizing functionality
+   */
+  private _setupResizeHandling(options: {
+    minWidth: number;
+    maxWidth: number;
+    grabZoneWidth: number;
+  }): void {
+    let isResizing = false;
+    let startX: number;
+    let startWidth: number;
+  
+    const { minWidth, maxWidth, grabZoneWidth } = options;
+  
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isResizing) return;
+  
+      const width = startWidth - (e.clientX - startX);
+      if (width >= minWidth && width <= maxWidth) {
+        this.domElement.style.width = `${width}px`;
+      }
+    };
+  
+    const onMouseUp = () => {
+      isResizing = false;
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+  
+    this.domElement.addEventListener('mousedown', (e: MouseEvent) => {
+      if (e.clientX < this.domElement.getBoundingClientRect().left + grabZoneWidth) {
+        isResizing = true;
+        startX = e.clientX;
+        startWidth = parseInt(getComputedStyle(this.domElement).width, 10);
+        e.preventDefault();
+  
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+      }
+    });
+  }
+  
 }
+
