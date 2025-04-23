@@ -218,6 +218,9 @@ export class URDFControls extends GUI {
 
   /**
    * Sets up panel resizing functionality
+   * @param minWidth - Minimum width of the panel
+   * @param maxWidth - Maximum width of the panel
+   * @param grabZoneWidth - Width of the area where the mouse can be clicked
    */
   private _setupResizeHandling(options: {
     minWidth: number;

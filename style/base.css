@@ -144,6 +144,6 @@
 /* Style for Dat.GUI's close button */
 .urdf-gui .close-button {
   width: 100% !important;
-  color: white !important; /* This doesn't used a predefined color */
+  color: white !important; 
   position: absolute;
 }
