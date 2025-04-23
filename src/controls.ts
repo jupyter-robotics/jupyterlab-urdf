@@ -230,36 +230,39 @@ export class URDFControls extends GUI {
     let isResizing = false;
     let startX: number;
     let startWidth: number;
-  
+
     const { minWidth, maxWidth, grabZoneWidth } = options;
-  
+
     const onMouseMove = (e: MouseEvent) => {
-      if (!isResizing) return;
-  
+      if (!isResizing) {
+        return;
+      }
+
       const width = startWidth - (e.clientX - startX);
       if (width >= minWidth && width <= maxWidth) {
         this.domElement.style.width = `${width}px`;
       }
     };
-  
+
     const onMouseUp = () => {
       isResizing = false;
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
-  
+
     this.domElement.addEventListener('mousedown', (e: MouseEvent) => {
-      if (e.clientX < this.domElement.getBoundingClientRect().left + grabZoneWidth) {
+      if (
+        e.clientX <
+        this.domElement.getBoundingClientRect().left + grabZoneWidth
+      ) {
         isResizing = true;
         startX = e.clientX;
         startWidth = parseInt(getComputedStyle(this.domElement).width, 10);
         e.preventDefault();
-  
+
         document.addEventListener('mousemove', onMouseMove);
         document.addEventListener('mouseup', onMouseUp);
       }
     });
   }
-  
 }
-

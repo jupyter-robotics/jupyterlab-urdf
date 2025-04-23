@@ -29,16 +29,16 @@
   box-sizing: border-box;
   min-width: 150px;
   max-width: 500px;
-  padding-bottom: 20px; 
+  padding-bottom: 20px;
 }
 
 /* Add a resize handle on the left border */
 .urdf-gui::before {
-  content: "";
+  content: '';
   position: absolute;
-  width: 12px;        
+  width: 12px;
   height: 100%;
-  cursor: ew-resize;  
+  cursor: ew-resize;
 }
 
 .urdf-gui li.folder {
@@ -144,6 +144,6 @@
 /* Style for Dat.GUI's close button */
 .urdf-gui .close-button {
   width: 100% !important;
-  color: white !important; 
+  color: white !important;
   position: absolute;
 }
