@@ -101,10 +101,9 @@ const extension: JupyterFrontEndPlugin<void> = {
 
       // Open editor alongside viewer
       commands.execute('docmanager:open', {
-      path: widget.context.path,
-      factory: 'Editor'
+        path: widget.context.path,
+        factory: 'Editor'
       });
-
     });
 
     // Register widget and model factories
@@ -135,12 +134,12 @@ const extension: JupyterFrontEndPlugin<void> = {
           type: 'file',
           ext: '.urdf'
         });
-      
+
         await commands.execute('docmanager:open', {
           path: model.path,
           factory: FACTORY
         });
-      
+
         await commands.execute('docmanager:open', {
           path: model.path,
           factory: 'Editor'
