@@ -55,8 +55,17 @@ export class URDFRenderer extends THREE.WebGLRenderer {
 
     this._controls = new OrbitControls(this._camera, this.domElement);
     this._initControls();
-  }
 
+    this.printSceneLights();
+  }
+  printSceneLights() {
+    console.log('Scene Lights:');
+    this._scene.children.forEach(obj => {
+      if (obj.type.includes('Light')) {
+        console.log(obj);
+      }
+    });
+  }
   /**
    * Initializes the camera
    */
@@ -134,6 +143,14 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     directionalLight.shadow.camera.far = 40;
     this._scene.add(directionalLight);
 
+    // Add a helper for the directional light with black color
+    const directionalLightHelper = new THREE.DirectionalLightHelper(
+      directionalLight,
+      2,
+      new THREE.Color(0x000000) // Black color for helper
+    );
+    this._scene.add(directionalLightHelper);
+
     const ambientLight = new THREE.AmbientLight('#fff');
     ambientLight.intensity = 0.5;
     ambientLight.position.set(0, 5, 0);
@@ -145,6 +162,14 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     );
     hemisphereLight.intensity = 1;
     this._scene.add(hemisphereLight);
+
+    // Add a helper for the hemisphere light with black color
+    const hemisphereLightHelper = new THREE.HemisphereLightHelper(
+      hemisphereLight,
+      2
+    );
+    hemisphereLightHelper.material.color.set(0x000000); // Black color for helper
+    this._scene.add(hemisphereLightHelper);
   }
 
   /**
