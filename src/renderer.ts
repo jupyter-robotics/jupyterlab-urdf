@@ -252,6 +252,138 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   }
 
   /**
+   * Updates the position of the directional light
+   *
+   * @param x - The new x position
+   * @param y - The new y position
+   * @param z - The new z position
+   */
+  setDirectionalLightPosition(x: number, y: number, z: number): void {
+    const directionalLight = this._scene.children.find(
+      obj => obj.type === 'DirectionalLight'
+    ) as THREE.DirectionalLight;
+
+    if (directionalLight) {
+      directionalLight.position.set(x, y, z);
+      this.redraw();
+    }
+  }
+
+  /**
+   * Updates the color of the directional light
+   *
+   * @param newColor - The new color as [R, G, B] array 0-255
+   */
+  setDirectionalLightColor(newColor: number[]): void {
+    const directionalLight = this._scene.children.find(
+      obj => obj.type === 'DirectionalLight'
+    ) as THREE.DirectionalLight;
+
+    if (directionalLight) {
+      directionalLight.color = new THREE.Color(...newColor.map(x => x / 255));
+      this.redraw();
+    }
+  }
+
+  /**
+   * Updates the intensity of the directional light
+   *
+   * @param intensity - The new intensity value
+   */
+  setDirectionalLightIntensity(intensity: number): void {
+    const directionalLight = this._scene.children.find(
+      obj => obj.type === 'DirectionalLight'
+    ) as THREE.DirectionalLight;
+
+    if (directionalLight) {
+      directionalLight.intensity = intensity;
+      this.redraw();
+    }
+  }
+
+  /**
+   * Updates the color of the ambient light
+   *
+   * @param newColor - The new color as [R, G, B] array 0-255
+   */
+  setAmbientLightColor(newColor: number[]): void {
+    const ambientLight = this._scene.children.find(
+      obj => obj.type === 'AmbientLight'
+    ) as THREE.AmbientLight;
+
+    if (ambientLight) {
+      ambientLight.color = new THREE.Color(...newColor.map(x => x / 255));
+      this.redraw();
+    }
+  }
+
+  /**
+   * Updates the intensity of the ambient light
+   *
+   * @param intensity - The new intensity value
+   */
+  setAmbientLightIntensity(intensity: number): void {
+    const ambientLight = this._scene.children.find(
+      obj => obj.type === 'AmbientLight'
+    ) as THREE.AmbientLight;
+
+    if (ambientLight) {
+      ambientLight.intensity = intensity;
+      this.redraw();
+    }
+  }
+
+  /**
+   * Updates the hemisphere light sky color
+   *
+   * @param newColor - The new color as [R, G, B] array 0-255
+   */
+  setHemisphereLightSkyColor(newColor: number[]): void {
+    const hemisphereLight = this._scene.children.find(
+      obj => obj.type === 'HemisphereLight'
+    ) as THREE.HemisphereLight;
+
+    if (hemisphereLight) {
+      hemisphereLight.color = new THREE.Color(...newColor.map(x => x / 255));
+      this.redraw();
+    }
+  }
+
+  /**
+   * Updates the hemisphere light ground color
+   *
+   * @param newColor - The new color as [R, G, B] array 0-255
+   */
+  setHemisphereLightGroundColor(newColor: number[]): void {
+    const hemisphereLight = this._scene.children.find(
+      obj => obj.type === 'HemisphereLight'
+    ) as THREE.HemisphereLight;
+
+    if (hemisphereLight) {
+      hemisphereLight.groundColor = new THREE.Color(
+        ...newColor.map(x => x / 255)
+      );
+      this.redraw();
+    }
+  }
+
+  /**
+   * Updates the hemisphere light intensity
+   *
+   * @param intensity - The new intensity value
+   */
+  setHemisphereLightIntensity(intensity: number): void {
+    const hemisphereLight = this._scene.children.find(
+      obj => obj.type === 'HemisphereLight'
+    ) as THREE.HemisphereLight;
+
+    if (hemisphereLight) {
+      hemisphereLight.intensity = intensity;
+      this.redraw();
+    }
+  }
+
+  /**
    * Refreshes the viewer by re-rendering the scene and its elements
    */
   redraw(): void {

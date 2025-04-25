@@ -165,6 +165,7 @@ export class URDFLayout extends PanelLayout {
     this._setPathControls();
     this._setSceneControls();
     this._setJointControls();
+    this._setLightControls();
   }
 
   /**
@@ -211,6 +212,70 @@ export class URDFLayout extends PanelLayout {
       jointControl[jointName].onChange((newValue = 0) => {
         this._setJointValue(jointName, newValue);
       });
+    });
+  }
+
+  /**
+   * Set callback for changing directional light position in the controls panel.
+   */
+  private _setLightControls(): void {
+    const lightControl = this._controlsPanel.createLightControls();
+
+    // Directional light callbacks
+    const directional = lightControl.directional;
+
+    // Position controls
+    directional.position.x.onChange((newX: number) => {
+      const y = directional.position.y.getValue();
+      const z = directional.position.z.getValue();
+      this._renderer.setDirectionalLightPosition(newX, y, z);
+    });
+
+    directional.position.y.onChange((newY: number) => {
+      const x = directional.position.x.getValue();
+      const z = directional.position.z.getValue();
+      this._renderer.setDirectionalLightPosition(x, newY, z);
+    });
+
+    directional.position.z.onChange((newZ: number) => {
+      const x = directional.position.x.getValue();
+      const y = directional.position.y.getValue();
+      this._renderer.setDirectionalLightPosition(x, y, newZ);
+    });
+
+    // Color and intensity controls
+    directional.color.onChange((newColor: number[]) => {
+      this._renderer.setDirectionalLightColor(newColor);
+    });
+
+    directional.intensity.onChange((newIntensity: number) => {
+      this._renderer.setDirectionalLightIntensity(newIntensity);
+    });
+
+    // Ambient light callbacks
+    const ambient = lightControl.ambient;
+
+    ambient.color.onChange((newColor: number[]) => {
+      this._renderer.setAmbientLightColor(newColor);
+    });
+
+    ambient.intensity.onChange((newIntensity: number) => {
+      this._renderer.setAmbientLightIntensity(newIntensity);
+    });
+
+    // Hemisphere light callbacks
+    const hemisphere = lightControl.hemisphere;
+
+    hemisphere.skyColor.onChange((newColor: number[]) => {
+      this._renderer.setHemisphereLightSkyColor(newColor);
+    });
+
+    hemisphere.groundColor.onChange((newColor: number[]) => {
+      this._renderer.setHemisphereLightGroundColor(newColor);
+    });
+
+    hemisphere.intensity.onChange((newIntensity: number) => {
+      this._renderer.setHemisphereLightIntensity(newIntensity);
     });
   }
 

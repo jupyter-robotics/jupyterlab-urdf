@@ -16,6 +16,7 @@ export class URDFControls extends GUI {
   private _workspaceFolder: any;
   private _sceneFolder: any;
   private _jointsFolder: any;
+  private _lightsFolder: any;
   private _workingPath = '';
 
   controls: any = {
@@ -25,7 +26,8 @@ export class URDFControls extends GUI {
       grid: {},
       height: {}
     },
-    joints: {}
+    joints: {},
+    lights: {}
   };
 
   /**
@@ -58,6 +60,9 @@ export class URDFControls extends GUI {
 
     this._jointsFolder = this.addFolder('Joints');
     this._jointsFolder.domElement.setAttribute('class', 'dg joints-folder');
+
+    this._lightsFolder = this.addFolder('Lights');
+    this._lightsFolder.domElement.setAttribute('class', 'dg lights-folder');
   }
 
   /**
@@ -79,6 +84,13 @@ export class URDFControls extends GUI {
    */
   get jointsFolder() {
     return this._jointsFolder;
+  }
+
+  /**
+   * Retrieves the folder with lights settings
+   */
+  get lightsFolder() {
+    return this._lightsFolder;
   }
 
   /**
@@ -262,5 +274,118 @@ export class URDFControls extends GUI {
         document.addEventListener('mouseup', onMouseUp);
       }
     });
+  }
+  /**
+   * Creates controls for the different lights in the scene
+   *
+   * @returns - The controls to trigger callbacks when light settings change
+   */
+  createLightControls() {
+    if (this._isEmpty(this.controls.lights)) {
+      // Create subfolders for each light
+      const directionalFolder =
+        this._lightsFolder.addFolder('Directional Light');
+      const ambientFolder = this._lightsFolder.addFolder('Ambient Light');
+      const hemisphereFolder = this._lightsFolder.addFolder('Hemisphere Light');
+
+      // Initialize settings for each light type
+      const directionalSettings = {
+        X: 3,
+        Y: 10,
+        Z: 3,
+        Color: [255, 255, 255],
+        Intensity: 1.0
+      };
+
+      const ambientSettings = {
+        Color: [255, 255, 255],
+        Intensity: 0.5
+      };
+
+      const hemisphereSettings = {
+        SkyColor: [255, 255, 255],
+        GroundColor: [38, 50, 56], // Default hex: #263238
+        Intensity: 1.0
+      };
+
+      // Position limits and steps
+      const minPosition = -20;
+      const maxPosition = 20;
+      const positionStep = 0.1;
+
+      // Intensity limits and steps
+      const minIntensity = 0;
+      const maxIntensity = 2;
+      const intensityStep = 0.05;
+
+      // Directional light controls
+      this.controls.lights.directional = {
+        position: {
+          x: directionalFolder.add(
+            directionalSettings,
+            'X',
+            minPosition,
+            maxPosition,
+            positionStep
+          ),
+          y: directionalFolder.add(
+            directionalSettings,
+            'Y',
+            minPosition,
+            maxPosition,
+            positionStep
+          ),
+          z: directionalFolder.add(
+            directionalSettings,
+            'Z',
+            minPosition,
+            maxPosition,
+            positionStep
+          )
+        },
+        color: directionalFolder.addColor(directionalSettings, 'Color'),
+        intensity: directionalFolder.add(
+          directionalSettings,
+          'Intensity',
+          minIntensity,
+          maxIntensity,
+          intensityStep
+        )
+      };
+
+      // Ambient light controls
+      this.controls.lights.ambient = {
+        color: ambientFolder.addColor(ambientSettings, 'Color'),
+        intensity: ambientFolder.add(
+          ambientSettings,
+          'Intensity',
+          minIntensity,
+          maxIntensity,
+          intensityStep
+        )
+      };
+
+      // Hemisphere light controls
+      this.controls.lights.hemisphere = {
+        skyColor: hemisphereFolder.addColor(hemisphereSettings, 'SkyColor'),
+        groundColor: hemisphereFolder.addColor(
+          hemisphereSettings,
+          'GroundColor'
+        ),
+        intensity: hemisphereFolder.add(
+          hemisphereSettings,
+          'Intensity',
+          minIntensity,
+          maxIntensity,
+          intensityStep
+        )
+      };
+
+      // Open main lights folder and directional subfolder
+      this._lightsFolder.open();
+      directionalFolder.open();
+    }
+
+    return this.controls.lights;
   }
 }
