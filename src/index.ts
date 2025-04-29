@@ -70,9 +70,13 @@ const extension: JupyterFrontEndPlugin<void> = {
     const tracker = new WidgetTracker<URDFWidget>({ namespace });
 
     // Track split state
-    let splitDone = false;
-    let leftEditorRefId: string | null = null;
-    let rightViewerRefId: string | null = null;
+    const splitDoneKey = 'jupyterlab-urdf:splitDone';
+    const leftEditorRefKey = 'jupyterlab-urdf:leftEditorRefId';
+    const rightViewerRefKey = 'jupyterlab-urdf:rightViewerRefId';
+    let splitDone = localStorage.getItem(splitDoneKey) === 'true';
+    let leftEditorRefId: string | null = localStorage.getItem(leftEditorRefKey);
+    let rightViewerRefId: string | null =
+      localStorage.getItem(rightViewerRefKey);
 
     // State restoration: reopen document if it was open previously
     if (restorer) {
@@ -108,8 +112,11 @@ const extension: JupyterFrontEndPlugin<void> = {
       widget.disposed.connect(() => {
         if (tracker.size === 0) {
           splitDone = false;
+          localStorage.setItem(splitDoneKey, 'false');
           leftEditorRefId = null;
           rightViewerRefId = null;
+          localStorage.removeItem(leftEditorRefKey);
+          localStorage.removeItem(rightViewerRefKey);
         }
       });
 
@@ -121,8 +128,11 @@ const extension: JupyterFrontEndPlugin<void> = {
           options: { mode: 'split-left', ref: widget.id }
         });
         splitDone = true;
+        localStorage.setItem(splitDoneKey, 'true');
         leftEditorRefId = editor.id;
         rightViewerRefId = widget.id;
+        localStorage.setItem(leftEditorRefKey, leftEditorRefId as string);
+        localStorage.setItem(rightViewerRefKey, rightViewerRefId as string);
       } else {
         if (rightViewerRefId) {
           shell.add(widget, 'main', {
