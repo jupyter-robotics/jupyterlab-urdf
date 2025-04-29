@@ -62,53 +62,59 @@ const extension: JupyterFrontEndPlugin<void> = {
     launcher: ILauncher,
     languageRegistry: IEditorLanguageRegistry
   ) => {
+    console.log('JupyterLab extension URDF is activated!');
     const { commands, shell } = app;
 
-    // --- track whether we've already done the split, and the two anchor IDs ---
+    // Tracker
+    const namespace = 'jupyterlab-urdf';
+    const tracker = new WidgetTracker<URDFWidget>({ namespace });
+
+    // Track split state
     let splitDone = false;
     let leftEditorRefId: string | null = null;
     let rightViewerRefId: string | null = null;
 
-    const tracker = new WidgetTracker<URDFWidget>({
-      namespace: 'jupyterlab-urdf'
-    });
+    // State restoration: reopen document if it was open previously
     if (restorer) {
       restorer.restore(tracker, {
         command: 'docmanager:open',
-        args: w => ({ path: w.context.path, factory: FACTORY }),
-        name: w => w.context.path
+        args: widget => ({ path: widget.context.path, factory: FACTORY }),
+        name: widget => {
+          console.debug('[Restorer]: Re-opening', widget.context.path);
+          return widget.context.path;
+        }
       });
     }
 
-    // Function to check if any URDF widgets are currently open
-    const checkAndResetSplitState = () => {
-      if (tracker.size === 0) {
-        // No URDF widgets left, reset split state
-        splitDone = false;
-        leftEditorRefId = null;
-        rightViewerRefId = null;
-      }
-    };
-
+    // Create widget factory so that manager knows about widget
     const widgetFactory = new URDFWidgetFactory({
       name: FACTORY,
       fileTypes: ['urdf'],
       defaultFor: ['urdf']
     });
 
+    // Add widget to tracker when created
     widgetFactory.widgetCreated.connect(async (sender, widget) => {
       widget.title.icon = urdf_icon;
       widget.title.iconClass = 'jp-URDFIcon';
-      widget.context.pathChanged.connect(() => tracker.save(widget));
+
+      // Notify instance tracker if restore data needs to be updated
+      widget.context.pathChanged.connect(() => {
+        tracker.save(widget);
+      });
       tracker.add(widget);
 
-      // Add dispose listener to reset split state when all widgets are closed
+      // Reset split state when all widgets are closed
       widget.disposed.connect(() => {
-        checkAndResetSplitState();
+        if (tracker.size === 0) {
+          splitDone = false;
+          leftEditorRefId = null;
+          rightViewerRefId = null;
+        }
       });
 
+      // Split layout on first open, then tab into panels
       if (!splitDone) {
-        // First file: split out the editor to the left of this viewer
         const editor = await commands.execute('docmanager:open', {
           path: widget.context.path,
           factory: 'Editor',
@@ -118,14 +124,12 @@ const extension: JupyterFrontEndPlugin<void> = {
         leftEditorRefId = editor.id;
         rightViewerRefId = widget.id;
       } else {
-        // Subsequent viewers → tab them into the _right_ panel
         if (rightViewerRefId) {
           shell.add(widget, 'main', {
             mode: 'tab-after',
             ref: rightViewerRefId
           });
         }
-        // And open each new editor as a tab in the _left_ panel
         if (leftEditorRefId) {
           await commands.execute('docmanager:open', {
             path: widget.context.path,
@@ -136,7 +140,10 @@ const extension: JupyterFrontEndPlugin<void> = {
       }
     });
 
+    // Register widget and model factories
     app.docRegistry.addWidgetFactory(widgetFactory);
+
+    // Register file type
     app.docRegistry.addFileType({
       name: 'urdf',
       displayName: 'URDF',
@@ -148,22 +155,26 @@ const extension: JupyterFrontEndPlugin<void> = {
       icon: urdf_icon
     });
 
-    // new‐file command now just fires the viewer; widgetCreated handles the rest
+    // Add command for creating new urdf (file)
     commands.addCommand('urdf:create-new', {
       label: 'Create new URDF',
       icon: urdf_icon,
+      iconClass: 'jp-URDFIcon',
       caption: 'Create a new URDF',
-      execute: async () => {
+      execute: () => {
         const cwd = browserFactory.model.path;
-        const { path } = await commands.execute('docmanager:new-untitled', {
-          path: cwd,
-          type: 'file',
-          ext: '.urdf'
-        });
-        await commands.execute('docmanager:open', {
-          path,
-          factory: FACTORY
-        });
+        commands
+          .execute('docmanager:new-untitled', {
+            path: cwd,
+            type: 'file',
+            ext: '.urdf'
+          })
+          .then(model =>
+            commands.execute('docmanager:open', {
+              path: model.path,
+              factory: FACTORY
+            })
+          );
       }
     });
 
