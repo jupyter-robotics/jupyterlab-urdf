@@ -43,7 +43,7 @@ export class URDFControls extends GUI {
     // Add resize functionality
     this._setupResizeHandling({
       minWidth: 150,
-      maxWidth: 500,
+      maxWidth: 1000,
       grabZoneWidth: 12
     });
 

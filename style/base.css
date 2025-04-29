@@ -28,7 +28,7 @@
   border: none;
   box-sizing: border-box;
   min-width: 150px;
-  max-width: 500px;
+  max-width: 1000px;
   padding-bottom: 20px;
 }
 
@@ -108,6 +108,12 @@
 
 .urdf-gui .closed li:not(.title) {
   padding: 0;
+}
+
+.urdf-gui .c {
+  float: right;
+  max-width: 180px;
+  position: relative;
 }
 
 .urdf-gui .c .slider {
