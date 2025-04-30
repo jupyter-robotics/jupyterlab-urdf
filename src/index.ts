@@ -69,7 +69,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     const namespace = 'jupyterlab-urdf';
     const tracker = new WidgetTracker<URDFWidget>({ namespace });
 
-    // Track split state
+    // Track and persist split panel state
     const splitDoneKey = 'jupyterlab-urdf:splitDone';
     const leftEditorRefKey = 'jupyterlab-urdf:leftEditorRefId';
     const rightViewerRefKey = 'jupyterlab-urdf:rightViewerRefId';
