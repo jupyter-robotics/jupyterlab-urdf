@@ -43,7 +43,6 @@ export class URDFControls extends GUI {
     // Add resize functionality
     this._setupResizeHandling({
       minWidth: 150,
-      maxWidth: 1000,
       grabZoneWidth: 12
     });
 
@@ -224,14 +223,13 @@ export class URDFControls extends GUI {
    */
   private _setupResizeHandling(options: {
     minWidth: number;
-    maxWidth: number;
     grabZoneWidth: number;
   }): void {
     let isResizing = false;
     let startX: number;
     let startWidth: number;
 
-    const { minWidth, maxWidth, grabZoneWidth } = options;
+    const { minWidth, grabZoneWidth } = options;
 
     const onMouseMove = (e: MouseEvent) => {
       if (!isResizing) {
@@ -239,7 +237,7 @@ export class URDFControls extends GUI {
       }
 
       const width = startWidth - (e.clientX - startX);
-      if (width >= minWidth && width <= maxWidth) {
+      if (width >= minWidth) {
         this.domElement.style.width = `${width}px`;
       }
     };
