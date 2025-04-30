@@ -63,11 +63,20 @@ const extension: JupyterFrontEndPlugin<void> = {
     languageRegistry: IEditorLanguageRegistry
   ) => {
     console.log('JupyterLab extension URDF is activated!');
-    const { commands } = app;
+    const { commands, shell } = app;
 
     // Tracker
     const namespace = 'jupyterlab-urdf';
     const tracker = new WidgetTracker<URDFWidget>({ namespace });
+
+    // Track and persist split panel state
+    const splitDoneKey = 'jupyterlab-urdf:splitDone';
+    const leftEditorRefKey = 'jupyterlab-urdf:leftEditorRefId';
+    const rightViewerRefKey = 'jupyterlab-urdf:rightViewerRefId';
+    let splitDone = localStorage.getItem(splitDoneKey) === 'true';
+    let leftEditorRefId: string | null = localStorage.getItem(leftEditorRefKey);
+    let rightViewerRefId: string | null =
+      localStorage.getItem(rightViewerRefKey);
 
     // State restoration: reopen document if it was open previously
     if (restorer) {
@@ -89,7 +98,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     });
 
     // Add widget to tracker when created
-    widgetFactory.widgetCreated.connect((sender, widget) => {
+    widgetFactory.widgetCreated.connect(async (sender, widget) => {
       widget.title.icon = urdf_icon;
       widget.title.iconClass = 'jp-URDFIcon';
 
@@ -98,6 +107,47 @@ const extension: JupyterFrontEndPlugin<void> = {
         tracker.save(widget);
       });
       tracker.add(widget);
+
+      // Reset split state when all widgets are closed
+      widget.disposed.connect(() => {
+        if (tracker.size === 0) {
+          splitDone = false;
+          localStorage.setItem(splitDoneKey, 'false');
+          leftEditorRefId = null;
+          rightViewerRefId = null;
+          localStorage.removeItem(leftEditorRefKey);
+          localStorage.removeItem(rightViewerRefKey);
+        }
+      });
+
+      // Split layout on first open, then tab into panels
+      if (!splitDone) {
+        const editor = await commands.execute('docmanager:open', {
+          path: widget.context.path,
+          factory: 'Editor',
+          options: { mode: 'split-left', ref: widget.id }
+        });
+        splitDone = true;
+        localStorage.setItem(splitDoneKey, 'true');
+        leftEditorRefId = editor.id;
+        rightViewerRefId = widget.id;
+        localStorage.setItem(leftEditorRefKey, leftEditorRefId as string);
+        localStorage.setItem(rightViewerRefKey, rightViewerRefId as string);
+      } else {
+        if (rightViewerRefId) {
+          shell.add(widget, 'main', {
+            mode: 'tab-after',
+            ref: rightViewerRefId
+          });
+        }
+        if (leftEditorRefId) {
+          await commands.execute('docmanager:open', {
+            path: widget.context.path,
+            factory: 'Editor',
+            options: { mode: 'tab-after', ref: leftEditorRefId }
+          });
+        }
+      }
     });
 
     // Register widget and model factories
