@@ -25,6 +25,8 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   private _colorGround = new THREE.Color();
   private _gridHeight = 0;
   private _robotIndex = -1;
+  private _directionalLightHelper: THREE.DirectionalLightHelper | null = null;
+  private _hemisphereLightHelper: THREE.HemisphereLightHelper | null = null;
 
   /**
    * Creates a renderer to manage the scene elements
@@ -143,13 +145,13 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     directionalLight.shadow.camera.far = 40;
     this._scene.add(directionalLight);
 
-    // Add a helper for the directional light with black color
-    const directionalLightHelper = new THREE.DirectionalLightHelper(
+    // Add a helper for the directional light
+    this._directionalLightHelper = new THREE.DirectionalLightHelper(
       directionalLight,
       2,
-      new THREE.Color(0x000000) // Black color for helper
+      new THREE.Color(0x000000)
     );
-    this._scene.add(directionalLightHelper);
+    this._scene.add(this._directionalLightHelper);
 
     const ambientLight = new THREE.AmbientLight('#fff');
     ambientLight.intensity = 0.5;
@@ -163,13 +165,13 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     hemisphereLight.intensity = 1;
     this._scene.add(hemisphereLight);
 
-    // Add a helper for the hemisphere light with black color
-    const hemisphereLightHelper = new THREE.HemisphereLightHelper(
+    // Add a helper for the hemisphere light
+    this._hemisphereLightHelper = new THREE.HemisphereLightHelper(
       hemisphereLight,
       2
     );
-    hemisphereLightHelper.material.color.set(0x000000); // Black color for helper
-    this._scene.add(hemisphereLightHelper);
+    this._hemisphereLightHelper.material.color.set(0x000000); // Black color for helper
+    this._scene.add(this._hemisphereLightHelper);
   }
 
   /**
@@ -185,6 +187,80 @@ export class URDFRenderer extends THREE.WebGLRenderer {
       .map(i => i.type)
       .indexOf('HemisphereLight');
     this._scene.children[hemisphereIndex] = hemisphereLight;
+  }
+
+  /**
+   * Toggle the visibility of the directional light helper
+   *
+   * @param visible - Whether the helper should be visible
+   */
+  setDirectionalLightHelperVisibility(visible: boolean): void {
+    if (this._directionalLightHelper) {
+      this._directionalLightHelper.visible = visible;
+      this.redraw();
+    }
+  }
+
+  /**
+   * Toggle the visibility of the hemisphere light helper
+   *
+   * @param visible - Whether the helper should be visible
+   */
+  setHemisphereLightHelperVisibility(visible: boolean): void {
+    if (this._hemisphereLightHelper) {
+      this._hemisphereLightHelper.visible = visible;
+      this.redraw();
+    }
+  }
+
+  /**
+   * Updates the target of the directional light
+   *
+   * @param x - The x coordinate of the target
+   * @param y - The y coordinate of the target
+   * @param z - The z coordinate of the target
+   */
+  setDirectionalLightTarget(x: number, y: number, z: number): void {
+    const directionalLight = this._scene.children.find(
+      obj => obj.type === 'DirectionalLight'
+    ) as THREE.DirectionalLight;
+
+    if (directionalLight) {
+      directionalLight.target.position.set(x, y, z);
+      if (this._directionalLightHelper) {
+        this._directionalLightHelper.update();
+      }
+      this.redraw();
+    }
+  }
+
+  /**
+   * Updates the position of the directional light using spherical coordinates
+   *
+   * @param distance - Distance from target
+   * @param altitude - Angle in radians from the horizontal plane (elevation)
+   * @param azimuth - Angle in radians around the vertical axis
+   */
+  setDirectionalLightPositionSpherical(
+    distance: number,
+    altitude: number,
+    azimuth: number
+  ): void {
+    const directionalLight = this._scene.children.find(
+      obj => obj.type === 'DirectionalLight'
+    ) as THREE.DirectionalLight;
+
+    if (directionalLight) {
+      const x = distance * Math.cos(altitude) * Math.cos(azimuth);
+      const z = distance * Math.cos(altitude) * Math.sin(azimuth);
+      const y = distance * Math.sin(altitude);
+
+      directionalLight.position.set(x, y, z);
+      if (this._directionalLightHelper) {
+        this._directionalLightHelper.update();
+      }
+      this.redraw();
+    }
   }
 
   /**
@@ -265,6 +341,9 @@ export class URDFRenderer extends THREE.WebGLRenderer {
 
     if (directionalLight) {
       directionalLight.position.set(x, y, z);
+      if (this._directionalLightHelper) {
+        this._directionalLightHelper.update();
+      }
       this.redraw();
     }
   }

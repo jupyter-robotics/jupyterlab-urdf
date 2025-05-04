@@ -287,14 +287,22 @@ export class URDFControls extends GUI {
         this._lightsFolder.addFolder('Directional Light');
       const ambientFolder = this._lightsFolder.addFolder('Ambient Light');
       const hemisphereFolder = this._lightsFolder.addFolder('Hemisphere Light');
+      const helpersFolder = this._lightsFolder.addFolder('Light Helpers');
 
       // Initialize settings for each light type
       const directionalSettings = {
-        X: 3,
-        Y: 10,
-        Z: 3,
+        // Spherical coordinates are more intuitive for light positioning
+        Distance: 10.9, // Initial distance from origin
+        Altitude: Math.PI / 4, // Initial altitude angle (radians)
+        Azimuth: Math.PI / 4, // Initial azimuth angle (radians)
         Color: [255, 255, 255],
-        Intensity: 1.0
+        Intensity: 1.0,
+        // Adding target controls
+        Target: {
+          X: 0,
+          Y: 0,
+          Z: 0
+        }
       };
 
       const ambientSettings = {
@@ -308,35 +316,73 @@ export class URDFControls extends GUI {
         Intensity: 1.0
       };
 
+      const helperSettings = {
+        DirectionalHelper: true,
+        HemisphereHelper: true
+      };
+
       // Position limits and steps
       const minPosition = -20;
       const maxPosition = 20;
       const positionStep = 0.1;
+
+      // Spherical coordinate limits and steps
+      const minDistance = 0.1;
+      const maxDistance = 30;
+      const distanceStep = 0.1;
+      const minAngle = -Math.PI;
+      const maxAngle = Math.PI;
+      const angleStep = 0.01;
 
       // Intensity limits and steps
       const minIntensity = 0;
       const maxIntensity = 2;
       const intensityStep = 0.05;
 
-      // Directional light controls
+      // Target controls for directional light
+      const targetFolder = directionalFolder.addFolder('Target');
       this.controls.lights.directional = {
         position: {
-          x: directionalFolder.add(
+          // Using spherical coordinates instead of Cartesian
+          distance: directionalFolder.add(
             directionalSettings,
+            'Distance',
+            minDistance,
+            maxDistance,
+            distanceStep
+          ),
+          altitude: directionalFolder.add(
+            directionalSettings,
+            'Altitude',
+            minAngle,
+            maxAngle,
+            angleStep
+          ),
+          azimuth: directionalFolder.add(
+            directionalSettings,
+            'Azimuth',
+            minAngle,
+            maxAngle,
+            angleStep
+          )
+        },
+        target: {
+          x: targetFolder.add(
+            directionalSettings.Target,
             'X',
             minPosition,
             maxPosition,
             positionStep
           ),
-          y: directionalFolder.add(
-            directionalSettings,
+          y: targetFolder.add(
+            directionalSettings.Target,
             'Y',
             minPosition,
             maxPosition,
             positionStep
           ),
-          z: directionalFolder.add(
-            directionalSettings,
+          z: targetFolder.add(
+            directionalSettings.Target,
             'Z',
             minPosition,
             maxPosition,
@@ -379,6 +425,15 @@ export class URDFControls extends GUI {
           maxIntensity,
           intensityStep
         )
+      };
+
+      // Light helpers controls
+      this.controls.lights.helpers = {
+        directionalHelper: helpersFolder.add(
+          helperSettings,
+          'DirectionalHelper'
+        ),
+        hemisphereHelper: helpersFolder.add(helperSettings, 'HemisphereHelper')
       };
 
       // Open main lights folder and directional subfolder

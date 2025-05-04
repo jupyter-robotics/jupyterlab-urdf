@@ -224,23 +224,54 @@ export class URDFLayout extends PanelLayout {
     // Directional light callbacks
     const directional = lightControl.directional;
 
-    // Position controls
-    directional.position.x.onChange((newX: number) => {
-      const y = directional.position.y.getValue();
-      const z = directional.position.z.getValue();
-      this._renderer.setDirectionalLightPosition(newX, y, z);
+    // Position controls using spherical coordinates
+    directional.position.distance.onChange((newDistance: number) => {
+      const altitude = directional.position.altitude.getValue();
+      const azimuth = directional.position.azimuth.getValue();
+      this._renderer.setDirectionalLightPositionSpherical(
+        newDistance,
+        altitude,
+        azimuth
+      );
     });
 
-    directional.position.y.onChange((newY: number) => {
-      const x = directional.position.x.getValue();
-      const z = directional.position.z.getValue();
-      this._renderer.setDirectionalLightPosition(x, newY, z);
+    directional.position.altitude.onChange((newAltitude: number) => {
+      const distance = directional.position.distance.getValue();
+      const azimuth = directional.position.azimuth.getValue();
+      this._renderer.setDirectionalLightPositionSpherical(
+        distance,
+        newAltitude,
+        azimuth
+      );
     });
 
-    directional.position.z.onChange((newZ: number) => {
-      const x = directional.position.x.getValue();
-      const y = directional.position.y.getValue();
-      this._renderer.setDirectionalLightPosition(x, y, newZ);
+    directional.position.azimuth.onChange((newAzimuth: number) => {
+      const distance = directional.position.distance.getValue();
+      const altitude = directional.position.altitude.getValue();
+      this._renderer.setDirectionalLightPositionSpherical(
+        distance,
+        altitude,
+        newAzimuth
+      );
+    });
+
+    // Target position controls for directional light
+    directional.target.x.onChange((newX: number) => {
+      const y = directional.target.y.getValue();
+      const z = directional.target.z.getValue();
+      this._renderer.setDirectionalLightTarget(newX, y, z);
+    });
+
+    directional.target.y.onChange((newY: number) => {
+      const x = directional.target.x.getValue();
+      const z = directional.target.z.getValue();
+      this._renderer.setDirectionalLightTarget(x, newY, z);
+    });
+
+    directional.target.z.onChange((newZ: number) => {
+      const x = directional.target.x.getValue();
+      const y = directional.target.y.getValue();
+      this._renderer.setDirectionalLightTarget(x, y, newZ);
     });
 
     // Color and intensity controls
@@ -250,6 +281,15 @@ export class URDFLayout extends PanelLayout {
 
     directional.intensity.onChange((newIntensity: number) => {
       this._renderer.setDirectionalLightIntensity(newIntensity);
+    });
+
+    // Light helper visibility toggles
+    lightControl.helpers.directionalHelper.onChange((visible: boolean) => {
+      this._renderer.setDirectionalLightHelperVisibility(visible);
+    });
+
+    lightControl.helpers.hemisphereHelper.onChange((visible: boolean) => {
+      this._renderer.setHemisphereLightHelperVisibility(visible);
     });
 
     // Ambient light callbacks
