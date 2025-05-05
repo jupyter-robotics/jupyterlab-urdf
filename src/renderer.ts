@@ -134,43 +134,48 @@ export class URDFRenderer extends THREE.WebGLRenderer {
    * Adds three lights to the scene
    */
   private _addLights(): void {
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    // Directional light
+    const directionalLight = new THREE.DirectionalLight(0xfff2cc, 1.8);
     directionalLight.castShadow = true;
-    directionalLight.position.set(3, 10, 3);
-    directionalLight.shadow.camera.top = 2;
-    directionalLight.shadow.camera.bottom = -2;
-    directionalLight.shadow.camera.left = -2;
-    directionalLight.shadow.camera.right = 2;
-    directionalLight.shadow.camera.near = 0.1;
-    directionalLight.shadow.camera.far = 40;
+    directionalLight.position.set(5, 12, 6);
+    directionalLight.shadow.camera.top = 5;
+    directionalLight.shadow.camera.bottom = -5;
+    directionalLight.shadow.camera.left = -5;
+    directionalLight.shadow.camera.right = 5;
+    directionalLight.shadow.camera.near = 0.5;
+    directionalLight.shadow.camera.far = 50;
     this._scene.add(directionalLight);
 
-    // Add a helper for the directional light
+    // Directional light helper
     this._directionalLightHelper = new THREE.DirectionalLightHelper(
       directionalLight,
       2,
       new THREE.Color(0x000000)
     );
+    this._directionalLightHelper.visible = false;
     this._scene.add(this._directionalLightHelper);
 
-    const ambientLight = new THREE.AmbientLight('#fff');
-    ambientLight.intensity = 0.5;
+    // Ambient light
+    const ambientLight = new THREE.AmbientLight(0x404040);
+    ambientLight.intensity = 0.1;
     ambientLight.position.set(0, 5, 0);
     this._scene.add(ambientLight);
 
+    // Hemisphere light
     const hemisphereLight = new THREE.HemisphereLight(
-      this._colorSky,
-      this._colorGround
+      0x8888ff, // cool sky
+      0x442200, // warm ground
+      0.4
     );
-    hemisphereLight.intensity = 1;
     this._scene.add(hemisphereLight);
 
-    // Add a helper for the hemisphere light
+    // Hemisphere light helper
     this._hemisphereLightHelper = new THREE.HemisphereLightHelper(
       hemisphereLight,
       2
     );
-    this._hemisphereLightHelper.material.color.set(0x000000); // Black color for helper
+    this._hemisphereLightHelper.material.color.set(0x000000);
+    this._hemisphereLightHelper.visible = false; // Set to hidden by default
     this._scene.add(this._hemisphereLightHelper);
   }
 

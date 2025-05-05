@@ -283,13 +283,9 @@ export class URDFLayout extends PanelLayout {
       this._renderer.setDirectionalLightIntensity(newIntensity);
     });
 
-    // Light helper visibility toggles
-    lightControl.helpers.directionalHelper.onChange((visible: boolean) => {
+    // Helper visibility toggle for directional light
+    directional.showHelper.onChange((visible: boolean) => {
       this._renderer.setDirectionalLightHelperVisibility(visible);
-    });
-
-    lightControl.helpers.hemisphereHelper.onChange((visible: boolean) => {
-      this._renderer.setHemisphereLightHelperVisibility(visible);
     });
 
     // Ambient light callbacks
@@ -316,6 +312,11 @@ export class URDFLayout extends PanelLayout {
 
     hemisphere.intensity.onChange((newIntensity: number) => {
       this._renderer.setHemisphereLightIntensity(newIntensity);
+    });
+
+    // Helper visibility toggle for hemisphere light
+    hemisphere.showHelper.onChange((visible: boolean) => {
+      this._renderer.setHemisphereLightHelperVisibility(visible);
     });
   }
 

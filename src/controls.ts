@@ -287,16 +287,15 @@ export class URDFControls extends GUI {
         this._lightsFolder.addFolder('Directional Light');
       const ambientFolder = this._lightsFolder.addFolder('Ambient Light');
       const hemisphereFolder = this._lightsFolder.addFolder('Hemisphere Light');
-      const helpersFolder = this._lightsFolder.addFolder('Light Helpers');
 
       // Initialize settings for each light type
       const directionalSettings = {
-        // Spherical coordinates are more intuitive for light positioning
         Distance: 10.9, // Initial distance from origin
         Altitude: Math.PI / 4, // Initial altitude angle (radians)
         Azimuth: Math.PI / 4, // Initial azimuth angle (radians)
         Color: [255, 255, 255],
         Intensity: 1.0,
+        ShowHelper: false,
         // Adding target controls
         Target: {
           X: 0,
@@ -312,13 +311,9 @@ export class URDFControls extends GUI {
 
       const hemisphereSettings = {
         SkyColor: [255, 255, 255],
-        GroundColor: [38, 50, 56], // Default hex: #263238
-        Intensity: 1.0
-      };
-
-      const helperSettings = {
-        DirectionalHelper: true,
-        HemisphereHelper: true
+        GroundColor: [38, 50, 56],
+        Intensity: 1.0,
+        ShowHelper: false // Helper toggle moved here, off by default
       };
 
       // Position limits and steps
@@ -396,7 +391,8 @@ export class URDFControls extends GUI {
           minIntensity,
           maxIntensity,
           intensityStep
-        )
+        ),
+        showHelper: directionalFolder.add(directionalSettings, 'ShowHelper')
       };
 
       // Ambient light controls
@@ -424,16 +420,8 @@ export class URDFControls extends GUI {
           minIntensity,
           maxIntensity,
           intensityStep
-        )
-      };
-
-      // Light helpers controls
-      this.controls.lights.helpers = {
-        directionalHelper: helpersFolder.add(
-          helperSettings,
-          'DirectionalHelper'
         ),
-        hemisphereHelper: helpersFolder.add(helperSettings, 'HemisphereHelper')
+        showHelper: hemisphereFolder.add(hemisphereSettings, 'ShowHelper')
       };
 
       // Open main lights folder and directional subfolder
