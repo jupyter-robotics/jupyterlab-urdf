@@ -110,12 +110,6 @@
   padding: 0;
 }
 
-.urdf-gui .c {
-  float: right !important;
-  max-width: 180px;
-  position: relative;
-}
-
 .urdf-gui .c .slider {
   margin: 0;
   margin-top: 0.5em;
@@ -152,4 +146,35 @@
   width: 100% !important;
   color: white !important;
   position: absolute;
+}
+
+.urdf-gui li.cr.number.has-slider .property-name {
+  flex: 1 1;
+  padding-right: 15px;
+}
+
+.urdf-gui li.cr.number.has-slider .property-name:hover {
+  overflow-x: auto;
+  text-overflow: unset;
+}
+
+/* Adjust the control container */
+.urdf-gui li.cr.number.has-slider .c {
+  flex: 0 1 180px;
+  margin-left: auto;
+}
+
+li.cr.number.has-slider > div {
+  display: flex;
+}
+
+/* Styling for Chromium based browsers*/
+.urdf-gui li.cr.number.has-slider .property-name:hover::-webkit-scrollbar {
+  height: 8px;
+}
+
+.urdf-gui
+  li.cr.number.has-slider
+  .property-name:hover::-webkit-scrollbar-thumb {
+  background: #888;
 }
