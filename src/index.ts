@@ -78,6 +78,16 @@ const extension: JupyterFrontEndPlugin<void> = {
     let rightViewerRefId: string | null =
       localStorage.getItem(rightViewerRefKey);
 
+    // Reset our “splitDone” flags & remove saved refs
+    function resetSplitState() {
+      splitDone = false;
+      localStorage.setItem(splitDoneKey, 'false');
+      leftEditorRefId = null;
+      rightViewerRefId = null;
+      localStorage.removeItem(leftEditorRefKey);
+      localStorage.removeItem(rightViewerRefKey);
+    }
+
     // State restoration: reopen document if it was open previously
     if (restorer) {
       restorer.restore(tracker, {
@@ -111,14 +121,20 @@ const extension: JupyterFrontEndPlugin<void> = {
       // Reset split state when all widgets are closed
       widget.disposed.connect(() => {
         if (tracker.size === 0) {
-          splitDone = false;
-          localStorage.setItem(splitDoneKey, 'false');
-          leftEditorRefId = null;
-          rightViewerRefId = null;
-          localStorage.removeItem(leftEditorRefKey);
-          localStorage.removeItem(rightViewerRefKey);
+          resetSplitState();
         }
       });
+
+      // Detect stale editor-ref
+      if (splitDone && leftEditorRefId) {
+        // look through all widgets in the main area
+        const allMain = [...shell.widgets('main')];
+        const stillHasEditor = allMain.some(w => w.id === leftEditorRefId);
+        if (!stillHasEditor) {
+          // the editor tab was closed ⇒ reset split state
+          resetSplitState();
+        }
+      }
 
       // Split layout on first open, then tab into panels
       if (!splitDone) {
