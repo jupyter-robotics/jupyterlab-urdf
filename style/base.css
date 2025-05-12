@@ -148,6 +148,12 @@
   position: absolute;
 }
 
+/* Expand hover area to reach color pickers */
+.urdf-gui .cr.color .c:hover {
+  padding: 15px 0;
+  margin: -15px 0;
+}
+
 .urdf-gui li.cr.number.has-slider .property-name {
   flex: 1 1;
   padding-right: 15px;
@@ -168,7 +174,7 @@ li.cr.number.has-slider > div {
   display: flex;
 }
 
-/* Styling for Chromium based browsers*/
+/* Styling for Chromium based browsers */
 .urdf-gui li.cr.number.has-slider .property-name:hover::-webkit-scrollbar {
   height: 8px;
 }
@@ -177,10 +183,4 @@ li.cr.number.has-slider > div {
   li.cr.number.has-slider
   .property-name:hover::-webkit-scrollbar-thumb {
   background: #888;
-}
-
-/* Expand hover area to reach color pickers */
-.urdf-gui .cr.color .c:hover {
-  padding: 15px 0;
-  margin: -15px 0;
 }
