@@ -178,3 +178,9 @@ li.cr.number.has-slider > div {
   .property-name:hover::-webkit-scrollbar-thumb {
   background: #888;
 }
+
+/* Expand hover area to reach color pickers */
+.urdf-gui .cr.color .c:hover {
+  padding: 15px 0;
+  margin: -15px 0;
+}
