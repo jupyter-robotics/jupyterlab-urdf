@@ -137,7 +137,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     // Directional light
     const directionalLight = new THREE.DirectionalLight(0xfff2cc, 1.8);
     directionalLight.castShadow = true;
-    directionalLight.position.set(5, 12, 6);
+    directionalLight.position.set(3, 3, 3);
     directionalLight.shadow.camera.top = 5;
     directionalLight.shadow.camera.bottom = -5;
     directionalLight.shadow.camera.left = -5;
@@ -242,12 +242,10 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   /**
    * Updates the position of the directional light using spherical coordinates
    *
-   * @param distance - Distance from target
    * @param altitude - Angle in radians from the horizontal plane (elevation)
    * @param azimuth - Angle in radians around the vertical axis
    */
   setDirectionalLightPositionSpherical(
-    distance: number,
     altitude: number,
     azimuth: number
   ): void {
@@ -256,6 +254,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     ) as THREE.DirectionalLight;
 
     if (directionalLight) {
+      const distance = 3;
       const x = distance * Math.cos(altitude) * Math.cos(azimuth);
       const z = distance * Math.cos(altitude) * Math.sin(azimuth);
       const y = distance * Math.sin(altitude);

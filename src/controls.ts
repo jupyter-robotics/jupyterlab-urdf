@@ -290,9 +290,8 @@ export class URDFControls extends GUI {
 
       // Initialize settings for each light type
       const directionalSettings = {
-        Distance: 10.9, // Initial distance from origin
-        Altitude: Math.PI / 4, // Initial altitude angle (radians)
-        Azimuth: Math.PI / 4, // Initial azimuth angle (radians)
+        Altitude: Math.PI / 4, // 45 degrees elevation
+        Azimuth: Math.PI / 4, // 45 degrees around vertical axis
         Color: [255, 255, 255],
         Intensity: 1.0,
         ShowHelper: false,
@@ -313,39 +312,28 @@ export class URDFControls extends GUI {
         SkyColor: [255, 255, 255],
         GroundColor: [38, 50, 56],
         Intensity: 1.0,
-        ShowHelper: false // Helper toggle moved here, off by default
+        ShowHelper: false
       };
 
       // Position limits and steps
-      const minPosition = -20;
-      const maxPosition = 20;
+      const minPosition = -50;
+      const maxPosition = 50;
       const positionStep = 0.1;
 
-      // Spherical coordinate limits and steps
-      const minDistance = 0.1;
-      const maxDistance = 30;
-      const distanceStep = 0.1;
+      // Spherical coordinate angle limits and steps
       const minAngle = -Math.PI;
       const maxAngle = Math.PI;
       const angleStep = 0.01;
 
       // Intensity limits and steps
       const minIntensity = 0;
-      const maxIntensity = 2;
-      const intensityStep = 0.05;
+      const maxIntensity = 10;
+      const intensityStep = 0.1;
 
       // Target controls for directional light
       const targetFolder = directionalFolder.addFolder('Target');
       this.controls.lights.directional = {
         position: {
-          // Using spherical coordinates instead of Cartesian
-          distance: directionalFolder.add(
-            directionalSettings,
-            'Distance',
-            minDistance,
-            maxDistance,
-            distanceStep
-          ),
           altitude: directionalFolder.add(
             directionalSettings,
             'Altitude',

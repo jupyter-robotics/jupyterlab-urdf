@@ -225,34 +225,14 @@ export class URDFLayout extends PanelLayout {
     const directional = lightControl.directional;
 
     // Position controls using spherical coordinates
-    directional.position.distance.onChange((newDistance: number) => {
-      const altitude = directional.position.altitude.getValue();
-      const azimuth = directional.position.azimuth.getValue();
-      this._renderer.setDirectionalLightPositionSpherical(
-        newDistance,
-        altitude,
-        azimuth
-      );
-    });
-
     directional.position.altitude.onChange((newAltitude: number) => {
-      const distance = directional.position.distance.getValue();
       const azimuth = directional.position.azimuth.getValue();
-      this._renderer.setDirectionalLightPositionSpherical(
-        distance,
-        newAltitude,
-        azimuth
-      );
+      this._renderer.setDirectionalLightPositionSpherical(newAltitude, azimuth);
     });
 
     directional.position.azimuth.onChange((newAzimuth: number) => {
-      const distance = directional.position.distance.getValue();
       const altitude = directional.position.altitude.getValue();
-      this._renderer.setDirectionalLightPositionSpherical(
-        distance,
-        altitude,
-        newAzimuth
-      );
+      this._renderer.setDirectionalLightPositionSpherical(altitude, newAzimuth);
     });
 
     // Target position controls for directional light
