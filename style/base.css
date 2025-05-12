@@ -27,6 +27,18 @@
   color: var(--gui-color-font);
   border: none;
   box-sizing: border-box;
+  min-width: 150px;
+  max-width: 98%;
+  padding-bottom: 20px;
+}
+
+/* Add a resize handle on the left border */
+.urdf-gui::before {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 100%;
+  cursor: ew-resize;
 }
 
 .urdf-gui li.folder {
@@ -129,8 +141,46 @@
   overflow: scroll;
 }
 
+/* Style for Dat.GUI's close button */
+.urdf-gui .close-button {
+  width: 100% !important;
+  color: white !important;
+  position: absolute;
+}
+
 /* Expand hover area to reach color pickers */
 .urdf-gui .cr.color .c:hover {
   padding: 15px 0;
   margin: -15px 0;
+}
+
+.urdf-gui li.cr.number.has-slider .property-name {
+  flex: 1 1;
+  padding-right: 15px;
+}
+
+.urdf-gui li.cr.number.has-slider .property-name:hover {
+  overflow-x: auto;
+  text-overflow: unset;
+}
+
+/* Adjust the control container */
+.urdf-gui li.cr.number.has-slider .c {
+  flex: 0 1 180px;
+  margin-left: auto;
+}
+
+li.cr.number.has-slider > div {
+  display: flex;
+}
+
+/* Styling for Chromium based browsers */
+.urdf-gui li.cr.number.has-slider .property-name:hover::-webkit-scrollbar {
+  height: 8px;
+}
+
+.urdf-gui
+  li.cr.number.has-slider
+  .property-name:hover::-webkit-scrollbar-thumb {
+  background: #888;
 }

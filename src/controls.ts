@@ -40,6 +40,13 @@ export class URDFControls extends GUI {
     this.domElement.style.right = '5px';
     this.domElement.setAttribute('class', 'dg main urdf-gui');
 
+    // Add resize functionality
+    this._setupResizeHandling({
+      minWidth: 150,
+      grabZoneWidth: 12
+    });
+
+    // Create folders
     this._workspaceFolder = this.addFolder('Workspace');
     this._workspaceFolder.domElement.setAttribute(
       'class',
@@ -206,5 +213,54 @@ export class URDFControls extends GUI {
       this._jointsFolder.open();
     }
     return this.controls.joints;
+  }
+
+  /**
+   * Sets up panel resizing functionality
+   * @param minWidth - Minimum width of the panel
+   * @param maxWidth - Maximum width of the panel
+   * @param grabZoneWidth - Width of the area where the mouse can be clicked
+   */
+  private _setupResizeHandling(options: {
+    minWidth: number;
+    grabZoneWidth: number;
+  }): void {
+    let isResizing = false;
+    let startX: number;
+    let startWidth: number;
+
+    const { minWidth, grabZoneWidth } = options;
+
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isResizing) {
+        return;
+      }
+
+      const width = startWidth - (e.clientX - startX);
+      if (width >= minWidth) {
+        this.domElement.style.width = `${width}px`;
+      }
+    };
+
+    const onMouseUp = () => {
+      isResizing = false;
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    this.domElement.addEventListener('mousedown', (e: MouseEvent) => {
+      if (
+        e.clientX <
+        this.domElement.getBoundingClientRect().left + grabZoneWidth
+      ) {
+        isResizing = true;
+        startX = e.clientX;
+        startWidth = parseInt(getComputedStyle(this.domElement).width, 10);
+        e.preventDefault();
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+      }
+    });
   }
 }
