@@ -16,7 +16,6 @@ export class URDFControls extends GUI {
   private _workspaceFolder: any;
   private _sceneFolder: any;
   private _jointsFolder: any;
-  private _lightsFolder: any;
   private _workingPath = '';
 
   controls: any = {
@@ -49,6 +48,9 @@ export class URDFControls extends GUI {
     });
 
     // Create folders
+    this._jointsFolder = this.addFolder('Joints');
+    this._jointsFolder.domElement.setAttribute('class', 'dg joints-folder');
+
     this._workspaceFolder = this.addFolder('Workspace');
     this._workspaceFolder.domElement.setAttribute(
       'class',
@@ -57,12 +59,6 @@ export class URDFControls extends GUI {
 
     this._sceneFolder = this.addFolder('Scene');
     this._sceneFolder.domElement.setAttribute('class', 'dg scene-folder');
-
-    this._jointsFolder = this.addFolder('Joints');
-    this._jointsFolder.domElement.setAttribute('class', 'dg joints-folder');
-
-    this._lightsFolder = this.addFolder('Lights');
-    this._lightsFolder.domElement.setAttribute('class', 'dg lights-folder');
   }
 
   /**
@@ -84,13 +80,6 @@ export class URDFControls extends GUI {
    */
   get jointsFolder() {
     return this._jointsFolder;
-  }
-
-  /**
-   * Retrieves the folder with lights settings
-   */
-  get lightsFolder() {
-    return this._lightsFolder;
   }
 
   /**
@@ -298,9 +287,9 @@ export class URDFControls extends GUI {
     if (this._isEmpty(this.controls.lights)) {
       // Create subfolders for each light
       const directionalFolder =
-        this._lightsFolder.addFolder('Directional Light');
-      const ambientFolder = this._lightsFolder.addFolder('Ambient Light');
-      const hemisphereFolder = this._lightsFolder.addFolder('Hemisphere Light');
+        this._sceneFolder.addFolder('Directional Light');
+      const ambientFolder = this._sceneFolder.addFolder('Ambient Light');
+      const hemisphereFolder = this._sceneFolder.addFolder('Hemisphere Light');
 
       // Initialize settings for each light type
       const directionalSettings = {
@@ -359,7 +348,9 @@ export class URDFControls extends GUI {
           maxIntensity,
           intensityStep
         ),
-        showHelper: directionalFolder.add(directionalSettings, 'ShowHelper')
+        showHelper: directionalFolder
+          .add(directionalSettings, 'ShowHelper')
+          .name('Show Helper')
       };
 
       // Ambient light controls
@@ -376,11 +367,12 @@ export class URDFControls extends GUI {
 
       // Hemisphere light controls
       this.controls.lights.hemisphere = {
-        skyColor: hemisphereFolder.addColor(hemisphereSettings, 'SkyColor'),
-        groundColor: hemisphereFolder.addColor(
-          hemisphereSettings,
-          'GroundColor'
-        ),
+        skyColor: hemisphereFolder
+          .addColor(hemisphereSettings, 'SkyColor')
+          .name('Sky Color'),
+        groundColor: hemisphereFolder
+          .addColor(hemisphereSettings, 'GroundColor')
+          .name('Ground Color'),
         intensity: hemisphereFolder.add(
           hemisphereSettings,
           'Intensity',
@@ -388,11 +380,13 @@ export class URDFControls extends GUI {
           maxIntensity,
           intensityStep
         ),
-        showHelper: hemisphereFolder.add(hemisphereSettings, 'ShowHelper')
+        showHelper: hemisphereFolder
+          .add(hemisphereSettings, 'ShowHelper')
+          .name('Show Helper')
       };
 
-      // Open main lights folder and directional subfolder
-      this._lightsFolder.open();
+      // Open Scene (lights) and directional subfolder
+      this._sceneFolder.open();
       directionalFolder.open();
     }
 
