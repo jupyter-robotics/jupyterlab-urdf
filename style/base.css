@@ -29,16 +29,9 @@
   box-sizing: border-box;
   min-width: 150px;
   max-width: 98%;
-  padding-bottom: 20px;
-}
-
-/* Add a resize handle on the left border */
-.urdf-gui::before {
-  content: '';
-  position: absolute;
-  width: 12px;
-  height: 100%;
-  cursor: ew-resize;
+  max-height: 75%;
+  overflow-y: auto;
+  overscroll-behavior-y: none;
 }
 
 .urdf-gui li.folder {
@@ -152,6 +145,13 @@
 .urdf-gui .cr.color .c:hover {
   padding: 15px 0;
   margin: -15px 0;
+}
+
+.urdf-gui .close-button {
+  width: 100% !important;
+  color: white !important;
+  position: sticky !important;
+  bottom: 0 !important;
 }
 
 .urdf-gui li.cr.number.has-slider .property-name {

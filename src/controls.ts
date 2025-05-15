@@ -274,7 +274,21 @@ export class URDFControls extends GUI {
         document.addEventListener('mouseup', onMouseUp);
       }
     });
+
+    // Show resize cursor when hovering near left edge
+    this.domElement.addEventListener('mousemove', (e: MouseEvent) => {
+      const rect = this.domElement.getBoundingClientRect();
+      const offsetX = e.clientX - rect.left;
+      this.domElement.style.cursor =
+        offsetX < grabZoneWidth || isResizing ? 'ew-resize' : 'auto';
+    });
+    this.domElement.addEventListener('mouseleave', () => {
+      if (!isResizing) {
+        this.domElement.style.cursor = 'auto';
+      }
+    });
   }
+
   /**
    * Creates controls for the different lights in the scene
    *
