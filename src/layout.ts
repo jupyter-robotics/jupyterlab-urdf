@@ -165,6 +165,7 @@ export class URDFLayout extends PanelLayout {
     this._setPathControls();
     this._setSceneControls();
     this._setJointControls();
+    this._setLightControls();
   }
 
   /**
@@ -211,6 +212,72 @@ export class URDFLayout extends PanelLayout {
       jointControl[jointName].onChange((newValue = 0) => {
         this._setJointValue(jointName, newValue);
       });
+    });
+  }
+
+  /**
+   * Set callback for changing directional light position in the controls panel.
+   */
+  private _setLightControls(): void {
+    const lightControl = this._controlsPanel.createLightControls();
+
+    // Directional light callbacks
+    const directional = lightControl.directional;
+
+    // Position controls using spherical coordinates
+    directional.position.altitude.onChange((newAltitude: number) => {
+      const azimuth = directional.position.azimuth.getValue();
+      this._renderer.setDirectionalLightPositionSpherical(newAltitude, azimuth);
+    });
+
+    directional.position.azimuth.onChange((newAzimuth: number) => {
+      const altitude = directional.position.altitude.getValue();
+      this._renderer.setDirectionalLightPositionSpherical(altitude, newAzimuth);
+    });
+
+    // Color and intensity controls
+    directional.color.onChange((newColor: number[]) => {
+      this._renderer.setDirectionalLightColor(newColor);
+    });
+
+    directional.intensity.onChange((newIntensity: number) => {
+      this._renderer.setDirectionalLightIntensity(newIntensity);
+    });
+
+    // Helper visibility toggle for directional light
+    directional.showHelper.onChange((visible: boolean) => {
+      this._renderer.setDirectionalLightHelperVisibility(visible);
+    });
+
+    // Ambient light callbacks
+    const ambient = lightControl.ambient;
+
+    ambient.color.onChange((newColor: number[]) => {
+      this._renderer.setAmbientLightColor(newColor);
+    });
+
+    ambient.intensity.onChange((newIntensity: number) => {
+      this._renderer.setAmbientLightIntensity(newIntensity);
+    });
+
+    // Hemisphere light callbacks
+    const hemisphere = lightControl.hemisphere;
+
+    hemisphere.skyColor.onChange((newColor: number[]) => {
+      this._renderer.setHemisphereLightSkyColor(newColor);
+    });
+
+    hemisphere.groundColor.onChange((newColor: number[]) => {
+      this._renderer.setHemisphereLightGroundColor(newColor);
+    });
+
+    hemisphere.intensity.onChange((newIntensity: number) => {
+      this._renderer.setHemisphereLightIntensity(newIntensity);
+    });
+
+    // Helper visibility toggle for hemisphere light
+    hemisphere.showHelper.onChange((visible: boolean) => {
+      this._renderer.setHemisphereLightHelperVisibility(visible);
     });
   }
 

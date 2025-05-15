@@ -25,6 +25,8 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   private _colorGround = new THREE.Color();
   private _gridHeight = 0;
   private _robotIndex = -1;
+  private _directionalLightHelper: THREE.DirectionalLightHelper | null = null;
+  private _hemisphereLightHelper: THREE.HemisphereLightHelper | null = null;
 
   /**
    * Creates a renderer to manage the scene elements
@@ -55,8 +57,17 @@ export class URDFRenderer extends THREE.WebGLRenderer {
 
     this._controls = new OrbitControls(this._camera, this.domElement);
     this._initControls();
-  }
 
+    this.printSceneLights();
+  }
+  printSceneLights() {
+    console.log('Scene Lights:');
+    this._scene.children.forEach(obj => {
+      if (obj.type.includes('Light')) {
+        console.log(obj);
+      }
+    });
+  }
   /**
    * Initializes the camera
    */
@@ -123,28 +134,49 @@ export class URDFRenderer extends THREE.WebGLRenderer {
    * Adds three lights to the scene
    */
   private _addLights(): void {
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    // Directional light
+    const directionalLight = new THREE.DirectionalLight(0xfff2cc, 1.8);
     directionalLight.castShadow = true;
-    directionalLight.position.set(3, 10, 3);
-    directionalLight.shadow.camera.top = 2;
-    directionalLight.shadow.camera.bottom = -2;
-    directionalLight.shadow.camera.left = -2;
-    directionalLight.shadow.camera.right = 2;
-    directionalLight.shadow.camera.near = 0.1;
-    directionalLight.shadow.camera.far = 40;
+    directionalLight.position.set(3, 3, 3);
+    directionalLight.shadow.camera.top = 5;
+    directionalLight.shadow.camera.bottom = -5;
+    directionalLight.shadow.camera.left = -5;
+    directionalLight.shadow.camera.right = 5;
+    directionalLight.shadow.camera.near = 0.5;
+    directionalLight.shadow.camera.far = 50;
     this._scene.add(directionalLight);
 
-    const ambientLight = new THREE.AmbientLight('#fff');
-    ambientLight.intensity = 0.5;
+    // Directional light helper
+    this._directionalLightHelper = new THREE.DirectionalLightHelper(
+      directionalLight,
+      2,
+      new THREE.Color(0x000000)
+    );
+    this._directionalLightHelper.visible = false;
+    this._scene.add(this._directionalLightHelper);
+
+    // Ambient light
+    const ambientLight = new THREE.AmbientLight(0x404040);
+    ambientLight.intensity = 0.1;
     ambientLight.position.set(0, 5, 0);
     this._scene.add(ambientLight);
 
+    // Hemisphere light
     const hemisphereLight = new THREE.HemisphereLight(
-      this._colorSky,
-      this._colorGround
+      0x8888ff, // cool sky
+      0x442200, // warm ground
+      0.4
     );
-    hemisphereLight.intensity = 1;
     this._scene.add(hemisphereLight);
+
+    // Hemisphere light helper
+    this._hemisphereLightHelper = new THREE.HemisphereLightHelper(
+      hemisphereLight,
+      2
+    );
+    this._hemisphereLightHelper.material.color.set(0x000000);
+    this._hemisphereLightHelper.visible = false; // Set to hidden by default
+    this._scene.add(this._hemisphereLightHelper);
   }
 
   /**
@@ -160,6 +192,58 @@ export class URDFRenderer extends THREE.WebGLRenderer {
       .map(i => i.type)
       .indexOf('HemisphereLight');
     this._scene.children[hemisphereIndex] = hemisphereLight;
+  }
+
+  /**
+   * Toggle the visibility of the directional light helper
+   *
+   * @param visible - Whether the helper should be visible
+   */
+  setDirectionalLightHelperVisibility(visible: boolean): void {
+    if (this._directionalLightHelper) {
+      this._directionalLightHelper.visible = visible;
+      this.redraw();
+    }
+  }
+
+  /**
+   * Toggle the visibility of the hemisphere light helper
+   *
+   * @param visible - Whether the helper should be visible
+   */
+  setHemisphereLightHelperVisibility(visible: boolean): void {
+    if (this._hemisphereLightHelper) {
+      this._hemisphereLightHelper.visible = visible;
+      this.redraw();
+    }
+  }
+
+  /**
+   * Updates the position of the directional light using spherical coordinates
+   *
+   * @param altitude - Angle in radians from the horizontal plane (elevation)
+   * @param azimuth - Angle in radians around the vertical axis
+   */
+  setDirectionalLightPositionSpherical(
+    altitude: number,
+    azimuth: number
+  ): void {
+    const directionalLight = this._scene.children.find(
+      obj => obj.type === 'DirectionalLight'
+    ) as THREE.DirectionalLight;
+
+    if (directionalLight) {
+      const distance = 3;
+      const x = distance * Math.cos(altitude) * Math.cos(azimuth);
+      const z = distance * Math.cos(altitude) * Math.sin(azimuth);
+      const y = distance * Math.sin(altitude);
+
+      directionalLight.position.set(x, y, z);
+      if (this._directionalLightHelper) {
+        this._directionalLightHelper.update();
+      }
+      this.redraw();
+    }
   }
 
   /**
@@ -224,6 +308,141 @@ export class URDFRenderer extends THREE.WebGLRenderer {
       this._scene.children[this._robotIndex] = robot;
     }
     this.redraw();
+  }
+
+  /**
+   * Updates the position of the directional light
+   *
+   * @param x - The new x position
+   * @param y - The new y position
+   * @param z - The new z position
+   */
+  setDirectionalLightPosition(x: number, y: number, z: number): void {
+    const directionalLight = this._scene.children.find(
+      obj => obj.type === 'DirectionalLight'
+    ) as THREE.DirectionalLight;
+
+    if (directionalLight) {
+      directionalLight.position.set(x, y, z);
+      if (this._directionalLightHelper) {
+        this._directionalLightHelper.update();
+      }
+      this.redraw();
+    }
+  }
+
+  /**
+   * Updates the color of the directional light
+   *
+   * @param newColor - The new color as [R, G, B] array 0-255
+   */
+  setDirectionalLightColor(newColor: number[]): void {
+    const directionalLight = this._scene.children.find(
+      obj => obj.type === 'DirectionalLight'
+    ) as THREE.DirectionalLight;
+
+    if (directionalLight) {
+      directionalLight.color = new THREE.Color(...newColor.map(x => x / 255));
+      this.redraw();
+    }
+  }
+
+  /**
+   * Updates the intensity of the directional light
+   *
+   * @param intensity - The new intensity value
+   */
+  setDirectionalLightIntensity(intensity: number): void {
+    const directionalLight = this._scene.children.find(
+      obj => obj.type === 'DirectionalLight'
+    ) as THREE.DirectionalLight;
+
+    if (directionalLight) {
+      directionalLight.intensity = intensity;
+      this.redraw();
+    }
+  }
+
+  /**
+   * Updates the color of the ambient light
+   *
+   * @param newColor - The new color as [R, G, B] array 0-255
+   */
+  setAmbientLightColor(newColor: number[]): void {
+    const ambientLight = this._scene.children.find(
+      obj => obj.type === 'AmbientLight'
+    ) as THREE.AmbientLight;
+
+    if (ambientLight) {
+      ambientLight.color = new THREE.Color(...newColor.map(x => x / 255));
+      this.redraw();
+    }
+  }
+
+  /**
+   * Updates the intensity of the ambient light
+   *
+   * @param intensity - The new intensity value
+   */
+  setAmbientLightIntensity(intensity: number): void {
+    const ambientLight = this._scene.children.find(
+      obj => obj.type === 'AmbientLight'
+    ) as THREE.AmbientLight;
+
+    if (ambientLight) {
+      ambientLight.intensity = intensity;
+      this.redraw();
+    }
+  }
+
+  /**
+   * Updates the hemisphere light sky color
+   *
+   * @param newColor - The new color as [R, G, B] array 0-255
+   */
+  setHemisphereLightSkyColor(newColor: number[]): void {
+    const hemisphereLight = this._scene.children.find(
+      obj => obj.type === 'HemisphereLight'
+    ) as THREE.HemisphereLight;
+
+    if (hemisphereLight) {
+      hemisphereLight.color = new THREE.Color(...newColor.map(x => x / 255));
+      this.redraw();
+    }
+  }
+
+  /**
+   * Updates the hemisphere light ground color
+   *
+   * @param newColor - The new color as [R, G, B] array 0-255
+   */
+  setHemisphereLightGroundColor(newColor: number[]): void {
+    const hemisphereLight = this._scene.children.find(
+      obj => obj.type === 'HemisphereLight'
+    ) as THREE.HemisphereLight;
+
+    if (hemisphereLight) {
+      hemisphereLight.groundColor = new THREE.Color(
+        ...newColor.map(x => x / 255)
+      );
+      this.redraw();
+    }
+  }
+
+  /**
+   * Updates the hemisphere light intensity
+   *
+   * @param intensity - The new intensity value
+   */
+  setHemisphereLightIntensity(intensity: number): void {
+    const hemisphereLight = this._scene.children.find(
+      obj => obj.type === 'HemisphereLight'
+    ) as THREE.HemisphereLight;
+
+    if (hemisphereLight) {
+      hemisphereLight.intensity = intensity;
+      this.redraw();
+    }
   }
 
   /**
