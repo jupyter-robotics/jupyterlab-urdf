@@ -308,13 +308,7 @@ export class URDFControls extends GUI {
         Azimuth: Math.PI / 4, // 45 degrees around vertical axis
         Color: [255, 255, 255],
         Intensity: 1.0,
-        ShowHelper: false,
-        // Adding target controls
-        Target: {
-          X: 0,
-          Y: 0,
-          Z: 0
-        }
+        ShowHelper: false
       };
 
       const ambientSettings = {
@@ -329,11 +323,6 @@ export class URDFControls extends GUI {
         ShowHelper: false
       };
 
-      // Position limits and steps
-      const minPosition = -50;
-      const maxPosition = 50;
-      const positionStep = 0.1;
-
       // Spherical coordinate angle limits and steps
       const minAngle = -Math.PI;
       const maxAngle = Math.PI;
@@ -344,8 +333,7 @@ export class URDFControls extends GUI {
       const maxIntensity = 10;
       const intensityStep = 0.1;
 
-      // Target controls for directional light
-      const targetFolder = directionalFolder.addFolder('Target');
+      // Controls for directional light
       this.controls.lights.directional = {
         position: {
           altitude: directionalFolder.add(
@@ -361,29 +349,6 @@ export class URDFControls extends GUI {
             minAngle,
             maxAngle,
             angleStep
-          )
-        },
-        target: {
-          x: targetFolder.add(
-            directionalSettings.Target,
-            'X',
-            minPosition,
-            maxPosition,
-            positionStep
-          ),
-          y: targetFolder.add(
-            directionalSettings.Target,
-            'Y',
-            minPosition,
-            maxPosition,
-            positionStep
-          ),
-          z: targetFolder.add(
-            directionalSettings.Target,
-            'Z',
-            minPosition,
-            maxPosition,
-            positionStep
           )
         },
         color: directionalFolder.addColor(directionalSettings, 'Color'),

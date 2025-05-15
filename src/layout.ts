@@ -235,25 +235,6 @@ export class URDFLayout extends PanelLayout {
       this._renderer.setDirectionalLightPositionSpherical(altitude, newAzimuth);
     });
 
-    // Target position controls for directional light
-    directional.target.x.onChange((newX: number) => {
-      const y = directional.target.y.getValue();
-      const z = directional.target.z.getValue();
-      this._renderer.setDirectionalLightTarget(newX, y, z);
-    });
-
-    directional.target.y.onChange((newY: number) => {
-      const x = directional.target.x.getValue();
-      const z = directional.target.z.getValue();
-      this._renderer.setDirectionalLightTarget(x, newY, z);
-    });
-
-    directional.target.z.onChange((newZ: number) => {
-      const x = directional.target.x.getValue();
-      const y = directional.target.y.getValue();
-      this._renderer.setDirectionalLightTarget(x, y, newZ);
-    });
-
     // Color and intensity controls
     directional.color.onChange((newColor: number[]) => {
       this._renderer.setDirectionalLightColor(newColor);

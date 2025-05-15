@@ -219,27 +219,6 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   }
 
   /**
-   * Updates the target of the directional light
-   *
-   * @param x - The x coordinate of the target
-   * @param y - The y coordinate of the target
-   * @param z - The z coordinate of the target
-   */
-  setDirectionalLightTarget(x: number, y: number, z: number): void {
-    const directionalLight = this._scene.children.find(
-      obj => obj.type === 'DirectionalLight'
-    ) as THREE.DirectionalLight;
-
-    if (directionalLight) {
-      directionalLight.target.position.set(x, y, z);
-      if (this._directionalLightHelper) {
-        this._directionalLightHelper.update();
-      }
-      this.redraw();
-    }
-  }
-
-  /**
    * Updates the position of the directional light using spherical coordinates
    *
    * @param altitude - Angle in radians from the horizontal plane (elevation)
