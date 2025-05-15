@@ -10,7 +10,7 @@
   --gui-color-input-bg: color-mix(
     in hsl,
     var(--jp-layout-color1),
-    var(--jp-layout-color2)
+    var (--jp-layout-color2)
   );
   --gui-color-font: var(--jp-ui-font-color1);
   --gui-color-accent: var(--jp-brand-color0);
@@ -55,9 +55,21 @@
   justify-content: center;
 }
 
+.urdf-gui li.cr.string .property-name {
+  flex: 1 1;
+}
+
+.urdf-gui li.cr.color .property-name {
+  flex: 1 1;
+}
+
 .urdf-gui .cr.function .property-name:hover {
   background: var(--gui-color-accent);
   border: 1px solid var(--gui-color-accent);
+}
+
+.urdf-gui li.cr.number.has-slider .property-name {
+  flex: 1 1;
 }
 
 .urdf-gui .cr.color,
@@ -134,11 +146,23 @@
   overflow: scroll;
 }
 
-/* Style for Dat.GUI's close button */
+/* Style for Dat.GUI's close button (sticky at bottom) */
 .urdf-gui .close-button {
   width: 100% !important;
   color: white !important;
-  position: absolute;
+  position: sticky !important;
+  bottom: 0 !important;
+}
+
+.urdf-gui li.cr.number.has-slider .property-name:hover {
+  overflow-x: auto;
+  text-overflow: unset;
+}
+
+.urdf-gui li.cr.string .c,
+.urdf-gui li.cr.color .c {
+  flex: 0 1 180px;
+  margin-left: auto;
 }
 
 /* Expand hover area to reach color pickers */
@@ -147,29 +171,13 @@
   margin: -15px 0;
 }
 
-.urdf-gui .close-button {
-  width: 100% !important;
-  color: white !important;
-  position: sticky !important;
-  bottom: 0 !important;
-}
-
-.urdf-gui li.cr.number.has-slider .property-name {
-  flex: 1 1;
-  padding-right: 15px;
-}
-
-.urdf-gui li.cr.number.has-slider .property-name:hover {
-  overflow-x: auto;
-  text-overflow: unset;
-}
-
-/* Adjust the control container */
 .urdf-gui li.cr.number.has-slider .c {
   flex: 0 1 180px;
   margin-left: auto;
 }
 
+li.cr.color > div,
+li.cr.string > div,
 li.cr.number.has-slider > div {
   display: flex;
 }
