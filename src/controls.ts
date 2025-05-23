@@ -25,7 +25,8 @@ export class URDFControls extends GUI {
       grid: {},
       height: {}
     },
-    joints: {}
+    joints: {},
+    lights: {}
   };
 
   /**
@@ -47,6 +48,9 @@ export class URDFControls extends GUI {
     });
 
     // Create folders
+    this._jointsFolder = this.addFolder('Joints');
+    this._jointsFolder.domElement.setAttribute('class', 'dg joints-folder');
+
     this._workspaceFolder = this.addFolder('Workspace');
     this._workspaceFolder.domElement.setAttribute(
       'class',
@@ -55,9 +59,6 @@ export class URDFControls extends GUI {
 
     this._sceneFolder = this.addFolder('Scene');
     this._sceneFolder.domElement.setAttribute('class', 'dg scene-folder');
-
-    this._jointsFolder = this.addFolder('Joints');
-    this._jointsFolder.domElement.setAttribute('class', 'dg joints-folder');
   }
 
   /**
@@ -262,5 +263,133 @@ export class URDFControls extends GUI {
         document.addEventListener('mouseup', onMouseUp);
       }
     });
+
+    // Show resize cursor when hovering near left edge
+    this.domElement.addEventListener('mousemove', (e: MouseEvent) => {
+      const rect = this.domElement.getBoundingClientRect();
+      const offsetX = e.clientX - rect.left;
+      this.domElement.style.cursor =
+        offsetX < grabZoneWidth || isResizing ? 'ew-resize' : 'auto';
+    });
+    this.domElement.addEventListener('mouseleave', () => {
+      if (!isResizing) {
+        this.domElement.style.cursor = 'auto';
+      }
+    });
+  }
+
+  /**
+   * Creates controls for the different lights in the scene
+   *
+   * @returns - The controls to trigger callbacks when light settings change
+   */
+  createLightControls() {
+    if (this._isEmpty(this.controls.lights)) {
+      // Create subfolders for each light
+      const directionalFolder =
+        this._sceneFolder.addFolder('Directional Light');
+      const ambientFolder = this._sceneFolder.addFolder('Ambient Light');
+      const hemisphereFolder = this._sceneFolder.addFolder('Hemisphere Light');
+
+      // Initialize settings for each light type
+      const directionalSettings = {
+        Altitude: Math.PI / 4, // 45 degrees elevation
+        Azimuth: Math.PI / 4, // 45 degrees around vertical axis
+        Color: [255, 255, 255],
+        Intensity: 1.0,
+        ShowHelper: false
+      };
+
+      const ambientSettings = {
+        Color: [255, 255, 255],
+        Intensity: 0.5
+      };
+
+      const hemisphereSettings = {
+        SkyColor: [255, 255, 255],
+        GroundColor: [38, 50, 56],
+        Intensity: 1.0,
+        ShowHelper: false
+      };
+
+      // Spherical coordinate angle limits and steps
+      const minAngle = -Math.PI;
+      const maxAngle = Math.PI;
+      const angleStep = 0.01;
+
+      // Intensity limits and steps
+      const minIntensity = 0;
+      const maxIntensity = 10;
+      const intensityStep = 0.1;
+
+      // Controls for directional light
+      this.controls.lights.directional = {
+        position: {
+          altitude: directionalFolder.add(
+            directionalSettings,
+            'Altitude',
+            minAngle,
+            maxAngle,
+            angleStep
+          ),
+          azimuth: directionalFolder.add(
+            directionalSettings,
+            'Azimuth',
+            minAngle,
+            maxAngle,
+            angleStep
+          )
+        },
+        color: directionalFolder.addColor(directionalSettings, 'Color'),
+        intensity: directionalFolder.add(
+          directionalSettings,
+          'Intensity',
+          minIntensity,
+          maxIntensity,
+          intensityStep
+        ),
+        showHelper: directionalFolder
+          .add(directionalSettings, 'ShowHelper')
+          .name('Show Helper')
+      };
+
+      // Ambient light controls
+      this.controls.lights.ambient = {
+        color: ambientFolder.addColor(ambientSettings, 'Color'),
+        intensity: ambientFolder.add(
+          ambientSettings,
+          'Intensity',
+          minIntensity,
+          maxIntensity,
+          intensityStep
+        )
+      };
+
+      // Hemisphere light controls
+      this.controls.lights.hemisphere = {
+        skyColor: hemisphereFolder
+          .addColor(hemisphereSettings, 'SkyColor')
+          .name('Sky Color'),
+        groundColor: hemisphereFolder
+          .addColor(hemisphereSettings, 'GroundColor')
+          .name('Ground Color'),
+        intensity: hemisphereFolder.add(
+          hemisphereSettings,
+          'Intensity',
+          minIntensity,
+          maxIntensity,
+          intensityStep
+        ),
+        showHelper: hemisphereFolder
+          .add(hemisphereSettings, 'ShowHelper')
+          .name('Show Helper')
+      };
+
+      // Open Scene (lights) and directional subfolder
+      this._sceneFolder.open();
+      directionalFolder.open();
+    }
+
+    return this.controls.lights;
   }
 }
