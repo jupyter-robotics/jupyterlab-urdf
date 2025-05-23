@@ -209,7 +209,7 @@ export class URDFLayout extends PanelLayout {
       this._loader.robotModel.joints
     );
     Object.keys(jointControl).forEach((jointName: string) => {
-      jointControl[jointName].onChange((newValue = 0) => {
+      jointControl[jointName].onChange((newValue = 0.0) => {
         this._setJointValue(jointName, newValue);
       });
     });
