@@ -107,7 +107,7 @@ jobs:
         init-shell: bash
         create-args: >-
           python
-          jupyterlab==4.0
+          jupyterlab>=4.0
 
     - name: Download extension package
       uses: actions/download-artifact@v4
