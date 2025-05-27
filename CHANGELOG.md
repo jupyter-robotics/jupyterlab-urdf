@@ -2,6 +2,56 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.5.0
+
+([Full Changelog](https://github.com/jupyter-robotics/jupyterlab-urdf/compare/v0.4.0...b2a669fc6f7116683ccf2adf101e9b302179f0ae))
+
+### Enhancements made
+
+- Increase motion resolution [#88](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/88) ([@mosfet80](https://github.com/mosfet80))
+- Enhancement jupiterlab build.yml [#87](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/87) ([@mosfet80](https://github.com/mosfet80))
+- Update update-integration-tests.yml [#86](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/86) ([@mosfet80](https://github.com/mosfet80))
+- Fixes #39 Scene lighting needs improvement [#85](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/85) ([@Yahiewi](https://github.com/Yahiewi))
+- Issue controls panel UI [#81](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/81) ([@Yahiewi](https://github.com/Yahiewi))
+
+### Bugs fixed
+
+- Fixes #39 Scene lighting needs improvement [#85](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/85) ([@Yahiewi](https://github.com/Yahiewi))
+- Fix readthedocs build [#84](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/84) ([@Yahiewi](https://github.com/Yahiewi))
+- Fixed Color Picker issue [#82](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/82) ([@Yahiewi](https://github.com/Yahiewi))
+- Issue controls panel UI [#81](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/81) ([@Yahiewi](https://github.com/Yahiewi))
+
+### Maintenance and upkeep improvements
+
+- Bump serialize-javascript from 6.0.1 to 6.0.2 [#80](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/80) ([@dependabot](https://github.com/dependabot))
+- Bump nanoid from 3.3.6 to 3.3.11 [#79](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/79) ([@dependabot](https://github.com/dependabot))
+- Bump markdown-to-jsx from 7.3.2 to 7.7.4 [#78](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/78) ([@dependabot](https://github.com/dependabot))
+- Bump vega from 5.25.0 to 5.33.0 in /ui-tests [#76](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/76) ([@dependabot](https://github.com/dependabot))
+- Bump systeminformation from 5.21.20 to 5.23.14 in /ui-tests [#73](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/73) ([@dependabot](https://github.com/dependabot))
+- Bump nanoid from 3.3.6 to 3.3.8 in /ui-tests [#72](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/72) ([@dependabot](https://github.com/dependabot))
+- Bump cross-spawn from 7.0.3 to 7.0.6 in /ui-tests [#71](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/71) ([@dependabot](https://github.com/dependabot))
+- Bump cross-spawn from 6.0.5 to 6.0.6 [#70](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/70) ([@dependabot](https://github.com/dependabot))
+- Bump markdown-to-jsx from 7.2.1 to 7.5.0 in /ui-tests [#69](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/69) ([@dependabot](https://github.com/dependabot))
+- Bump micromatch from 4.0.5 to 4.0.8 [#68](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/68) ([@dependabot](https://github.com/dependabot))
+- Bump webpack from 5.88.2 to 5.94.0 [#67](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/67) ([@dependabot](https://github.com/dependabot))
+
+### Documentation improvements
+
+- Fix readthedocs build [#84](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/84) ([@Yahiewi](https://github.com/Yahiewi))
+
+### Other merged PRs
+
+- fix deprecation [#75](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/75) ([@mosfet80](https://github.com/mosfet80))
+- Update micromamba to v2 [#74](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/74) ([@mosfet80](https://github.com/mosfet80))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyter-robotics/jupyterlab-urdf/graphs/contributors?from=2024-07-15&to=2025-05-27&type=c))
+
+[@dependabot](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3Adependabot+updated%3A2024-07-15..2025-05-27&type=Issues) | [@github-actions](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3Agithub-actions+updated%3A2024-07-15..2025-05-27&type=Issues) | [@IsabelParedes](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3AIsabelParedes+updated%3A2024-07-15..2025-05-27&type=Issues) | [@mosfet80](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3Amosfet80+updated%3A2024-07-15..2025-05-27&type=Issues) | [@Yahiewi](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3AYahiewi+updated%3A2024-07-15..2025-05-27&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.4.0
 
 ### Bugs fixed
@@ -35,8 +85,6 @@
 - @yxzhan made their first contribution in https://github.com/jupyter-robotics/jupyterlab-urdf/pull/63
 
 **Full Changelog**: https://github.com/jupyter-robotics/jupyterlab-urdf/compare/v0.3.2...v0.4.0
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.3.2
 
