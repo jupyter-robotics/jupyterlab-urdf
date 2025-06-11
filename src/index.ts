@@ -63,11 +63,16 @@ const extension: JupyterFrontEndPlugin<void> = {
     languageRegistry: IEditorLanguageRegistry
   ) => {
     console.log('JupyterLab extension URDF is activated!');
-    const { commands } = app;
+    const { commands, shell } = app;
 
     // Tracker
     const namespace = 'jupyterlab-urdf';
     const tracker = new WidgetTracker<URDFWidget>({ namespace });
+
+    // Track split state
+    let splitDone = false;
+    let leftEditorRefId: string | null = null;
+    let rightViewerRefId: string | null = null;
 
     // State restoration: reopen document if it was open previously
     if (restorer) {
@@ -89,7 +94,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     });
 
     // Add widget to tracker when created
-    widgetFactory.widgetCreated.connect((sender, widget) => {
+    widgetFactory.widgetCreated.connect(async (sender, widget) => {
       widget.title.icon = urdf_icon;
       widget.title.iconClass = 'jp-URDFIcon';
 
@@ -98,6 +103,41 @@ const extension: JupyterFrontEndPlugin<void> = {
         tracker.save(widget);
       });
       tracker.add(widget);
+
+      // Reset split state when all widgets are closed
+      widget.disposed.connect(() => {
+        if (tracker.size === 0) {
+          splitDone = false;
+          leftEditorRefId = null;
+          rightViewerRefId = null;
+        }
+      });
+
+      // Split layout on first open, then tab into panels
+      if (!splitDone) {
+        const editor = await commands.execute('docmanager:open', {
+          path: widget.context.path,
+          factory: 'Editor',
+          options: { mode: 'split-left', ref: widget.id }
+        });
+        splitDone = true;
+        leftEditorRefId = editor.id;
+        rightViewerRefId = widget.id;
+      } else {
+        if (rightViewerRefId) {
+          shell.add(widget, 'main', {
+            mode: 'tab-after',
+            ref: rightViewerRefId
+          });
+        }
+        if (leftEditorRefId) {
+          await commands.execute('docmanager:open', {
+            path: widget.context.path,
+            factory: 'Editor',
+            options: { mode: 'tab-after', ref: leftEditorRefId }
+          });
+        }
+      }
     });
 
     // Register widget and model factories
