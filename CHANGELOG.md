@@ -2,6 +2,31 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.6.0
+
+([Full Changelog](https://github.com/jupyter-robotics/jupyterlab-urdf/compare/v0.5.0...a66e7b86276c50b909904bffd74de1bc6cc9f33a))
+
+### Enhancements made
+
+- Now opens editor and viewer [#83](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/83) ([@Yahiewi](https://github.com/Yahiewi))
+
+### Maintenance and upkeep improvements
+
+- Bump brace-expansion from 2.0.1 to 2.0.2 in /ui-tests [#92](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/92) ([@dependabot](https://github.com/dependabot))
+- Update workflows [#89](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/89) ([@IsabelParedes](https://github.com/IsabelParedes))
+
+### Documentation improvements
+
+- Update urdf version in docs [#90](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/90) ([@IsabelParedes](https://github.com/IsabelParedes))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyter-robotics/jupyterlab-urdf/graphs/contributors?from=2025-05-27&to=2025-06-15&type=c))
+
+[@dependabot](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3Adependabot+updated%3A2025-05-27..2025-06-15&type=Issues) | [@github-actions](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3Agithub-actions+updated%3A2025-05-27..2025-06-15&type=Issues) | [@IsabelParedes](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3AIsabelParedes+updated%3A2025-05-27..2025-06-15&type=Issues) | [@Yahiewi](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3AYahiewi+updated%3A2025-05-27..2025-06-15&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.5.0
 
 ([Full Changelog](https://github.com/jupyter-robotics/jupyterlab-urdf/compare/v0.4.0...b2a669fc6f7116683ccf2adf101e9b302179f0ae))
@@ -49,8 +74,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyter-robotics/jupyterlab-urdf/graphs/contributors?from=2024-07-15&to=2025-05-27&type=c))
 
 [@dependabot](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3Adependabot+updated%3A2024-07-15..2025-05-27&type=Issues) | [@github-actions](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3Agithub-actions+updated%3A2024-07-15..2025-05-27&type=Issues) | [@IsabelParedes](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3AIsabelParedes+updated%3A2024-07-15..2025-05-27&type=Issues) | [@mosfet80](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3Amosfet80+updated%3A2024-07-15..2025-05-27&type=Issues) | [@Yahiewi](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3AYahiewi+updated%3A2024-07-15..2025-05-27&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.4.0
 
