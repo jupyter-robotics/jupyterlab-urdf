@@ -47,12 +47,20 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     link: any | null;
     originalMaterial: THREE.Material | THREE.Material[] | null;
     tag: CSS2DObject | null;
-  } = { link: null, originalMaterial: null, tag: null };
+  } = {
+    link: null,
+    originalMaterial: null,
+    tag: null
+  };
   private _selectedChildObj: {
     link: any | null;
     originalMaterial: THREE.Material | THREE.Material[] | null;
     tag: CSS2DObject | null;
-  } = { link: null, originalMaterial: null, tag: null };
+  } = {
+    link: null,
+    originalMaterial: null,
+    tag: null
+  };
   private _highlightMaterial: THREE.Material;
   private _parentSelectMaterial: THREE.Material;
   private _childSelectMaterial: THREE.Material;
@@ -274,7 +282,8 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     }
 
     // Apply new highlight
-    selectedObj.originalMaterial = link.material;
+    // The true original material is the one stored on hover.
+    selectedObj.originalMaterial = this._hoveredObj.originalMaterial;
     link.material = material;
     selectedObj.link = link;
 
@@ -679,6 +688,26 @@ export class URDFRenderer extends THREE.WebGLRenderer {
       hemisphereLight.intensity = intensity;
       this.redraw();
     }
+  }
+
+  /**
+   * Un-highlights a single selected link.
+   * @param type - The type of selection to clear ('parent' or 'child').
+   */
+  unHighlightLink(type: 'parent' | 'child'): void {
+    const selectedObj =
+      type === 'parent' ? this._selectedParentObj : this._selectedChildObj;
+
+    if (selectedObj.link) {
+      selectedObj.link.material = selectedObj.originalMaterial;
+      if (selectedObj.tag) {
+        selectedObj.link.remove(selectedObj.tag);
+      }
+      selectedObj.link = null;
+      selectedObj.originalMaterial = null;
+      selectedObj.tag = null;
+    }
+    this.redraw();
   }
 
   /**

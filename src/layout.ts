@@ -362,22 +362,45 @@ export class URDFLayout extends PanelLayout {
       const linkName = visual.urdfNode.parentElement.getAttribute('name');
       const linkObject = selectedObject;
 
+      // Case 1: Clicked on the currently selected parent link to unselect it.
+      if (this._selectedLinks.parent.name === linkName) {
+        this._renderer.unHighlightLink('parent');
+        this._selectedLinks.parent = { name: null, obj: null };
+        editorControls.parent.setValue('none');
+        return;
+      }
+
+      // Case 2: Clicked on the currently selected child link to unselect it.
+      if (this._selectedLinks.child.name === linkName) {
+        this._renderer.unHighlightLink('child');
+        this._selectedLinks.child = { name: null, obj: null };
+        editorControls.child.setValue('none');
+        return;
+      }
+
+      // Case 3: No parent is selected yet.
       if (!this._selectedLinks.parent.name) {
         this._selectedLinks.parent = { name: linkName, obj: linkObject };
         editorControls.parent.setValue(linkName);
         this._renderer.highlightLink(linkObject, 'parent');
-      } else if (!this._selectedLinks.child.name) {
+        return;
+      }
+
+      // Case 4: Parent is selected, but child is not.
+      if (!this._selectedLinks.child.name) {
         this._selectedLinks.child = { name: linkName, obj: linkObject };
         editorControls.child.setValue(linkName);
         this._renderer.highlightLink(linkObject, 'child');
-      } else {
-        this._renderer.clearHighlights();
-        this._selectedLinks.parent = { name: linkName, obj: linkObject };
-        this._selectedLinks.child = { name: null, obj: null };
-        editorControls.parent.setValue(linkName);
-        editorControls.child.setValue('none');
-        this._renderer.highlightLink(linkObject, 'parent');
+        return;
       }
+
+      // Case 5: Both parent and child are selected, so reset and set new parent.
+      this._renderer.clearHighlights();
+      this._selectedLinks.parent = { name: linkName, obj: linkObject };
+      this._selectedLinks.child = { name: null, obj: null };
+      editorControls.parent.setValue(linkName);
+      editorControls.child.setValue('none');
+      this._renderer.highlightLink(linkObject, 'parent');
     });
   }
 
