@@ -12,6 +12,8 @@ import { URDFRenderer } from './renderer';
 
 import { URDFLoadingManager } from './robot';
 
+import { UrdfEditor } from './urdf-editor';
+
 interface IURDFColors {
   sky: Color;
   ground: Color;
@@ -26,6 +28,15 @@ export class URDFLayout extends PanelLayout {
   private _renderer: URDFRenderer;
   private _colors: IURDFColors;
   private _loader: URDFLoadingManager;
+  private _editor: UrdfEditor;
+  private _context: DocumentRegistry.IContext<DocumentModel> | null = null;
+  private _selectedLinks: {
+    parent: { name: string | null; obj: any | null };
+    child: { name: string | null; obj: any | null };
+  } = {
+    parent: { name: null, obj: null },
+    child: { name: null, obj: null }
+  };
 
   /**
    * Construct a `URDFLayout`
@@ -45,6 +56,7 @@ export class URDFLayout extends PanelLayout {
     this._renderer = new URDFRenderer(this._colors.sky, this._colors.ground);
     this._controlsPanel = new URDFControls();
     this._loader = new URDFLoadingManager();
+    this._editor = new UrdfEditor();
   }
 
   /**
@@ -98,6 +110,7 @@ export class URDFLayout extends PanelLayout {
    * @param context - Contains the URDF file and its parameters
    */
   setURDF(context: DocumentRegistry.IContext<DocumentModel>): void {
+    this._context = context;
     // Default to parent directory of URDF file
     const filePath = context.path;
     const parentDir = filePath.substring(0, filePath.lastIndexOf('/'));
@@ -166,6 +179,7 @@ export class URDFLayout extends PanelLayout {
     this._setSceneControls();
     this._setJointControls();
     this._setLightControls();
+    this._setEditorControls();
   }
 
   /**
@@ -292,6 +306,82 @@ export class URDFLayout extends PanelLayout {
   }
 
   /**
+   * Set callbacks for the editor controls
+   */
+  private _setEditorControls(): void {
+    const addJointCallback = () => {
+      if (
+        this._context &&
+        this._selectedLinks.parent.name &&
+        this._selectedLinks.child.name
+      ) {
+        const urdfString = this._context.model.toString();
+        const editorControls = this._controlsPanel.controls.editor;
+        const newUrdfString = this._editor.addJoint(urdfString, {
+          name: editorControls.name.getValue(),
+          type: editorControls.type.getValue(),
+          parent: this._selectedLinks.parent.name,
+          child: this._selectedLinks.child.name
+        });
+        this._context.model.fromString(newUrdfString);
+        this._selectedLinks.parent = { name: null, obj: null };
+        this._selectedLinks.child = { name: null, obj: null };
+        editorControls.parent.setValue('none');
+        editorControls.child.setValue('none');
+        this._renderer.clearHighlights();
+      }
+    };
+
+    const editorControls =
+      this._controlsPanel.createEditorControls(addJointCallback);
+
+    editorControls.mode.onChange((enabled: boolean) => {
+      this._renderer.setEditorMode(enabled);
+      if (!enabled) {
+        this._selectedLinks.parent = { name: null, obj: null };
+        this._selectedLinks.child = { name: null, obj: null };
+        editorControls.parent.setValue('none');
+        editorControls.child.setValue('none');
+      }
+    });
+
+    this._renderer.linkSelected.connect((sender, selectedObject) => {
+      let visual: any = selectedObject;
+      while (visual && !visual.isURDFVisual) {
+        visual = visual.parent;
+      }
+
+      if (!visual?.urdfNode?.parentElement) {
+        console.error(
+          'Could not find urdfNode for selected object',
+          selectedObject
+        );
+        return;
+      }
+
+      const linkName = visual.urdfNode.parentElement.getAttribute('name');
+      const linkObject = selectedObject;
+
+      if (!this._selectedLinks.parent.name) {
+        this._selectedLinks.parent = { name: linkName, obj: linkObject };
+        editorControls.parent.setValue(linkName);
+        this._renderer.highlightLink(linkObject, 'parent');
+      } else if (!this._selectedLinks.child.name) {
+        this._selectedLinks.child = { name: linkName, obj: linkObject };
+        editorControls.child.setValue(linkName);
+        this._renderer.highlightLink(linkObject, 'child');
+      } else {
+        this._renderer.clearHighlights();
+        this._selectedLinks.parent = { name: linkName, obj: linkObject };
+        this._selectedLinks.child = { name: null, obj: null };
+        editorControls.parent.setValue(linkName);
+        editorControls.child.setValue('none');
+        this._renderer.highlightLink(linkObject, 'parent');
+      }
+    });
+  }
+
+  /**
    * Handle `update-request` messages sent to the widget
    */
   protected onUpdateRequest(msg: Message): void {
@@ -318,6 +408,7 @@ export class URDFLayout extends PanelLayout {
   protected onAfterAttach(msg: Message): void {
     this._renderer.redraw();
     this._host.appendChild(this._renderer.domElement);
+    this._host.appendChild(this._renderer.css2dDomElement);
     this._renderer.setSize(
       this._renderer.domElement.clientWidth,
       this._renderer.domElement.clientHeight
@@ -334,6 +425,10 @@ export class URDFLayout extends PanelLayout {
 
     const currentSize = this._renderer.getSize(new Vector2());
     this._renderer.setSize(
+      rect?.width || currentSize.width,
+      rect?.height || currentSize.height
+    );
+    this._renderer.setCss2dSize(
       rect?.width || currentSize.width,
       rect?.height || currentSize.height
     );

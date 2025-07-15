@@ -16,6 +16,7 @@ export class URDFControls extends GUI {
   private _workspaceFolder: any;
   private _sceneFolder: any;
   private _jointsFolder: any;
+  private _editorFolder: any;
   private _workingPath = '';
 
   controls: any = {
@@ -26,7 +27,8 @@ export class URDFControls extends GUI {
       height: {}
     },
     joints: {},
-    lights: {}
+    lights: {},
+    editor: {}
   };
 
   /**
@@ -59,6 +61,9 @@ export class URDFControls extends GUI {
 
     this._sceneFolder = this.addFolder('Scene');
     this._sceneFolder.domElement.setAttribute('class', 'dg scene-folder');
+
+    this._editorFolder = this.addFolder('Editor');
+    this._editorFolder.domElement.setAttribute('class', 'dg editor-folder');
   }
 
   /**
@@ -80,6 +85,13 @@ export class URDFControls extends GUI {
    */
   get jointsFolder() {
     return this._jointsFolder;
+  }
+
+  /**
+   * Retrieves the folder with editor settings
+   */
+  get editorFolder() {
+    return this._editorFolder;
   }
 
   /**
@@ -144,9 +156,9 @@ export class URDFControls extends GUI {
         'Grid'
       );
 
-      const minHeight = -2.0;
-      const maxHeight = 5.0;
-      const stepSize = 0.001;
+      const minHeight = -2;
+      const maxHeight = 5;
+      const stepSize = 0.1;
       this.controls.scene.height = this._sceneFolder.add(
         sceneSettings,
         'Height',
@@ -196,11 +208,11 @@ export class URDFControls extends GUI {
         const limitMax = Number(joints[name].limit.upper);
 
         // Skip joint if the limits are not defined
-        if (limitMin === 0.0 && limitMax === 0.0) {
+        if (limitMin === 0 && limitMax === 0) {
           return;
         }
 
-        const stepSize = (limitMax - limitMin) / 100.0;
+        const stepSize = (limitMax - limitMin) / 20;
         const initValue = joints[name].jointValue[0];
 
         this.controls.joints[name] = this._jointsFolder.add(
@@ -391,5 +403,51 @@ export class URDFControls extends GUI {
     }
 
     return this.controls.lights;
+  }
+
+  /**
+   * Creates controls for the editor mode
+   *
+   * @returns - The controls to trigger callbacks when editor settings change
+   */
+  createEditorControls(addJointCallback: () => void) {
+    if (this._isEmpty(this.controls.editor)) {
+      const editorSettings = {
+        'Editor Mode': false,
+        'Parent Link': 'none',
+        'Child Link': 'none',
+        'Joint Name': 'new_joint',
+        'Joint Type': 'revolute',
+        'Add Joint': addJointCallback
+      };
+
+      this.controls.editor.mode = this._editorFolder.add(
+        editorSettings,
+        'Editor Mode'
+      );
+      this.controls.editor.parent = this._editorFolder
+        .add(editorSettings, 'Parent Link')
+        .listen();
+      this.controls.editor.child = this._editorFolder
+        .add(editorSettings, 'Child Link')
+        .listen();
+      this.controls.editor.name = this._editorFolder.add(
+        editorSettings,
+        'Joint Name'
+      );
+      this.controls.editor.type = this._editorFolder.add(
+        editorSettings,
+        'Joint Type',
+        ['revolute', 'continuous', 'prismatic', 'fixed', 'floating', 'planar']
+      );
+      this.controls.editor.add = this._editorFolder.add(
+        editorSettings,
+        'Add Joint'
+      );
+
+      this._editorFolder.open();
+    }
+
+    return this.controls.editor;
   }
 }

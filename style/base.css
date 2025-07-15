@@ -192,3 +192,12 @@ li.cr.number.has-slider > div {
   .property-name:hover::-webkit-scrollbar-thumb {
   background: #888;
 }
+
+/* Styling for 3D labels in editor mode */
+.jp-urdf-label {
+  color: #fff;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-family: sans-serif;
+  font-size: 12px;
+}
