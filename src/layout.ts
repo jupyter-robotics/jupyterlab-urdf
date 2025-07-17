@@ -324,7 +324,11 @@ export class URDFLayout extends PanelLayout {
           child: this._selectedLinks.child.name,
           origin_xyz: editorControls.origin_xyz.getValue(),
           origin_rpy: editorControls.origin_rpy.getValue(),
-          axis_xyz: editorControls.axis_xyz.getValue()
+          axis_xyz: editorControls.axis_xyz.getValue(),
+          lower: editorControls.lower.getValue(),
+          upper: editorControls.upper.getValue(),
+          effort: editorControls.effort.getValue(),
+          velocity: editorControls.velocity.getValue()
         });
         this._context.model.fromString(newUrdfString);
         this._selectedLinks.parent = { name: null, obj: null };
@@ -435,6 +439,35 @@ export class URDFLayout extends PanelLayout {
       this._renderer.highlightLink(linkObject, 'parent');
       updateJointName();
     });
+
+    // Add a handler for joint type changes to show/hide relevant fields
+    editorControls.type.onChange((type: string) => {
+      const axisControl = editorControls.axis_xyz;
+      const limitControls = [
+        editorControls.lower,
+        editorControls.upper,
+        editorControls.effort,
+        editorControls.velocity
+      ];
+
+      // Show/hide axis based on type
+      const needsAxis = [
+        'revolute',
+        'continuous',
+        'prismatic',
+        'planar'
+      ].includes(type);
+      axisControl.__li.style.display = needsAxis ? '' : 'none';
+
+      // Show/hide limits based on type
+      const needsLimits = ['revolute', 'prismatic'].includes(type);
+      limitControls.forEach(c => {
+        c.__li.style.display = needsLimits ? '' : 'none';
+      });
+    });
+
+    // Trigger the change handler once to set the initial visibility
+    editorControls.type.domElement.dispatchEvent(new Event('change'));
 
     editorControls.parent.onChange((linkName: string) => {
       // Prevent selecting the same link as the child

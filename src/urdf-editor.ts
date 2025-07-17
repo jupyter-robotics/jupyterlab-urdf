@@ -22,6 +22,10 @@ export class UrdfEditor {
       origin_xyz: string;
       origin_rpy: string;
       axis_xyz: string;
+      lower: string;
+      upper: string;
+      effort: string;
+      velocity: string;
     }
   ): string {
     const urdf = this._parser.parseFromString(urdfString, 'application/xml');
@@ -67,6 +71,17 @@ export class UrdfEditor {
       const axisElement = urdf.createElement('axis');
       axisElement.setAttribute('xyz', joint.axis_xyz);
       jointElement.appendChild(axisElement);
+    }
+
+    // Add limit only for relevant joint types
+    if (joint.type === 'revolute' || joint.type === 'prismatic') {
+      jointElement.appendChild(createIndent(2));
+      const limitElement = urdf.createElement('limit');
+      limitElement.setAttribute('lower', joint.lower);
+      limitElement.setAttribute('upper', joint.upper);
+      limitElement.setAttribute('effort', joint.effort);
+      limitElement.setAttribute('velocity', joint.velocity);
+      jointElement.appendChild(limitElement);
     }
 
     // Add final indent before closing tag

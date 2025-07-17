@@ -421,6 +421,12 @@ export class URDFControls extends GUI {
         'Origin XYZ': '0 0 0',
         'Origin RPY': '0 0 0',
         'Axis XYZ': '0 0 1',
+        'Lower Limit': '0.0',
+        'Upper Limit': '0.0',
+        // eslint-disable-next-line
+        Effort: '0.0',
+        // eslint-disable-next-line
+        Velocity: '0.0',
         'Add Joint': addJointCallback
       };
 
@@ -456,6 +462,20 @@ export class URDFControls extends GUI {
       this.controls.editor.axis_xyz = this._editorFolder
         .add(editorSettings, 'Axis XYZ')
         .name('Axis XYZ');
+
+      // Add limit controls
+      this.controls.editor.lower = this._editorFolder
+        .add(editorSettings, 'Lower Limit')
+        .name('Lower Limit');
+      this.controls.editor.upper = this._editorFolder
+        .add(editorSettings, 'Upper Limit')
+        .name('Upper Limit');
+      this.controls.editor.effort = this._editorFolder
+        .add(editorSettings, 'Effort')
+        .name('Effort');
+      this.controls.editor.velocity = this._editorFolder
+        .add(editorSettings, 'Velocity')
+        .name('Velocity');
 
       this.controls.editor.add = this._editorFolder.add(
         editorSettings,
