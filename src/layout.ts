@@ -437,11 +437,21 @@ export class URDFLayout extends PanelLayout {
     });
 
     editorControls.parent.onChange((linkName: string) => {
+      // Prevent selecting the same link as the child
+      if (linkName !== 'none' && linkName === this._selectedLinks.child.name) {
+        editorControls.parent.setValue(
+          this._selectedLinks.parent.name || 'none'
+        ); // Revert
+        return;
+      }
+
       if (linkName === 'none') {
         this._renderer.unHighlightLink('parent');
         this._selectedLinks.parent = { name: null, obj: null };
       } else {
-        const linkObject = this._loader.robotModel.links[linkName];
+        const link = this._loader.robotModel.links[linkName];
+        const linkObject = link.children.find((c: any) => c.isURDFVisual)
+          ?.children[0];
         this._selectedLinks.parent = { name: linkName, obj: linkObject };
         this._renderer.highlightLink(linkObject, 'parent');
       }
@@ -449,11 +459,19 @@ export class URDFLayout extends PanelLayout {
     });
 
     editorControls.child.onChange((linkName: string) => {
+      // Prevent selecting the same link as the parent
+      if (linkName !== 'none' && linkName === this._selectedLinks.parent.name) {
+        editorControls.child.setValue(this._selectedLinks.child.name || 'none'); // Revert
+        return;
+      }
+
       if (linkName === 'none') {
         this._renderer.unHighlightLink('child');
         this._selectedLinks.child = { name: null, obj: null };
       } else {
-        const linkObject = this._loader.robotModel.links[linkName];
+        const link = this._loader.robotModel.links[linkName];
+        const linkObject = link.children.find((c: any) => c.isURDFVisual)
+          ?.children[0];
         this._selectedLinks.child = { name: linkName, obj: linkObject };
         this._renderer.highlightLink(linkObject, 'child');
       }
