@@ -19,6 +19,9 @@ export class UrdfEditor {
       type: string;
       parent: string;
       child: string;
+      origin_xyz: string;
+      origin_rpy: string;
+      axis_xyz: string;
     }
   ): string {
     const urdf = this._parser.parseFromString(urdfString, 'application/xml');
@@ -28,28 +31,51 @@ export class UrdfEditor {
       throw new Error('No robot tag found in URDF');
     }
 
+    // Helper to create an indented text node
+    const createIndent = (level: number) =>
+      urdf.createTextNode(`\n${'  '.repeat(level)}`);
+
     const jointElement = urdf.createElement('joint');
     jointElement.setAttribute('name', joint.name);
     jointElement.setAttribute('type', joint.type);
 
+    // Add child elements with indentation
+    jointElement.appendChild(createIndent(2));
     const parentElement = urdf.createElement('parent');
     parentElement.setAttribute('link', joint.parent);
     jointElement.appendChild(parentElement);
 
+    jointElement.appendChild(createIndent(2));
     const childElement = urdf.createElement('child');
     childElement.setAttribute('link', joint.child);
     jointElement.appendChild(childElement);
 
+    jointElement.appendChild(createIndent(2));
     const originElement = urdf.createElement('origin');
-    originElement.setAttribute('xyz', '0 0 0');
-    originElement.setAttribute('rpy', '0 0 0');
+    originElement.setAttribute('xyz', joint.origin_xyz);
+    originElement.setAttribute('rpy', joint.origin_rpy);
     jointElement.appendChild(originElement);
 
-    const axisElement = urdf.createElement('axis');
-    axisElement.setAttribute('xyz', '0 0 1');
-    jointElement.appendChild(axisElement);
+    // Add axis only for relevant joint types
+    if (
+      joint.type === 'revolute' ||
+      joint.type === 'continuous' ||
+      joint.type === 'prismatic' ||
+      joint.type === 'planar'
+    ) {
+      jointElement.appendChild(createIndent(2));
+      const axisElement = urdf.createElement('axis');
+      axisElement.setAttribute('xyz', joint.axis_xyz);
+      jointElement.appendChild(axisElement);
+    }
 
+    // Add final indent before closing tag
+    jointElement.appendChild(createIndent(1));
+
+    // Append the new joint with proper indentation
+    robot.appendChild(createIndent(1));
     robot.appendChild(jointElement);
+    robot.appendChild(createIndent(0));
 
     return this._serializer.serializeToString(urdf);
   }

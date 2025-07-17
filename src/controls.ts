@@ -410,7 +410,7 @@ export class URDFControls extends GUI {
    *
    * @returns - The controls to trigger callbacks when editor settings change
    */
-  createEditorControls(addJointCallback: () => void) {
+  createEditorControls(addJointCallback: () => void, linkNames: string[] = []) {
     if (this._isEmpty(this.controls.editor)) {
       const editorSettings = {
         'Editor Mode': false,
@@ -418,18 +418,23 @@ export class URDFControls extends GUI {
         'Child Link': 'none',
         'Joint Name': 'new_joint',
         'Joint Type': 'revolute',
+        'Origin XYZ': '0 0 0',
+        'Origin RPY': '0 0 0',
+        'Axis XYZ': '0 0 1',
         'Add Joint': addJointCallback
       };
+
+      const dropdownOptions = ['none', ...linkNames];
 
       this.controls.editor.mode = this._editorFolder.add(
         editorSettings,
         'Editor Mode'
       );
       this.controls.editor.parent = this._editorFolder
-        .add(editorSettings, 'Parent Link')
+        .add(editorSettings, 'Parent Link', dropdownOptions)
         .listen();
       this.controls.editor.child = this._editorFolder
-        .add(editorSettings, 'Child Link')
+        .add(editorSettings, 'Child Link', dropdownOptions)
         .listen();
       this.controls.editor.name = this._editorFolder.add(
         editorSettings,
@@ -440,6 +445,18 @@ export class URDFControls extends GUI {
         'Joint Type',
         ['revolute', 'continuous', 'prismatic', 'fixed', 'floating', 'planar']
       );
+
+      // Add origin and axis controls
+      this.controls.editor.origin_xyz = this._editorFolder
+        .add(editorSettings, 'Origin XYZ')
+        .name('Origin XYZ');
+      this.controls.editor.origin_rpy = this._editorFolder
+        .add(editorSettings, 'Origin RPY')
+        .name('Origin RPY');
+      this.controls.editor.axis_xyz = this._editorFolder
+        .add(editorSettings, 'Axis XYZ')
+        .name('Axis XYZ');
+
       this.controls.editor.add = this._editorFolder.add(
         editorSettings,
         'Add Joint'

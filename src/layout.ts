@@ -321,7 +321,10 @@ export class URDFLayout extends PanelLayout {
           name: editorControls.name.getValue(),
           type: editorControls.type.getValue(),
           parent: this._selectedLinks.parent.name,
-          child: this._selectedLinks.child.name
+          child: this._selectedLinks.child.name,
+          origin_xyz: editorControls.origin_xyz.getValue(),
+          origin_rpy: editorControls.origin_rpy.getValue(),
+          axis_xyz: editorControls.axis_xyz.getValue()
         });
         this._context.model.fromString(newUrdfString);
         this._selectedLinks.parent = { name: null, obj: null };
@@ -332,8 +335,11 @@ export class URDFLayout extends PanelLayout {
       }
     };
 
-    const editorControls =
-      this._controlsPanel.createEditorControls(addJointCallback);
+    const linkNames = Object.keys(this._loader.robotModel.links);
+    const editorControls = this._controlsPanel.createEditorControls(
+      addJointCallback,
+      linkNames
+    );
 
     editorControls.mode.onChange((enabled: boolean) => {
       this._renderer.setEditorMode(enabled);
@@ -344,6 +350,20 @@ export class URDFLayout extends PanelLayout {
         editorControls.child.setValue('none');
       }
     });
+
+    const updateJointName = () => {
+      const p = this._selectedLinks.parent.name;
+      const c = this._selectedLinks.child.name;
+      let newName = 'new_joint';
+      if (p && c) {
+        newName = `${p}_to_${c}_joint`;
+      } else if (p) {
+        newName = `${p}_to_..._joint`;
+      } else if (c) {
+        newName = `..._to_${c}_joint`;
+      }
+      editorControls.name.setValue(newName);
+    };
 
     this._renderer.linkSelected.connect((sender, selectedObject) => {
       let visual: any = selectedObject;
@@ -367,6 +387,7 @@ export class URDFLayout extends PanelLayout {
         this._renderer.unHighlightLink('parent');
         this._selectedLinks.parent = { name: null, obj: null };
         editorControls.parent.setValue('none');
+        updateJointName();
         return;
       }
 
@@ -375,6 +396,15 @@ export class URDFLayout extends PanelLayout {
         this._renderer.unHighlightLink('child');
         this._selectedLinks.child = { name: null, obj: null };
         editorControls.child.setValue('none');
+        updateJointName();
+        return;
+      }
+
+      // Prevent selecting the same link as both parent and child
+      if (
+        this._selectedLinks.parent.name === linkName ||
+        this._selectedLinks.child.name === linkName
+      ) {
         return;
       }
 
@@ -383,6 +413,7 @@ export class URDFLayout extends PanelLayout {
         this._selectedLinks.parent = { name: linkName, obj: linkObject };
         editorControls.parent.setValue(linkName);
         this._renderer.highlightLink(linkObject, 'parent');
+        updateJointName();
         return;
       }
 
@@ -391,6 +422,7 @@ export class URDFLayout extends PanelLayout {
         this._selectedLinks.child = { name: linkName, obj: linkObject };
         editorControls.child.setValue(linkName);
         this._renderer.highlightLink(linkObject, 'child');
+        updateJointName();
         return;
       }
 
@@ -401,6 +433,23 @@ export class URDFLayout extends PanelLayout {
       editorControls.parent.setValue(linkName);
       editorControls.child.setValue('none');
       this._renderer.highlightLink(linkObject, 'parent');
+      updateJointName();
+    });
+
+    editorControls.parent.onChange((linkName: string) => {
+      if (linkName === 'none') {
+        this._renderer.unHighlightLink('parent');
+        this._selectedLinks.parent = { name: null, obj: null };
+      }
+      updateJointName();
+    });
+
+    editorControls.child.onChange((linkName: string) => {
+      if (linkName === 'none') {
+        this._renderer.unHighlightLink('child');
+        this._selectedLinks.child = { name: null, obj: null };
+      }
+      updateJointName();
     });
   }
 
