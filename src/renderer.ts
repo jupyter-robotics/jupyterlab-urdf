@@ -198,7 +198,13 @@ export class URDFRenderer extends THREE.WebGLRenderer {
 
         // Un-highlight the previously hovered object
         if (this._hoveredObj.link) {
-          this._hoveredObj.link.material = this._hoveredObj.originalMaterial;
+          // Only restore material if the object is not currently selected
+          if (
+            this._hoveredObj.link !== this._selectedParentObj.link &&
+            this._hoveredObj.link !== this._selectedChildObj.link
+          ) {
+            this._hoveredObj.link.material = this._hoveredObj.originalMaterial;
+          }
           if (this._hoveredObj.tag) {
             this._hoveredObj.link.remove(this._hoveredObj.tag);
           }
@@ -283,19 +289,12 @@ export class URDFRenderer extends THREE.WebGLRenderer {
 
     // Apply new highlight
     // The true original material is the one stored on hover.
-    selectedObj.originalMaterial = this._hoveredObj.originalMaterial;
+    selectedObj.originalMaterial =
+      link === this._hoveredObj.link
+        ? this._hoveredObj.originalMaterial
+        : link.material;
     link.material = material;
     selectedObj.link = link;
-
-    // Add tag
-    const tagDiv = document.createElement('div');
-    tagDiv.className = 'jp-urdf-label';
-    tagDiv.textContent = type;
-    tagDiv.style.backgroundColor = type === 'parent' ? 'green' : 'blue';
-
-    const tag = new CSS2DObject(tagDiv);
-    link.add(tag);
-    selectedObj.tag = tag;
 
     this.redraw();
   }

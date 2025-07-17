@@ -440,6 +440,10 @@ export class URDFLayout extends PanelLayout {
       if (linkName === 'none') {
         this._renderer.unHighlightLink('parent');
         this._selectedLinks.parent = { name: null, obj: null };
+      } else {
+        const linkObject = this._loader.robotModel.links[linkName];
+        this._selectedLinks.parent = { name: linkName, obj: linkObject };
+        this._renderer.highlightLink(linkObject, 'parent');
       }
       updateJointName();
     });
@@ -448,6 +452,10 @@ export class URDFLayout extends PanelLayout {
       if (linkName === 'none') {
         this._renderer.unHighlightLink('child');
         this._selectedLinks.child = { name: null, obj: null };
+      } else {
+        const linkObject = this._loader.robotModel.links[linkName];
+        this._selectedLinks.child = { name: linkName, obj: linkObject };
+        this._renderer.highlightLink(linkObject, 'child');
       }
       updateJointName();
     });
