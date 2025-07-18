@@ -105,6 +105,29 @@ export class URDFControls extends GUI {
   }
 
   /**
+   * Restricts input on a control to numeric and special characters.
+   *
+   * @param control - The dat.gui controller to modify.
+   */
+  private _enforceNumericInput(control: any): void {
+    const inputElement = control.domElement as HTMLInputElement;
+
+    inputElement.addEventListener('input', (event: Event) => {
+      const target = event.target as HTMLInputElement;
+      const originalValue = target.value;
+
+      // Remove any characters that aren't digits, spaces, periods, or minus signs
+      const filteredValue = originalValue.replace(/[^\d.\s-]/g, '');
+
+      if (originalValue !== filteredValue) {
+        target.value = filteredValue;
+        // Trigger dat.gui's internal change detection
+        control.updateDisplay();
+      }
+    });
+  }
+
+  /**
    * Creates an input box and a button to modify the working path
    *
    * @param workingPath - The path where the loader looks for mesh files
@@ -476,6 +499,15 @@ export class URDFControls extends GUI {
       this.controls.editor.velocity = this._editorFolder
         .add(editorSettings, 'Velocity')
         .name('Velocity');
+
+      // Enforce numeric input for relevant fields
+      this._enforceNumericInput(this.controls.editor.origin_xyz);
+      this._enforceNumericInput(this.controls.editor.origin_rpy);
+      this._enforceNumericInput(this.controls.editor.axis_xyz);
+      this._enforceNumericInput(this.controls.editor.lower);
+      this._enforceNumericInput(this.controls.editor.upper);
+      this._enforceNumericInput(this.controls.editor.effort);
+      this._enforceNumericInput(this.controls.editor.velocity);
 
       this.controls.editor.add = this._editorFolder.add(
         editorSettings,
