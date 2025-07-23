@@ -12,7 +12,9 @@ import { URDFRenderer } from './renderer';
 
 import { URDFLoadingManager } from './robot';
 
-import { UrdfEditor } from './urdf-editor';
+import { UrdfEditor } from './editor/urdf-editor';
+
+import { Editor } from './editor/editor';
 
 interface IURDFColors {
   sky: Color;
@@ -29,6 +31,7 @@ export class URDFLayout extends PanelLayout {
   private _colors: IURDFColors;
   private _loader: URDFLoadingManager;
   private _editor: UrdfEditor;
+  private _interactionEditor: Editor;
   private _context: DocumentRegistry.IContext<DocumentModel> | null = null;
   private _selectedLinks: {
     parent: { name: string | null; obj: any | null };
@@ -57,6 +60,7 @@ export class URDFLayout extends PanelLayout {
     this._controlsPanel = new URDFControls();
     this._loader = new URDFLoadingManager();
     this._editor = new UrdfEditor();
+    this._interactionEditor = new Editor(this._renderer);
   }
 
   /**
@@ -335,7 +339,7 @@ export class URDFLayout extends PanelLayout {
         this._selectedLinks.child = { name: null, obj: null };
         editorControls.parent.setValue('none');
         editorControls.child.setValue('none');
-        this._renderer.clearHighlights();
+        this._interactionEditor.clearHighlights();
       }
     };
 
@@ -346,7 +350,7 @@ export class URDFLayout extends PanelLayout {
     );
 
     editorControls.mode.onChange((enabled: boolean) => {
-      this._renderer.setEditorMode(enabled);
+      this._interactionEditor.setEditorMode(enabled);
       if (!enabled) {
         this._selectedLinks.parent = { name: null, obj: null };
         this._selectedLinks.child = { name: null, obj: null };
@@ -369,7 +373,7 @@ export class URDFLayout extends PanelLayout {
       editorControls.name.setValue(newName);
     };
 
-    this._renderer.linkSelected.connect((sender, selectedObject) => {
+    this._interactionEditor.linkSelected.connect((sender, selectedObject) => {
       let visual: any = selectedObject;
       while (visual && !visual.isURDFVisual) {
         visual = visual.parent;
@@ -388,7 +392,7 @@ export class URDFLayout extends PanelLayout {
 
       // Case 1: Clicked on the currently selected parent link to unselect it.
       if (this._selectedLinks.parent.name === linkName) {
-        this._renderer.unHighlightLink('parent');
+        this._interactionEditor.unHighlightLink('parent');
         this._selectedLinks.parent = { name: null, obj: null };
         editorControls.parent.setValue('none');
         updateJointName();
@@ -397,7 +401,7 @@ export class URDFLayout extends PanelLayout {
 
       // Case 2: Clicked on the currently selected child link to unselect it.
       if (this._selectedLinks.child.name === linkName) {
-        this._renderer.unHighlightLink('child');
+        this._interactionEditor.unHighlightLink('child');
         this._selectedLinks.child = { name: null, obj: null };
         editorControls.child.setValue('none');
         updateJointName();
@@ -416,7 +420,7 @@ export class URDFLayout extends PanelLayout {
       if (!this._selectedLinks.parent.name) {
         this._selectedLinks.parent = { name: linkName, obj: linkObject };
         editorControls.parent.setValue(linkName);
-        this._renderer.highlightLink(linkObject, 'parent');
+        this._interactionEditor.highlightLink(linkObject, 'parent');
         updateJointName();
         return;
       }
@@ -425,18 +429,18 @@ export class URDFLayout extends PanelLayout {
       if (!this._selectedLinks.child.name) {
         this._selectedLinks.child = { name: linkName, obj: linkObject };
         editorControls.child.setValue(linkName);
-        this._renderer.highlightLink(linkObject, 'child');
+        this._interactionEditor.highlightLink(linkObject, 'child');
         updateJointName();
         return;
       }
 
       // Case 5: Both parent and child are selected, so reset and set new parent.
-      this._renderer.clearHighlights();
+      this._interactionEditor.clearHighlights();
       this._selectedLinks.parent = { name: linkName, obj: linkObject };
       this._selectedLinks.child = { name: null, obj: null };
       editorControls.parent.setValue(linkName);
       editorControls.child.setValue('none');
-      this._renderer.highlightLink(linkObject, 'parent');
+      this._interactionEditor.highlightLink(linkObject, 'parent');
       updateJointName();
     });
 
@@ -479,14 +483,14 @@ export class URDFLayout extends PanelLayout {
       }
 
       if (linkName === 'none') {
-        this._renderer.unHighlightLink('parent');
+        this._interactionEditor.unHighlightLink('parent');
         this._selectedLinks.parent = { name: null, obj: null };
       } else {
         const link = this._loader.robotModel.links[linkName];
         const linkObject = link.children.find((c: any) => c.isURDFVisual)
           ?.children[0];
         this._selectedLinks.parent = { name: linkName, obj: linkObject };
-        this._renderer.highlightLink(linkObject, 'parent');
+        this._interactionEditor.highlightLink(linkObject, 'parent');
       }
       updateJointName();
     });
@@ -499,14 +503,14 @@ export class URDFLayout extends PanelLayout {
       }
 
       if (linkName === 'none') {
-        this._renderer.unHighlightLink('child');
+        this._interactionEditor.unHighlightLink('child');
         this._selectedLinks.child = { name: null, obj: null };
       } else {
         const link = this._loader.robotModel.links[linkName];
         const linkObject = link.children.find((c: any) => c.isURDFVisual)
           ?.children[0];
         this._selectedLinks.child = { name: linkName, obj: linkObject };
-        this._renderer.highlightLink(linkObject, 'child');
+        this._interactionEditor.highlightLink(linkObject, 'child');
       }
       updateJointName();
     });

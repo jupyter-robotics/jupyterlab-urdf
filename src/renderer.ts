@@ -1,14 +1,9 @@
 import * as THREE from 'three';
 
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import {
-  CSS2DRenderer,
-  CSS2DObject
-} from 'three/examples/jsm/renderers/CSS2DRenderer.js';
+import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
 
 import { URDFRobot } from 'urdf-loader';
-
-import { Signal } from '@lumino/signaling';
 
 /**
  *   THREE.js          ROS URDF
@@ -34,38 +29,6 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   private _robotIndex = -1;
   private _directionalLightHelper: THREE.DirectionalLightHelper | null = null;
   private _hemisphereLightHelper: THREE.HemisphereLightHelper | null = null;
-  private _raycaster: THREE.Raycaster;
-  private _mouse: THREE.Vector2;
-  // private _selectedLink: THREE.Object3D | null = null;
-  private _editorMode = false;
-  private _hoveredObj: {
-    link: any | null;
-    originalMaterial: THREE.Material | THREE.Material[] | null;
-    tag: CSS2DObject | null;
-  } = { link: null, originalMaterial: null, tag: null };
-  private _selectedParentObj: {
-    link: any | null;
-    originalMaterial: THREE.Material | THREE.Material[] | null;
-    tag: CSS2DObject | null;
-  } = {
-    link: null,
-    originalMaterial: null,
-    tag: null
-  };
-  private _selectedChildObj: {
-    link: any | null;
-    originalMaterial: THREE.Material | THREE.Material[] | null;
-    tag: CSS2DObject | null;
-  } = {
-    link: null,
-    originalMaterial: null,
-    tag: null
-  };
-  private _highlightMaterial: THREE.Material;
-  private _parentSelectMaterial: THREE.Material;
-  private _childSelectMaterial: THREE.Material;
-
-  public linkSelected = new Signal<this, THREE.Object3D>(this);
 
   /**
    * Creates a renderer to manage the scene elements
@@ -97,37 +60,13 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     this._controls = new OrbitControls(this._camera, this.domElement);
     this._initControls();
 
-    this._raycaster = new THREE.Raycaster();
-    this._mouse = new THREE.Vector2();
-    this._setupPicking();
-    this._setupHovering();
-
-    // Initialize materials for highlighting
-    this._highlightMaterial = new THREE.MeshPhongMaterial({
-      emissive: '#ffff00',
-      emissiveIntensity: 0.5,
-      transparent: true,
-      opacity: 0.5
-    });
-    this._parentSelectMaterial = new THREE.MeshPhongMaterial({
-      emissive: '#00ff00',
-      emissiveIntensity: 0.5,
-      transparent: true,
-      opacity: 0.5
-    });
-    this._childSelectMaterial = new THREE.MeshPhongMaterial({
-      emissive: '#0000ff',
-      emissiveIntensity: 0.5,
-      transparent: true,
-      opacity: 0.5
-    });
-
     // Initialize the 2D renderer for labels
     this._css2dRenderer = new CSS2DRenderer();
     this._css2dRenderer.domElement.style.position = 'absolute';
     this._css2dRenderer.domElement.style.top = '0px';
     this._css2dRenderer.domElement.style.pointerEvents = 'none';
   }
+
   /**
    * Initializes the camera
    */
@@ -148,186 +87,6 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     this._controls.maxDistance = 50;
     this._controls.minDistance = 0.25;
     this._controls.addEventListener('change', () => this.redraw());
-  }
-
-  /**
-   * Sets up picking functionality
-   */
-  private _setupPicking(): void {
-    this.domElement.addEventListener('click', (event: MouseEvent) => {
-      if (!this._editorMode) {
-        return;
-      }
-
-      const rect = this.domElement.getBoundingClientRect();
-      this._mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      this._mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-      this._raycaster.setFromCamera(this._mouse, this._camera);
-
-      const robot = this._scene.children[this._robotIndex];
-      if (robot) {
-        const intersects = this._raycaster.intersectObject(robot, true);
-
-        if (intersects.length > 0) {
-          const selectedObject = intersects[0].object;
-          this.linkSelected.emit(selectedObject);
-        }
-      }
-    });
-  }
-
-  /**
-   * Sets up hovering functionality
-   */
-  private _setupHovering(): void {
-    this.domElement.addEventListener('mousemove', (event: MouseEvent) => {
-      if (!this._editorMode) {
-        return;
-      }
-
-      const rect = this.domElement.getBoundingClientRect();
-      this._mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      this._mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-      this._raycaster.setFromCamera(this._mouse, this._camera);
-
-      const robot = this._scene.children[this._robotIndex];
-      if (robot) {
-        const intersects = this._raycaster.intersectObject(robot, true);
-
-        // Un-highlight the previously hovered object
-        if (this._hoveredObj.link) {
-          // Only restore material if the object is not currently selected
-          if (
-            this._hoveredObj.link !== this._selectedParentObj.link &&
-            this._hoveredObj.link !== this._selectedChildObj.link
-          ) {
-            this._hoveredObj.link.material = this._hoveredObj.originalMaterial;
-          }
-          if (this._hoveredObj.tag) {
-            this._hoveredObj.link.remove(this._hoveredObj.tag);
-          }
-          this._hoveredObj = { link: null, originalMaterial: null, tag: null };
-          this.redraw();
-        }
-
-        if (intersects.length > 0) {
-          const hoveredObject = intersects[0].object as any;
-
-          // Don't highlight already selected links
-          if (
-            hoveredObject === this._selectedParentObj.link ||
-            hoveredObject === this._selectedChildObj.link
-          ) {
-            return;
-          }
-
-          this._hoveredObj.link = hoveredObject;
-          this._hoveredObj.originalMaterial = hoveredObject.material;
-          hoveredObject.material = this._highlightMaterial;
-
-          // Find the link name by traversing up the hierarchy
-          let visual: any = hoveredObject;
-          while (visual && !visual.isURDFVisual) {
-            visual = visual.parent;
-          }
-
-          // Add a tag with the link's name
-          if (visual && visual.urdfNode?.parentElement) {
-            const linkName = visual.urdfNode.parentElement.getAttribute('name');
-            const tagDiv = document.createElement('div');
-            tagDiv.className = 'jp-urdf-label';
-            tagDiv.textContent = linkName;
-            tagDiv.style.backgroundColor = 'yellow';
-            tagDiv.style.color = 'black';
-
-            const tag = new CSS2DObject(tagDiv);
-            this._hoveredObj.tag = tag;
-            hoveredObject.add(tag);
-          }
-
-          this.redraw();
-        }
-      }
-    });
-  }
-
-  /**
-   * Enables or disables editor mode
-   *
-   * @param enabled - Whether editor mode is enabled
-   */
-  setEditorMode(enabled: boolean): void {
-    this._editorMode = enabled;
-
-    if (!enabled) {
-      this.clearHighlights();
-    }
-  }
-
-  /**
-   * Highlights a selected link and adds a tag.
-   * @param link - The link object to highlight.
-   * @param type - The type of selection ('parent' or 'child').
-   */
-  highlightLink(link: any, type: 'parent' | 'child'): void {
-    const material =
-      type === 'parent'
-        ? this._parentSelectMaterial
-        : this._childSelectMaterial;
-    const selectedObj =
-      type === 'parent' ? this._selectedParentObj : this._selectedChildObj;
-
-    // Clear previous selection of the same type
-    if (selectedObj.link) {
-      selectedObj.link.material = selectedObj.originalMaterial;
-      if (selectedObj.tag) {
-        selectedObj.link.remove(selectedObj.tag);
-      }
-    }
-
-    // Apply new highlight
-    // The true original material is the one stored on hover.
-    selectedObj.originalMaterial =
-      link === this._hoveredObj.link
-        ? this._hoveredObj.originalMaterial
-        : link.material;
-    link.material = material;
-    selectedObj.link = link;
-
-    this.redraw();
-  }
-
-  /**
-   * Clears all highlights and tags from selected links.
-   */
-  clearHighlights(): void {
-    if (this._selectedParentObj.link) {
-      this._selectedParentObj.link.material =
-        this._selectedParentObj.originalMaterial;
-      if (this._selectedParentObj.tag) {
-        this._selectedParentObj.link.remove(this._selectedParentObj.tag);
-      }
-      this._selectedParentObj = {
-        link: null,
-        originalMaterial: null,
-        tag: null
-      };
-    }
-    if (this._selectedChildObj.link) {
-      this._selectedChildObj.link.material =
-        this._selectedChildObj.originalMaterial;
-      if (this._selectedChildObj.tag) {
-        this._selectedChildObj.link.remove(this._selectedChildObj.tag);
-      }
-      this._selectedChildObj = {
-        link: null,
-        originalMaterial: null,
-        tag: null
-      };
-    }
-    this.redraw();
   }
 
   /**
@@ -690,26 +449,6 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   }
 
   /**
-   * Un-highlights a single selected link.
-   * @param type - The type of selection to clear ('parent' or 'child').
-   */
-  unHighlightLink(type: 'parent' | 'child'): void {
-    const selectedObj =
-      type === 'parent' ? this._selectedParentObj : this._selectedChildObj;
-
-    if (selectedObj.link) {
-      selectedObj.link.material = selectedObj.originalMaterial;
-      if (selectedObj.tag) {
-        selectedObj.link.remove(selectedObj.tag);
-      }
-      selectedObj.link = null;
-      selectedObj.originalMaterial = null;
-      selectedObj.tag = null;
-    }
-    this.redraw();
-  }
-
-  /**
    * Refreshes the viewer by re-rendering the scene and its elements
    */
   redraw(): void {
@@ -736,5 +475,15 @@ export class URDFRenderer extends THREE.WebGLRenderer {
    */
   setCss2dSize(width: number, height: number): void {
     this._css2dRenderer.setSize(width, height);
+  }
+
+  get camera(): THREE.PerspectiveCamera {
+    return this._camera;
+  }
+
+  getRobot(): URDFRobot | null {
+    return this._robotIndex !== -1
+      ? (this._scene.children[this._robotIndex] as URDFRobot)
+      : null;
   }
 }
