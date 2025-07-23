@@ -179,9 +179,9 @@ export class URDFControls extends GUI {
         'Grid'
       );
 
-      const minHeight = -2;
-      const maxHeight = 5;
-      const stepSize = 0.1;
+      const minHeight = -2.0;
+      const maxHeight = 5.0;
+      const stepSize = 0.001;
       this.controls.scene.height = this._sceneFolder.add(
         sceneSettings,
         'Height',
@@ -231,11 +231,11 @@ export class URDFControls extends GUI {
         const limitMax = Number(joints[name].limit.upper);
 
         // Skip joint if the limits are not defined
-        if (limitMin === 0 && limitMax === 0) {
+        if (limitMin === 0.0 && limitMax === 0.0) {
           return;
         }
 
-        const stepSize = (limitMax - limitMin) / 20;
+        const stepSize = (limitMax - limitMin) / 100;
         const initValue = joints[name].jointValue[0];
 
         this.controls.joints[name] = this._jointsFolder.add(
