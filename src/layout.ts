@@ -335,6 +335,12 @@ export class URDFLayout extends PanelLayout {
           velocity: editorControls.velocity.getValue()
         });
         this._context.model.fromString(newUrdfString);
+
+        // Update the robot model and refresh joint controls
+        this._loader.setRobot(newUrdfString);
+        this._renderer.setRobot(this._loader.robotModel);
+        this._refreshJointControls();
+
         this._selectedLinks.parent = { name: null, obj: null };
         this._selectedLinks.child = { name: null, obj: null };
         editorControls.parent.setValue('none');
@@ -470,7 +476,6 @@ export class URDFLayout extends PanelLayout {
       });
     });
 
-    // Trigger the change handler once to set the initial visibility
     editorControls.type.domElement.dispatchEvent(new Event('change'));
 
     editorControls.parent.onChange((linkName: string) => {
@@ -478,10 +483,9 @@ export class URDFLayout extends PanelLayout {
       if (linkName !== 'none' && linkName === this._selectedLinks.child.name) {
         editorControls.parent.setValue(
           this._selectedLinks.parent.name || 'none'
-        ); // Revert
+        );
         return;
       }
-
       if (linkName === 'none') {
         this._interactionEditor.unHighlightLink('parent');
         this._selectedLinks.parent = { name: null, obj: null };
@@ -501,7 +505,6 @@ export class URDFLayout extends PanelLayout {
         editorControls.child.setValue(this._selectedLinks.child.name || 'none'); // Revert
         return;
       }
-
       if (linkName === 'none') {
         this._interactionEditor.unHighlightLink('child');
         this._selectedLinks.child = { name: null, obj: null };
@@ -514,6 +517,22 @@ export class URDFLayout extends PanelLayout {
       }
       updateJointName();
     });
+  }
+
+  /**
+   * Refreshes the joint controls by clearing and recreating them
+   */
+  private _refreshJointControls(): void {
+    // Clear existing joint controls
+    Object.keys(this._controlsPanel.controls.joints).forEach(jointName => {
+      this._controlsPanel.jointsFolder.remove(
+        this._controlsPanel.controls.joints[jointName]
+      );
+    });
+    this._controlsPanel.controls.joints = {};
+
+    // Recreate joint controls with updated robot model
+    this._setJointControls();
   }
 
   /**
