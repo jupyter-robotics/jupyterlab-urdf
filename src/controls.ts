@@ -190,6 +190,9 @@ export class URDFControls extends GUI {
         stepSize
       );
 
+      // Enforce input validation
+      this._enforceNumericInput(this.controls.scene.height);
+
       this._sceneFolder.open();
     }
     return this.controls.scene;
@@ -245,6 +248,9 @@ export class URDFControls extends GUI {
           limitMax,
           stepSize
         );
+
+        // Enforce numeric input for joint controls
+        this._enforceNumericInput(this.controls.joints[name]);
       });
       this._jointsFolder.open();
     }
@@ -419,6 +425,17 @@ export class URDFControls extends GUI {
           .add(hemisphereSettings, 'ShowHelper')
           .name('Show Helper')
       };
+
+      // Enforce input validation for light controls
+      this._enforceNumericInput(
+        this.controls.lights.directional.position.altitude
+      );
+      this._enforceNumericInput(
+        this.controls.lights.directional.position.azimuth
+      );
+      this._enforceNumericInput(this.controls.lights.directional.intensity);
+      this._enforceNumericInput(this.controls.lights.ambient.intensity);
+      this._enforceNumericInput(this.controls.lights.hemisphere.intensity);
 
       // Open Scene (lights) and directional subfolder
       this._sceneFolder.open();
