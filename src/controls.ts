@@ -121,7 +121,6 @@ export class URDFControls extends GUI {
 
       if (originalValue !== filteredValue) {
         target.value = filteredValue;
-        // Trigger dat.gui's internal change detection
         control.updateDisplay();
       }
     });
@@ -248,8 +247,6 @@ export class URDFControls extends GUI {
           limitMax,
           stepSize
         );
-
-        // Enforce numeric input for joint controls
         this._enforceNumericInput(this.controls.joints[name]);
       });
       this._jointsFolder.open();
@@ -426,7 +423,6 @@ export class URDFControls extends GUI {
           .name('Show Helper')
       };
 
-      // Enforce input validation for light controls
       this._enforceNumericInput(
         this.controls.lights.directional.position.altitude
       );
@@ -441,7 +437,6 @@ export class URDFControls extends GUI {
       this._sceneFolder.open();
       directionalFolder.open();
     }
-
     return this.controls.lights;
   }
 
@@ -463,9 +458,7 @@ export class URDFControls extends GUI {
         'Axis XYZ': '0 0 1',
         'Lower Limit': '0.0',
         'Upper Limit': '0.0',
-        // eslint-disable-next-line
         Effort: '0.0',
-        // eslint-disable-next-line
         Velocity: '0.0',
         'Add Joint': addJointCallback
       };
@@ -517,7 +510,6 @@ export class URDFControls extends GUI {
         .add(editorSettings, 'Velocity')
         .name('Velocity');
 
-      // Enforce numeric input for relevant fields
       this._enforceNumericInput(this.controls.editor.origin_xyz);
       this._enforceNumericInput(this.controls.editor.origin_rpy);
       this._enforceNumericInput(this.controls.editor.axis_xyz);

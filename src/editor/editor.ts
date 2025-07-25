@@ -50,7 +50,7 @@ export class Editor {
     this._raycaster = new THREE.Raycaster();
     this._mouse = new THREE.Vector2();
 
-    // Create materials
+    // Create highlight and selection materials
     this._highlightMaterial = new THREE.MeshBasicMaterial({
       color: 0xffff00,
       transparent: true,
@@ -133,9 +133,7 @@ export class Editor {
 
         const robot = this._renderer.getRobot();
         if (robot) {
-          // Un-highlight the previously hovered object
           if (this._hoveredObj.link) {
-            // Only restore material if the object is not currently selected
             if (
               this._hoveredObj.link !== this._selectedParentObj.link &&
               this._hoveredObj.link !== this._selectedChildObj.link
@@ -183,8 +181,6 @@ export class Editor {
               const tagDiv = document.createElement('div');
               tagDiv.className = 'jp-urdf-label';
               tagDiv.textContent = linkName;
-              tagDiv.style.backgroundColor = 'yellow';
-              tagDiv.style.color = 'black';
 
               const tag = new CSS2DObject(tagDiv);
               this._hoveredObj.tag = tag;
