@@ -195,9 +195,10 @@ li.cr.number.has-slider > div {
 
 /* Styling for 3D labels in editor mode */
 .jp-urdf-label {
-  color: #fff;
+  background: yellow;
+  color: black;
   padding: 2px 5px;
   border-radius: 3px;
-  font-family: sans-serif;
-  font-size: 12px;
+  font-family: var(--jp-ui-font-family, sans-serif);
+  font-size: var(--jp-ui-font-size1, 12px);
 }
