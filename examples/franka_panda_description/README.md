@@ -1,6 +1,6 @@
 # franka_panda_desctiption
 
-Robot description package modified from [_franka_ros_](https://frankaemika.github.io/docs/franka_ros.html) package to include dynamics parameters for the robot arm and gripper for simulating the behaviour of the real robot. The descriptions also include transmission and control definitions required for Gazebo support (see [_panda_simulator_](https://github.com/justagist/panda_simulator) package).
+Robot description package modified from [_franka_ros_](https://frankarobotics.github.io/docs/franka_ros.html) package to include dynamics parameters for the robot arm and gripper for simulating the behaviour of the real robot. The descriptions also include transmission and control definitions required for Gazebo support (see [_panda_simulator_](https://github.com/justagist/panda_simulator) package).
 
 Robot dynamics values are as estimated in [this paper](https://hal.inria.fr/hal-02265293/document).
 
