@@ -16,7 +16,7 @@ export class URDFControls extends GUI {
   private _workspaceFolder: any;
   private _sceneFolder: any;
   private _jointsFolder: any;
-  private _editorFolder: any;
+  private _jointsEditorFolder: any;
   private _workingPath = '';
 
   controls: any = {
@@ -53,6 +53,12 @@ export class URDFControls extends GUI {
     this._jointsFolder = this.addFolder('Joints');
     this._jointsFolder.domElement.setAttribute('class', 'dg joints-folder');
 
+    this._jointsEditorFolder = this.addFolder('Joints Editor');
+    this._jointsEditorFolder.domElement.setAttribute(
+      'class',
+      'dg editor-folder'
+    );
+
     this._workspaceFolder = this.addFolder('Workspace');
     this._workspaceFolder.domElement.setAttribute(
       'class',
@@ -61,9 +67,6 @@ export class URDFControls extends GUI {
 
     this._sceneFolder = this.addFolder('Scene');
     this._sceneFolder.domElement.setAttribute('class', 'dg scene-folder');
-
-    this._editorFolder = this.addFolder('Editor');
-    this._editorFolder.domElement.setAttribute('class', 'dg editor-folder');
   }
 
   /**
@@ -90,8 +93,8 @@ export class URDFControls extends GUI {
   /**
    * Retrieves the folder with editor settings
    */
-  get editorFolder() {
-    return this._editorFolder;
+  get jointsEditorFolder() {
+    return this._jointsEditorFolder;
   }
 
   /**
@@ -448,7 +451,7 @@ export class URDFControls extends GUI {
   createEditorControls(addJointCallback: () => void, linkNames: string[] = []) {
     if (this._isEmpty(this.controls.editor)) {
       const editorSettings = {
-        'Editor Mode': false,
+        'Cursor Link Selection': false,
         'Parent Link': 'none',
         'Child Link': 'none',
         'Joint Name': 'new_joint',
@@ -456,8 +459,8 @@ export class URDFControls extends GUI {
         'Origin XYZ': '0 0 0',
         'Origin RPY': '0 0 0',
         'Axis XYZ': '0 0 1',
-        'Lower Limit': '0.0',
-        'Upper Limit': '0.0',
+        'Lower Limit': '-1.0',
+        'Upper Limit': '1.0',
         Effort: '0.0',
         Velocity: '0.0',
         'Add Joint': addJointCallback
@@ -465,48 +468,48 @@ export class URDFControls extends GUI {
 
       const dropdownOptions = ['none', ...linkNames];
 
-      this.controls.editor.mode = this._editorFolder.add(
+      this.controls.editor.mode = this._jointsEditorFolder.add(
         editorSettings,
-        'Editor Mode'
+        'Cursor Link Selection'
       );
-      this.controls.editor.parent = this._editorFolder
+      this.controls.editor.parent = this._jointsEditorFolder
         .add(editorSettings, 'Parent Link', dropdownOptions)
         .listen();
-      this.controls.editor.child = this._editorFolder
+      this.controls.editor.child = this._jointsEditorFolder
         .add(editorSettings, 'Child Link', dropdownOptions)
         .listen();
-      this.controls.editor.name = this._editorFolder.add(
+      this.controls.editor.name = this._jointsEditorFolder.add(
         editorSettings,
         'Joint Name'
       );
-      this.controls.editor.type = this._editorFolder.add(
+      this.controls.editor.type = this._jointsEditorFolder.add(
         editorSettings,
         'Joint Type',
         ['revolute', 'continuous', 'prismatic', 'fixed', 'floating', 'planar']
       );
 
       // Add origin and axis controls
-      this.controls.editor.origin_xyz = this._editorFolder
+      this.controls.editor.origin_xyz = this._jointsEditorFolder
         .add(editorSettings, 'Origin XYZ')
         .name('Origin XYZ');
-      this.controls.editor.origin_rpy = this._editorFolder
+      this.controls.editor.origin_rpy = this._jointsEditorFolder
         .add(editorSettings, 'Origin RPY')
         .name('Origin RPY');
-      this.controls.editor.axis_xyz = this._editorFolder
+      this.controls.editor.axis_xyz = this._jointsEditorFolder
         .add(editorSettings, 'Axis XYZ')
         .name('Axis XYZ');
 
       // Add limit controls
-      this.controls.editor.lower = this._editorFolder
+      this.controls.editor.lower = this._jointsEditorFolder
         .add(editorSettings, 'Lower Limit')
         .name('Lower Limit');
-      this.controls.editor.upper = this._editorFolder
+      this.controls.editor.upper = this._jointsEditorFolder
         .add(editorSettings, 'Upper Limit')
         .name('Upper Limit');
-      this.controls.editor.effort = this._editorFolder
+      this.controls.editor.effort = this._jointsEditorFolder
         .add(editorSettings, 'Effort')
         .name('Effort');
-      this.controls.editor.velocity = this._editorFolder
+      this.controls.editor.velocity = this._jointsEditorFolder
         .add(editorSettings, 'Velocity')
         .name('Velocity');
 
@@ -518,12 +521,12 @@ export class URDFControls extends GUI {
       this._enforceNumericInput(this.controls.editor.effort);
       this._enforceNumericInput(this.controls.editor.velocity);
 
-      this.controls.editor.add = this._editorFolder.add(
+      this.controls.editor.add = this._jointsEditorFolder.add(
         editorSettings,
         'Add Joint'
       );
 
-      this._editorFolder.open();
+      this._jointsEditorFolder.open();
     }
 
     return this.controls.editor;

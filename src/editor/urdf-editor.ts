@@ -1,7 +1,7 @@
 /**
  * A class for manipulating URDF XML documents.
  */
-export class UrdfEditor {
+export class URDFEditor {
   private _parser = new DOMParser();
   private _serializer = new XMLSerializer();
 

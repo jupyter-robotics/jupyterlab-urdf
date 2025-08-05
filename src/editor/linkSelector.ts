@@ -4,13 +4,13 @@ import { Signal } from '@lumino/signaling';
 import { URDFRenderer } from '../renderer';
 
 /**
- * Editor: Handles all user interaction logic for the URDF editor mode
+ * LinkSelector: Handles all user interaction logic for the URDF link selection mode
  */
-export class Editor {
+export class LinkSelector {
   private _renderer: URDFRenderer;
   private _raycaster: THREE.Raycaster;
   private _mouse: THREE.Vector2;
-  private _editorMode = false;
+  private _linkSelectorMode = false;
 
   private _hoveredObj: {
     link: any | null;
@@ -71,10 +71,10 @@ export class Editor {
   }
 
   /**
-   * Sets the editor mode on/off
+   * Sets the link selector mode on/off
    */
-  setEditorMode(enabled: boolean): void {
-    this._editorMode = enabled;
+  setLinkSelectorMode(enabled: boolean): void {
+    this._linkSelectorMode = enabled;
 
     if (!enabled) {
       this.clearHighlights();
@@ -94,7 +94,7 @@ export class Editor {
    */
   private _setupPicking(): void {
     this._renderer.domElement.addEventListener('click', (event: MouseEvent) => {
-      if (!this._editorMode) {
+      if (!this._linkSelectorMode) {
         return;
       }
 
@@ -121,7 +121,7 @@ export class Editor {
     this._renderer.domElement.addEventListener(
       'mousemove',
       (event: MouseEvent) => {
-        if (!this._editorMode) {
+        if (!this._linkSelectorMode) {
           return;
         }
 

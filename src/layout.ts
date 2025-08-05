@@ -12,9 +12,9 @@ import { URDFRenderer } from './renderer';
 
 import { URDFLoadingManager } from './robot';
 
-import { UrdfEditor } from './editor/urdf-editor';
+import { URDFEditor } from './editor/urdf-editor';
 
-import { Editor } from './editor/editor';
+import { LinkSelector } from './editor/linkSelector';
 
 interface IURDFColors {
   sky: Color;
@@ -30,8 +30,8 @@ export class URDFLayout extends PanelLayout {
   private _renderer: URDFRenderer;
   private _colors: IURDFColors;
   private _loader: URDFLoadingManager;
-  private _editor: UrdfEditor;
-  private _interactionEditor: Editor;
+  private _editor: URDFEditor;
+  private _interactionEditor: LinkSelector;
   private _context: DocumentRegistry.IContext<DocumentModel> | null = null;
   private _selectedLinks: {
     parent: { name: string | null; obj: any | null };
@@ -59,8 +59,8 @@ export class URDFLayout extends PanelLayout {
     this._renderer = new URDFRenderer(this._colors.sky, this._colors.ground);
     this._controlsPanel = new URDFControls();
     this._loader = new URDFLoadingManager();
-    this._editor = new UrdfEditor();
-    this._interactionEditor = new Editor(this._renderer);
+    this._editor = new URDFEditor();
+    this._interactionEditor = new LinkSelector(this._renderer);
   }
 
   /**
@@ -106,6 +106,7 @@ export class URDFLayout extends PanelLayout {
   updateURDF(urdfString: string): void {
     this._loader.setRobot(urdfString);
     this._renderer.setRobot(this._loader.robotModel);
+    this._refreshJointControls();
   }
 
   /**
@@ -337,9 +338,7 @@ export class URDFLayout extends PanelLayout {
         this._context.model.fromString(newUrdfString);
 
         // Update the robot model and refresh joint controls
-        this._loader.setRobot(newUrdfString);
-        this._renderer.setRobot(this._loader.robotModel);
-        this._refreshJointControls();
+        this.updateURDF(newUrdfString);
 
         this._selectedLinks.parent = { name: null, obj: null };
         this._selectedLinks.child = { name: null, obj: null };
@@ -356,7 +355,7 @@ export class URDFLayout extends PanelLayout {
     );
 
     editorControls.mode.onChange((enabled: boolean) => {
-      this._interactionEditor.setEditorMode(enabled);
+      this._interactionEditor.setLinkSelectorMode(enabled);
       if (!enabled) {
         this._selectedLinks.parent = { name: null, obj: null };
         this._selectedLinks.child = { name: null, obj: null };
