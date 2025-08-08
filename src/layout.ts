@@ -442,7 +442,6 @@ export class URDFLayout extends PanelLayout {
             limit?.getAttribute('velocity') || '0.0'
           );
 
-          // Update selected links for highlighting
           this._updateSelectedLinksFromJoint(parentLink, childLink);
         }
       } else {
