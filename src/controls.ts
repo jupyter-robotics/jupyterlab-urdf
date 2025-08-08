@@ -252,6 +252,22 @@ export class URDFControls extends GUI {
         );
         this._enforceNumericInput(this.controls.joints[name]);
       });
+
+      // Add reset button
+      const resetSettings = {
+        'Reset Joints': () => {
+          Object.keys(this.controls.joints).forEach((jointName: string) => {
+            if (jointName !== 'reset' && this.controls.joints[jointName]) {
+              this.controls.joints[jointName].setValue(0);
+            }
+          });
+        }
+      };
+      this.controls.joints.reset = this._jointsFolder.add(
+        resetSettings,
+        'Reset Joints'
+      );
+
       this._jointsFolder.open();
     }
     return this.controls.joints;

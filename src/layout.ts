@@ -384,6 +384,11 @@ export class URDFLayout extends PanelLayout {
       jointNames
     );
 
+    // Connect the cursor link selection mode
+    editorControls.mode.onChange((enabled: boolean) => {
+      this._interactionEditor.setLinkSelectorMode(enabled);
+    });
+
     // Handle joint selection for modification
     editorControls.selectedJoint.onChange((selectedJoint: string) => {
       const isModifying = selectedJoint !== 'New Joint';

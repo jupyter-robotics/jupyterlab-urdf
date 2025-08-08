@@ -202,3 +202,8 @@ li.cr.number.has-slider > div {
   font-family: var(--jp-ui-font-family, sans-serif);
   font-size: var(--jp-ui-font-size1, 12px);
 }
+
+/* Limit dropdown width to prevent UI overflow */
+.urdf-gui .cr select {
+  max-width: 180px !important;
+}
