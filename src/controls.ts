@@ -448,10 +448,15 @@ export class URDFControls extends GUI {
    *
    * @returns - The controls to trigger callbacks when editor settings change
    */
-  createEditorControls(addJointCallback: () => void, linkNames: string[] = []) {
+  createEditorControls(
+    addJointCallback: () => void,
+    linkNames: string[] = [],
+    jointNames: string[] = []
+  ) {
     if (this._isEmpty(this.controls.editor)) {
       const editorSettings = {
         'Cursor Link Selection': false,
+        'Select Joint': 'New Joint',
         'Parent Link': 'none',
         'Child Link': 'none',
         'Joint Name': 'new_joint',
@@ -467,11 +472,15 @@ export class URDFControls extends GUI {
       };
 
       const dropdownOptions = ['none', ...linkNames];
+      const jointOptions = ['New Joint', ...jointNames];
 
       this.controls.editor.mode = this._jointsEditorFolder.add(
         editorSettings,
         'Cursor Link Selection'
       );
+      this.controls.editor.selectedJoint = this._jointsEditorFolder
+        .add(editorSettings, 'Select Joint', jointOptions)
+        .name('Select Joint');
       this.controls.editor.parent = this._jointsEditorFolder
         .add(editorSettings, 'Parent Link', dropdownOptions)
         .listen();
