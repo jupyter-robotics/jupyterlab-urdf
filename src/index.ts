@@ -65,10 +65,11 @@ const extension: JupyterFrontEndPlugin<void> = {
     console.log('JupyterLab extension URDF is activated!');
     const { commands, shell } = app;
 
+    // Tracker
     const namespace = 'jupyterlab-urdf';
     const tracker = new WidgetTracker<URDFWidget>({ namespace });
 
-    let splitDone = false;
+    // Track split state
     let leftEditorRefId: string | null = null;
     let rightViewerRefId: string | null = null;
 
@@ -135,27 +136,24 @@ const extension: JupyterFrontEndPlugin<void> = {
       widget.title.icon = urdf_icon;
       widget.title.iconClass = 'jp-URDFIcon';
 
+      // Notify instance tracker if restore data needs to be updated
       widget.context.pathChanged.connect(() => {
         tracker.save(widget);
       });
       tracker.add(widget);
 
+      // Reset split state when all widgets are closed
       widget.disposed.connect(() => {
         if (widget.id === rightViewerRefId) {
           rightViewerRefId = null;
         }
         if (tracker.size === 0) {
-          splitDone = false;
           rightViewerRefId = null;
         }
       });
 
       if (!isInMain(rightViewerRefId)) {
         rightViewerRefId = widget.id;
-      }
-
-      if (!splitDone) {
-        splitDone = true;
       }
 
       if (isRestoring) {
