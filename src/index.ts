@@ -75,6 +75,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     let isRestoring = true;
     void app.restored.then(() => {
       isRestoring = false;
+      discoverLeftEditorAnchor();
     });
 
     function isInMain(id: string | null): boolean {
@@ -89,7 +90,28 @@ const extension: JupyterFrontEndPlugin<void> = {
       return false;
     }
 
-    // State restoration: reopen document if it was open previously
+    // Check if there is an existing editor on the left
+    function discoverLeftEditorAnchor(): void {
+      if (leftEditorRefId && isInMain(leftEditorRefId)) {
+        return;
+      }
+      for (const w of shell.widgets('main')) {
+        if (w instanceof URDFWidget) {
+          continue;
+        }
+        const anyW = w as any;
+        const path: string | undefined = anyW?.context?.path;
+        if (
+          typeof path === 'string' &&
+          (path.endsWith('.urdf') || path.endsWith('.xacro'))
+        ) {
+          leftEditorRefId = w.id;
+          break;
+        }
+      }
+    }
+
+    // State restoration
     if (restorer) {
       restorer.restore(tracker, {
         command: 'docmanager:open',
@@ -124,7 +146,6 @@ const extension: JupyterFrontEndPlugin<void> = {
         }
         if (tracker.size === 0) {
           splitDone = false;
-          leftEditorRefId = null;
           rightViewerRefId = null;
         }
       });
@@ -142,6 +163,10 @@ const extension: JupyterFrontEndPlugin<void> = {
       }
 
       if (!isInMain(leftEditorRefId)) {
+        discoverLeftEditorAnchor();
+      }
+
+      if (!isInMain(leftEditorRefId)) {
         const anchorId = rightViewerRefId || widget.id;
         try {
           const editor = await commands.execute('docmanager:open', {
@@ -151,7 +176,7 @@ const extension: JupyterFrontEndPlugin<void> = {
           });
           leftEditorRefId = editor.id;
         } catch (e) {
-          console.warn('[urdf] Failed to open paired editor:', e);
+          console.warn('[urdf] Failed to open paired editor (split-left):', e);
         }
       } else {
         try {
