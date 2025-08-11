@@ -65,14 +65,29 @@ const extension: JupyterFrontEndPlugin<void> = {
     console.log('JupyterLab extension URDF is activated!');
     const { commands, shell } = app;
 
-    // Tracker
     const namespace = 'jupyterlab-urdf';
     const tracker = new WidgetTracker<URDFWidget>({ namespace });
 
-    // Track split state
     let splitDone = false;
     let leftEditorRefId: string | null = null;
     let rightViewerRefId: string | null = null;
+
+    let isRestoring = true;
+    void app.restored.then(() => {
+      isRestoring = false;
+    });
+
+    function isInMain(id: string | null): boolean {
+      if (!id) {
+        return false;
+      }
+      for (const w of shell.widgets('main')) {
+        if (w.id === id) {
+          return true;
+        }
+      }
+      return false;
+    }
 
     // State restoration: reopen document if it was open previously
     if (restorer) {
@@ -98,14 +113,15 @@ const extension: JupyterFrontEndPlugin<void> = {
       widget.title.icon = urdf_icon;
       widget.title.iconClass = 'jp-URDFIcon';
 
-      // Notify instance tracker if restore data needs to be updated
       widget.context.pathChanged.connect(() => {
         tracker.save(widget);
       });
       tracker.add(widget);
 
-      // Reset split state when all widgets are closed
       widget.disposed.connect(() => {
+        if (widget.id === rightViewerRefId) {
+          rightViewerRefId = null;
+        }
         if (tracker.size === 0) {
           splitDone = false;
           leftEditorRefId = null;
@@ -113,28 +129,49 @@ const extension: JupyterFrontEndPlugin<void> = {
         }
       });
 
-      // Split layout on first open, then tab into panels
-      if (!splitDone) {
-        const editor = await commands.execute('docmanager:open', {
-          path: widget.context.path,
-          factory: 'Editor',
-          options: { mode: 'split-left', ref: widget.id }
-        });
-        splitDone = true;
-        leftEditorRefId = editor.id;
+      if (!isInMain(rightViewerRefId)) {
         rightViewerRefId = widget.id;
-      } else {
-        if (rightViewerRefId) {
-          shell.add(widget, 'main', {
-            mode: 'tab-after',
-            ref: rightViewerRefId
+      }
+
+      if (!splitDone) {
+        splitDone = true;
+      }
+
+      if (isRestoring) {
+        return;
+      }
+
+      if (!isInMain(leftEditorRefId)) {
+        const anchorId = rightViewerRefId || widget.id;
+        try {
+          const editor = await commands.execute('docmanager:open', {
+            path: widget.context.path,
+            factory: 'Editor',
+            options: { mode: 'split-left', ref: anchorId }
           });
+          leftEditorRefId = editor.id;
+        } catch (e) {
+          console.warn('[urdf] Failed to open paired editor:', e);
         }
-        if (leftEditorRefId) {
+      } else {
+        try {
           await commands.execute('docmanager:open', {
             path: widget.context.path,
             factory: 'Editor',
             options: { mode: 'tab-after', ref: leftEditorRefId }
+          });
+        } catch (e) {
+          console.warn('[urdf] Failed to tab-after editor:', e);
+        }
+      }
+
+      if (widget.id !== rightViewerRefId) {
+        if (!isInMain(rightViewerRefId)) {
+          rightViewerRefId = widget.id;
+        } else {
+          shell.add(widget, 'main', {
+            mode: 'tab-after',
+            ref: rightViewerRefId
           });
         }
       }
