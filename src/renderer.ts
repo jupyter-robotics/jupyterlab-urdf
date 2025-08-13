@@ -57,17 +57,8 @@ export class URDFRenderer extends THREE.WebGLRenderer {
 
     this._controls = new OrbitControls(this._camera, this.domElement);
     this._initControls();
+  }
 
-    this.printSceneLights();
-  }
-  printSceneLights() {
-    console.log('Scene Lights:');
-    this._scene.children.forEach(obj => {
-      if (obj.type.includes('Light')) {
-        console.log(obj);
-      }
-    });
-  }
   /**
    * Initializes the camera
    */
