@@ -40,6 +40,7 @@ export class URDFLayout extends PanelLayout {
     parent: { name: null, obj: null },
     child: { name: null, obj: null }
   };
+  private _editorControlsSetup = false;
 
   /**
    * Construct a `URDFLayout`
@@ -314,6 +315,12 @@ export class URDFLayout extends PanelLayout {
    * Set callbacks for the editor controls
    */
   private _setEditorControls(): void {
+    if (this._editorControlsSetup) {
+      // Prevent setting up controls multiple times
+      return;
+    }
+    this._editorControlsSetup = true;
+
     const addJointCallback = () => {
       if (
         this._context &&
