@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
 
 import { URDFRobot } from 'urdf-loader';
 
@@ -21,6 +22,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   private _scene: THREE.Scene;
   private _camera: THREE.PerspectiveCamera;
   private _controls: OrbitControls;
+  private _css2dRenderer: CSS2DRenderer;
   private _colorSky = new THREE.Color();
   private _colorGround = new THREE.Color();
   private _gridHeight = 0;
@@ -57,6 +59,12 @@ export class URDFRenderer extends THREE.WebGLRenderer {
 
     this._controls = new OrbitControls(this._camera, this.domElement);
     this._initControls();
+
+    // Initialize the 2D renderer for labels
+    this._css2dRenderer = new CSS2DRenderer();
+    this._css2dRenderer.domElement.style.position = 'absolute';
+    this._css2dRenderer.domElement.style.top = '0px';
+    this._css2dRenderer.domElement.style.pointerEvents = 'none';
   }
 
   /**
@@ -290,14 +298,18 @@ export class URDFRenderer extends THREE.WebGLRenderer {
    * @param robot
    */
   setRobot(robot: URDFRobot): void {
-    if (this._robotIndex < 0) {
-      this._scene.add(robot);
-      this._robotIndex = this._scene.children
-        .map(i => i.name)
-        .indexOf(robot.name);
-    } else {
-      this._scene.children[this._robotIndex] = robot;
+    if (this._robotIndex !== -1) {
+      this._scene.children[this._robotIndex].traverse(child => {
+        if (child instanceof THREE.Mesh) {
+          child.geometry.dispose();
+          child.material.dispose();
+        }
+      });
+      this._scene.children.splice(this._robotIndex, 1);
     }
+
+    this._robotIndex = this._scene.children.length;
+    this._scene.add(robot);
     this.redraw();
   }
 
@@ -444,5 +456,34 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     this._camera.aspect = renderSize.width / renderSize.height;
     this._camera.updateProjectionMatrix();
     this.render(this._scene, this._camera);
+    if (this._css2dRenderer) {
+      this._css2dRenderer.render(this._scene, this._camera);
+    }
+  }
+
+  /**
+   * Returns the CSS2D renderer's DOM element.
+   */
+  get css2dDomElement(): HTMLElement {
+    return this._css2dRenderer.domElement;
+  }
+
+  /**
+   * Sets the size of the CSS2D renderer.
+   * @param width - The width of the renderer.
+   * @param height - The height of the renderer.
+   */
+  setCss2dSize(width: number, height: number): void {
+    this._css2dRenderer.setSize(width, height);
+  }
+
+  get camera(): THREE.PerspectiveCamera {
+    return this._camera;
+  }
+
+  getRobot(): URDFRobot | null {
+    return this._robotIndex !== -1
+      ? (this._scene.children[this._robotIndex] as URDFRobot)
+      : null;
   }
 }

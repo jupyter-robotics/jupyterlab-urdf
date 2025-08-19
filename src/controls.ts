@@ -16,6 +16,7 @@ export class URDFControls extends GUI {
   private _workspaceFolder: any;
   private _sceneFolder: any;
   private _jointsFolder: any;
+  private _jointsEditorFolder: any;
   private _workingPath = '';
 
   controls: any = {
@@ -26,7 +27,8 @@ export class URDFControls extends GUI {
       height: {}
     },
     joints: {},
-    lights: {}
+    lights: {},
+    editor: {}
   };
 
   /**
@@ -50,6 +52,12 @@ export class URDFControls extends GUI {
     // Create folders
     this._jointsFolder = this.addFolder('Joints');
     this._jointsFolder.domElement.setAttribute('class', 'dg joints-folder');
+
+    this._jointsEditorFolder = this.addFolder('Joints Editor');
+    this._jointsEditorFolder.domElement.setAttribute(
+      'class',
+      'dg editor-folder'
+    );
 
     this._workspaceFolder = this.addFolder('Workspace');
     this._workspaceFolder.domElement.setAttribute(
@@ -83,6 +91,13 @@ export class URDFControls extends GUI {
   }
 
   /**
+   * Retrieves the folder with editor settings
+   */
+  get jointsEditorFolder() {
+    return this._jointsEditorFolder;
+  }
+
+  /**
    * Checks if a given object is empty {}
    *
    * @param obj - The object to check
@@ -90,6 +105,28 @@ export class URDFControls extends GUI {
    */
   private _isEmpty(obj: object): boolean {
     return Object.keys(obj).length === 0;
+  }
+
+  /**
+   * Restricts input on a control to numeric and special characters.
+   *
+   * @param control - The dat.gui controller to modify.
+   */
+  private _enforceNumericInput(control: any): void {
+    const inputElement = control.domElement as HTMLInputElement;
+
+    inputElement.addEventListener('input', (event: Event) => {
+      const target = event.target as HTMLInputElement;
+      const originalValue = target.value;
+
+      // Remove any characters that aren't digits, spaces, periods, or minus signs
+      const filteredValue = originalValue.replace(/[^\d.\s-]/g, '');
+
+      if (originalValue !== filteredValue) {
+        target.value = filteredValue;
+        control.updateDisplay();
+      }
+    });
   }
 
   /**
@@ -155,6 +192,9 @@ export class URDFControls extends GUI {
         stepSize
       );
 
+      // Enforce input validation
+      this._enforceNumericInput(this.controls.scene.height);
+
       this._sceneFolder.open();
     }
     return this.controls.scene;
@@ -200,7 +240,7 @@ export class URDFControls extends GUI {
           return;
         }
 
-        const stepSize = (limitMax - limitMin) / 100.0;
+        const stepSize = (limitMax - limitMin) / 100;
         const initValue = joints[name].jointValue[0];
 
         this.controls.joints[name] = this._jointsFolder.add(
@@ -210,7 +250,24 @@ export class URDFControls extends GUI {
           limitMax,
           stepSize
         );
+        this._enforceNumericInput(this.controls.joints[name]);
       });
+
+      // Add reset button
+      const resetSettings = {
+        'Reset Joints': () => {
+          Object.keys(this.controls.joints).forEach((jointName: string) => {
+            if (jointName !== 'reset' && this.controls.joints[jointName]) {
+              this.controls.joints[jointName].setValue(0);
+            }
+          });
+        }
+      };
+      this.controls.joints.reset = this._jointsFolder.add(
+        resetSettings,
+        'Reset Joints'
+      );
+
       this._jointsFolder.open();
     }
     return this.controls.joints;
@@ -385,11 +442,118 @@ export class URDFControls extends GUI {
           .name('Show Helper')
       };
 
+      this._enforceNumericInput(
+        this.controls.lights.directional.position.altitude
+      );
+      this._enforceNumericInput(
+        this.controls.lights.directional.position.azimuth
+      );
+      this._enforceNumericInput(this.controls.lights.directional.intensity);
+      this._enforceNumericInput(this.controls.lights.ambient.intensity);
+      this._enforceNumericInput(this.controls.lights.hemisphere.intensity);
+
       // Open Scene (lights) and directional subfolder
       this._sceneFolder.open();
       directionalFolder.open();
     }
-
     return this.controls.lights;
+  }
+
+  /**
+   * Creates controls for the editor mode
+   *
+   * @returns - The controls to trigger callbacks when editor settings change
+   */
+  createEditorControls(
+    addJointCallback: () => void,
+    linkNames: string[] = [],
+    jointNames: string[] = []
+  ) {
+    if (this._isEmpty(this.controls.editor)) {
+      const editorSettings = {
+        'Cursor Link Selection': false,
+        'Select Joint': 'New Joint',
+        'Parent Link': 'none',
+        'Child Link': 'none',
+        'Joint Name': 'new_joint',
+        'Joint Type': 'revolute',
+        'Origin XYZ': '0 0 0',
+        'Origin RPY': '0 0 0',
+        'Axis XYZ': '0 0 1',
+        'Lower Limit': '-1.0',
+        'Upper Limit': '1.0',
+        Effort: '0.0',
+        Velocity: '0.0',
+        'Add Joint': addJointCallback
+      };
+
+      const dropdownOptions = ['none', ...linkNames];
+      const jointOptions = ['New Joint', ...jointNames];
+
+      this.controls.editor.mode = this._jointsEditorFolder.add(
+        editorSettings,
+        'Cursor Link Selection'
+      );
+      this.controls.editor.selectedJoint = this._jointsEditorFolder
+        .add(editorSettings, 'Select Joint', jointOptions)
+        .name('Select Joint');
+      this.controls.editor.parent = this._jointsEditorFolder
+        .add(editorSettings, 'Parent Link', dropdownOptions)
+        .listen();
+      this.controls.editor.child = this._jointsEditorFolder
+        .add(editorSettings, 'Child Link', dropdownOptions)
+        .listen();
+      this.controls.editor.name = this._jointsEditorFolder.add(
+        editorSettings,
+        'Joint Name'
+      );
+      this.controls.editor.type = this._jointsEditorFolder.add(
+        editorSettings,
+        'Joint Type',
+        ['revolute', 'continuous', 'prismatic', 'fixed', 'floating', 'planar']
+      );
+
+      // Add origin and axis controls
+      this.controls.editor.origin_xyz = this._jointsEditorFolder
+        .add(editorSettings, 'Origin XYZ')
+        .name('Origin XYZ');
+      this.controls.editor.origin_rpy = this._jointsEditorFolder
+        .add(editorSettings, 'Origin RPY')
+        .name('Origin RPY');
+      this.controls.editor.axis_xyz = this._jointsEditorFolder
+        .add(editorSettings, 'Axis XYZ')
+        .name('Axis XYZ');
+
+      // Add limit controls
+      this.controls.editor.lower = this._jointsEditorFolder
+        .add(editorSettings, 'Lower Limit')
+        .name('Lower Limit');
+      this.controls.editor.upper = this._jointsEditorFolder
+        .add(editorSettings, 'Upper Limit')
+        .name('Upper Limit');
+      this.controls.editor.effort = this._jointsEditorFolder
+        .add(editorSettings, 'Effort')
+        .name('Effort');
+      this.controls.editor.velocity = this._jointsEditorFolder
+        .add(editorSettings, 'Velocity')
+        .name('Velocity');
+
+      this._enforceNumericInput(this.controls.editor.origin_xyz);
+      this._enforceNumericInput(this.controls.editor.origin_rpy);
+      this._enforceNumericInput(this.controls.editor.axis_xyz);
+      this._enforceNumericInput(this.controls.editor.lower);
+      this._enforceNumericInput(this.controls.editor.upper);
+      this._enforceNumericInput(this.controls.editor.effort);
+      this._enforceNumericInput(this.controls.editor.velocity);
+
+      this.controls.editor.add = this._jointsEditorFolder.add(
+        editorSettings,
+        'Add Joint'
+      );
+
+      this._jointsEditorFolder.open();
+    }
+
+    return this.controls.editor;
   }
 }
