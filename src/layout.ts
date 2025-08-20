@@ -219,6 +219,37 @@ export class URDFLayout extends PanelLayout {
     sceneControl.height.onChange((newHeight: number) =>
       this._renderer.setGridHeight(newHeight)
     );
+
+    // Add frame controls with link names
+    const linkNames = Object.keys(this._loader.robotModel.links);
+    const frameControls = this._controlsPanel.createFrameControls(linkNames);
+
+    // Coordinate helper control
+    frameControls.showCoordinateHelper.onChange((show: boolean) => {
+      this._renderer.setCoordinateHelperVisibility(show);
+    });
+
+    frameControls.size.onChange((size: number) => {
+      // Update individual frames with new size
+      if (frameControls.individual) {
+        Object.keys(frameControls.individual).forEach(linkName => {
+          const showIndividual = frameControls.individual[linkName].getValue();
+          if (showIndividual) {
+            this._renderer.setIndividualFrameVisibility(linkName, true, size);
+          }
+        });
+      }
+    });
+
+    // Individual frame controls
+    if (frameControls.individual) {
+      Object.keys(frameControls.individual).forEach(linkName => {
+        frameControls.individual[linkName].onChange((show: boolean) => {
+          const size = frameControls.size.getValue();
+          this._renderer.setIndividualFrameVisibility(linkName, show, size);
+        });
+      });
+    }
   }
 
   /**

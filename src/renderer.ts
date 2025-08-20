@@ -1,7 +1,11 @@
 import * as THREE from 'three';
 
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
+import {
+  CSS2DRenderer,
+  CSS2DObject
+} from 'three/examples/jsm/renderers/CSS2DRenderer.js';
+import { Group } from 'three';
 
 import { URDFRobot } from 'urdf-loader';
 
@@ -29,6 +33,12 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   private _robotIndex = -1;
   private _directionalLightHelper: THREE.DirectionalLightHelper | null = null;
   private _hemisphereLightHelper: THREE.HemisphereLightHelper | null = null;
+  private _frameHelpers: Group = new Group();
+  private _coordinateHelper: Group | null = null;
+  private _coordHelperScene: THREE.Scene | null = null;
+  private _coordHelperCamera: THREE.OrthographicCamera | null = null;
+  private _coordHelperRenderer: CSS2DRenderer | null = null;
+  private _coordHelperContainer: HTMLElement | null = null;
 
   /**
    * Creates a renderer to manage the scene elements
@@ -65,6 +75,8 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     this._css2dRenderer.domElement.style.position = 'absolute';
     this._css2dRenderer.domElement.style.top = '0px';
     this._css2dRenderer.domElement.style.pointerEvents = 'none';
+
+    this._scene.add(this._frameHelpers);
   }
 
   /**
@@ -310,6 +322,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
 
     this._robotIndex = this._scene.children.length;
     this._scene.add(robot);
+    this._updateAllFramePositions();
     this.redraw();
   }
 
@@ -449,6 +462,301 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   }
 
   /**
+   * Updates positions of all visible frames to match current robot pose
+   */
+  private _updateAllFramePositions(): void {
+    const robot = this.getRobot();
+    if (!robot) {
+      return;
+    }
+
+    // Update each visible frame
+    this._frameHelpers.children.forEach((frameGroup: any) => {
+      const linkName = frameGroup.userData.linkName;
+      if (linkName) {
+        robot.traverse((child: any) => {
+          if (child.isURDFLink && child.name === linkName) {
+            const worldPosition = new THREE.Vector3();
+            const worldQuaternion = new THREE.Quaternion();
+            const worldScale = new THREE.Vector3();
+            child.matrixWorld.decompose(
+              worldPosition,
+              worldQuaternion,
+              worldScale
+            );
+
+            frameGroup.position.copy(worldPosition);
+            frameGroup.quaternion.copy(worldQuaternion);
+          }
+        });
+      }
+    });
+  }
+
+  /**
+   * Creates a custom axes helper
+   */
+  private _createCustomAxesHelper(size = 0.3): THREE.Group {
+    const axesGroup = new THREE.Group();
+    axesGroup.userData.size = size;
+
+    const createArrow = (
+      direction: THREE.Vector3,
+      color: number,
+      label: string
+    ) => {
+      const arrowHelper = new THREE.ArrowHelper(
+        direction.normalize(),
+        new THREE.Vector3(0, 0, 0),
+        size,
+        color,
+        size * 0.2,
+        size * 0.1
+      );
+
+      arrowHelper.traverse(child => {
+        if (child instanceof THREE.Mesh) {
+          child.material.depthTest = false;
+          child.material.depthWrite = false;
+          child.renderOrder = 999;
+        }
+        if (child instanceof THREE.Line) {
+          child.material.depthTest = false;
+          child.material.depthWrite = false;
+          child.renderOrder = 999;
+        }
+      });
+
+      return arrowHelper;
+    };
+
+    // ROS coordinate system: X=red, Y=green, Z=blue
+    const xAxis = createArrow(new THREE.Vector3(1, 0, 0), 0xff0000, 'X');
+    const yAxis = createArrow(new THREE.Vector3(0, 1, 0), 0x00ff00, 'Y');
+    const zAxis = createArrow(new THREE.Vector3(0, 0, 1), 0x0000ff, 'Z');
+
+    axesGroup.add(xAxis);
+    axesGroup.add(yAxis);
+    axesGroup.add(zAxis);
+
+    return axesGroup;
+  }
+
+  /**
+   * Creates and shows a coordinate reference helper in the bottom-left corner
+   */
+  private _createCoordinateHelper(): void {
+    this._removeCoordinateHelper();
+
+    this._coordHelperScene = new THREE.Scene();
+
+    this._coordHelperCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 10);
+    this._coordHelperCamera.position.set(0, 0, 2);
+    this._coordHelperCamera.lookAt(0, 0, 0);
+
+    const axesGroup = new THREE.Group();
+
+    const createArrow = (
+      direction: THREE.Vector3,
+      color: number,
+      label: string
+    ) => {
+      const arrowHelper = new THREE.ArrowHelper(
+        direction.normalize(),
+        new THREE.Vector3(0, 0, 0),
+        0.5,
+        color,
+        0.5 * 0.2,
+        0.5 * 0.1
+      );
+      return arrowHelper;
+    };
+
+    const xAxis = createArrow(new THREE.Vector3(1, 0, 0), 0xff0000, 'X'); // Red - X axis
+    const yAxis = createArrow(new THREE.Vector3(0, 0, 1), 0x00ff00, 'Y'); // Green - Y axis (Z in THREE.js)
+    const zAxis = createArrow(new THREE.Vector3(0, 1, 0), 0x0000ff, 'Z'); // Blue - Z axis (Y in THREE.js)
+
+    axesGroup.add(xAxis);
+    axesGroup.add(yAxis);
+    axesGroup.add(zAxis);
+
+    this._coordHelperScene.add(axesGroup);
+
+    const createLabel = (text: string, pos: THREE.Vector3, color: string) => {
+      const div = document.createElement('div');
+      div.textContent = text;
+      div.style.color = color;
+      div.style.fontFamily = 'Arial, sans-serif';
+      div.style.fontSize = '14px';
+      div.style.fontWeight = 'bold';
+      div.style.textShadow = '1px 1px 1px rgba(0,0,0,0.5)';
+      const label = new CSS2DObject(div);
+      label.position.copy(pos);
+      return label;
+    };
+
+    this._coordHelperScene.add(
+      createLabel('X', new THREE.Vector3(0.6, 0, 0), '#ff0000')
+    );
+    this._coordHelperScene.add(
+      createLabel('Y', new THREE.Vector3(0, 0, 0.6), '#00ff00')
+    );
+    this._coordHelperScene.add(
+      createLabel('Z', new THREE.Vector3(0, 0.6, 0), '#0000ff')
+    );
+
+    // WebGL renderer for axes arrows
+    const coordHelperWebGLRenderer = new THREE.WebGLRenderer({ alpha: true });
+    coordHelperWebGLRenderer.setSize(80, 80);
+    coordHelperWebGLRenderer.domElement.style.position = 'absolute';
+    coordHelperWebGLRenderer.domElement.style.left = '0px';
+    coordHelperWebGLRenderer.domElement.style.top = '0px';
+    coordHelperWebGLRenderer.domElement.style.pointerEvents = 'none';
+
+    // CSS2DRenderer for labels
+    this._coordHelperRenderer = new CSS2DRenderer();
+    this._coordHelperRenderer.setSize(80, 80);
+    this._coordHelperRenderer.domElement.style.position = 'absolute';
+    this._coordHelperRenderer.domElement.style.left = '0px';
+    this._coordHelperRenderer.domElement.style.top = '0px';
+    this._coordHelperRenderer.domElement.style.pointerEvents = 'none';
+
+    // Container for overlay
+    this._coordHelperContainer = document.createElement('div');
+    this._coordHelperContainer.style.position = 'absolute';
+    this._coordHelperContainer.style.left = '10px';
+    this._coordHelperContainer.style.bottom = '10px';
+    this._coordHelperContainer.style.width = '80px';
+    this._coordHelperContainer.style.height = '80px';
+    this._coordHelperContainer.style.pointerEvents = 'none';
+    this._coordHelperContainer.style.zIndex = '10';
+
+    // Add both renderers to container
+    this._coordHelperContainer.appendChild(coordHelperWebGLRenderer.domElement);
+    this._coordHelperContainer.appendChild(
+      this._coordHelperRenderer.domElement
+    );
+
+    // Attach to main renderer's parent
+    if (this.domElement.parentElement) {
+      this.domElement.parentElement.appendChild(this._coordHelperContainer);
+    }
+
+    // Update function - rotate the helper scene to match camera
+    const updateHelper = () => {
+      if (
+        this._coordHelperScene &&
+        this._coordHelperCamera &&
+        this._coordHelperRenderer
+      ) {
+        this._coordHelperScene.rotation.copy(this._camera.rotation);
+        coordHelperWebGLRenderer.render(
+          this._coordHelperScene,
+          this._coordHelperCamera
+        );
+        this._coordHelperRenderer.render(
+          this._coordHelperScene,
+          this._coordHelperCamera
+        );
+      }
+    };
+    (this._coordHelperContainer as any)._updateHelper = updateHelper;
+    (this._coordHelperContainer as any)._webGLRenderer =
+      coordHelperWebGLRenderer;
+
+    // Initial render
+    updateHelper();
+
+    // Update on camera changes
+    this._controls.addEventListener('change', updateHelper);
+  }
+
+  /**
+   * Removes the coordinate helper overlay and cleans up DOM
+   */
+  private _removeCoordinateHelper(): void {
+    if (
+      this._coordHelperContainer &&
+      this._coordHelperContainer.parentElement
+    ) {
+      if ((this._coordHelperContainer as any)._updateHelper) {
+        this._controls.removeEventListener(
+          'change',
+          (this._coordHelperContainer as any)._updateHelper
+        );
+      }
+
+      if ((this._coordHelperContainer as any)._webGLRenderer) {
+        (this._coordHelperContainer as any)._webGLRenderer.dispose();
+      }
+
+      this._coordHelperContainer.parentElement.removeChild(
+        this._coordHelperContainer
+      );
+    }
+    this._coordHelperContainer = null;
+    this._coordHelperRenderer = null;
+    this._coordHelperScene = null;
+    this._coordHelperCamera = null;
+  }
+
+  /**
+   * Toggle the coordinate helper visibility
+   */
+  setCoordinateHelperVisibility(visible: boolean): void {
+    if (visible) {
+      this._createCoordinateHelper();
+    } else {
+      this._removeCoordinateHelper();
+    }
+  }
+
+  /**
+   * Shows or hides coordinate frame for a specific link
+   */
+  setIndividualFrameVisibility(
+    linkName: string,
+    visible: boolean,
+    size = 0.3
+  ): void {
+    const existingFrame = this._frameHelpers.children.find(
+      (child: any) => child.userData.linkName === linkName
+    );
+    if (existingFrame) {
+      this._frameHelpers.remove(existingFrame);
+    }
+
+    if (!visible) {
+      this.redraw();
+      return;
+    }
+
+    const robot = this.getRobot();
+    if (!robot) {
+      return;
+    }
+
+    robot.traverse((child: any) => {
+      if (child.isURDFLink && child.name === linkName) {
+        const axes = this._createCustomAxesHelper(size);
+        axes.userData.linkName = linkName;
+
+        const worldPosition = new THREE.Vector3();
+        const worldQuaternion = new THREE.Quaternion();
+        const worldScale = new THREE.Vector3();
+        child.matrixWorld.decompose(worldPosition, worldQuaternion, worldScale);
+
+        axes.position.copy(worldPosition);
+        axes.quaternion.copy(worldQuaternion);
+
+        this._frameHelpers.add(axes);
+      }
+    });
+
+    this.redraw();
+  }
+
+  /**
    * Refreshes the viewer by re-rendering the scene and its elements
    */
   redraw(): void {
@@ -485,5 +793,14 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     return this._robotIndex !== -1
       ? (this._scene.children[this._robotIndex] as URDFRobot)
       : null;
+  }
+
+  dispose(): void {
+    // ... existing dispose code
+    this._frameHelpers.clear();
+    if (this._coordinateHelper) {
+      this._scene.remove(this._coordinateHelper);
+    }
+    this._removeCoordinateHelper();
   }
 }

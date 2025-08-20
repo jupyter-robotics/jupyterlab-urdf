@@ -28,6 +28,7 @@ export class URDFControls extends GUI {
     },
     joints: {},
     lights: {},
+    frames: {},
     editor: {}
   };
 
@@ -555,5 +556,53 @@ export class URDFControls extends GUI {
     }
 
     return this.controls.editor;
+  }
+
+  /**
+   * Creates controls for coordinate frame visualization
+   *
+   * @param linkNames - Array of available link names
+   * @returns - The controls to trigger callbacks when frame settings change
+   */
+  createFrameControls(linkNames: string[] = []) {
+    if (this._isEmpty(this.controls.frames)) {
+      const frameSettings = {
+        'Show Coordinate Helper': false,
+        'Frame Size': 1
+      };
+
+      this.controls.frames.showCoordinateHelper = this._sceneFolder.add(
+        frameSettings,
+        'Show Coordinate Helper'
+      );
+
+      this.controls.frames.size = this._sceneFolder.add(
+        frameSettings,
+        'Frame Size',
+        0.1,
+        10,
+        0.05
+      );
+
+      this._enforceNumericInput(this.controls.frames.size);
+
+      // Individual frame controls subfolder
+      const individualFramesFolder =
+        this._sceneFolder.addFolder('Individual Frames');
+      this.controls.frames.individual = {};
+
+      // Create checkbox for each link
+      linkNames.forEach(linkName => {
+        const linkSettings = { [linkName]: false };
+        this.controls.frames.individual[linkName] = individualFramesFolder.add(
+          linkSettings,
+          linkName
+        );
+      });
+
+      individualFramesFolder.close();
+    }
+
+    return this.controls.frames;
   }
 }
