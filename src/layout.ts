@@ -220,20 +220,21 @@ export class URDFLayout extends PanelLayout {
       this._renderer.setGridHeight(newHeight)
     );
 
-    // Add frame controls with link names
+    // Add link controls with link names
     const linkNames = Object.keys(this._loader.robotModel.links);
-    const frameControls = this._controlsPanel.createFrameControls(linkNames);
+    const linkControls = this._controlsPanel.createLinkControls(linkNames);
 
-    // Coordinate helper control
-    frameControls.showCoordinateHelper.onChange((show: boolean) => {
-      this._renderer.setCoordinateHelperVisibility(show);
+    // Axis indicator control
+    linkControls.axisIndicator.onChange((show: boolean) => {
+      this._renderer.setAxisIndicatorVisibility(show);
     });
 
-    frameControls.size.onChange((size: number) => {
+    linkControls.frameSize.onChange((size: number) => {
       // Update individual frames with new size
-      if (frameControls.individual) {
-        Object.keys(frameControls.individual).forEach(linkName => {
-          const showIndividual = frameControls.individual[linkName].getValue();
+      if (linkControls.individual) {
+        Object.keys(linkControls.individual).forEach(linkName => {
+          const showIndividual =
+            linkControls.individual[linkName].showFrame.getValue();
           if (showIndividual) {
             this._renderer.setIndividualFrameVisibility(linkName, true, size);
           }
@@ -241,13 +242,23 @@ export class URDFLayout extends PanelLayout {
       }
     });
 
-    // Individual frame controls
-    if (frameControls.individual) {
-      Object.keys(frameControls.individual).forEach(linkName => {
-        frameControls.individual[linkName].onChange((show: boolean) => {
-          const size = frameControls.size.getValue();
-          this._renderer.setIndividualFrameVisibility(linkName, show, size);
-        });
+    // Individual link controls
+    if (linkControls.individual) {
+      Object.keys(linkControls.individual).forEach(linkName => {
+        // Frame visibility
+        linkControls.individual[linkName].showFrame.onChange(
+          (show: boolean) => {
+            const size = linkControls.frameSize.getValue();
+            this._renderer.setIndividualFrameVisibility(linkName, show, size);
+          }
+        );
+
+        // Link opacity control
+        linkControls.individual[linkName].opacity.onChange(
+          (opacity: number) => {
+            this._renderer.setLinkOpacity(linkName, opacity);
+          }
+        );
       });
     }
   }

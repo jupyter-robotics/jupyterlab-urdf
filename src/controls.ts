@@ -17,6 +17,7 @@ export class URDFControls extends GUI {
   private _sceneFolder: any;
   private _jointsFolder: any;
   private _jointsEditorFolder: any;
+  private _linksFolder: any; // Add new links folder
   private _workingPath = '';
 
   controls: any = {
@@ -28,7 +29,7 @@ export class URDFControls extends GUI {
     },
     joints: {},
     lights: {},
-    frames: {},
+    links: {}, // Move frames here and add new link controls
     editor: {}
   };
 
@@ -53,6 +54,10 @@ export class URDFControls extends GUI {
     // Create folders
     this._jointsFolder = this.addFolder('Joints');
     this._jointsFolder.domElement.setAttribute('class', 'dg joints-folder');
+
+    // Add Links folder right after Joints
+    this._linksFolder = this.addFolder('Links');
+    this._linksFolder.domElement.setAttribute('class', 'dg links-folder');
 
     this._jointsEditorFolder = this.addFolder('Joints Editor');
     this._jointsEditorFolder.domElement.setAttribute(
@@ -96,6 +101,13 @@ export class URDFControls extends GUI {
    */
   get jointsEditorFolder() {
     return this._jointsEditorFolder;
+  }
+
+  /**
+   * Retrieves the folder with links settings
+   */
+  get linksFolder() {
+    return this._linksFolder;
   }
 
   /**
@@ -559,50 +571,64 @@ export class URDFControls extends GUI {
   }
 
   /**
-   * Creates controls for coordinate frame visualization
+   * Creates controls for link visualization (frames, opacity)
    *
    * @param linkNames - Array of available link names
-   * @returns - The controls to trigger callbacks when frame settings change
+   * @returns - The controls to trigger callbacks when link settings change
    */
-  createFrameControls(linkNames: string[] = []) {
-    if (this._isEmpty(this.controls.frames)) {
-      const frameSettings = {
-        'Show Coordinate Helper': false,
+  createLinkControls(linkNames: string[] = []) {
+    if (this._isEmpty(this.controls.links)) {
+      const globalLinkSettings = {
+        'Axis Indicator': false,
         'Frame Size': 1
       };
 
-      this.controls.frames.showCoordinateHelper = this._sceneFolder.add(
-        frameSettings,
-        'Show Coordinate Helper'
+      this.controls.links.axisIndicator = this._linksFolder.add(
+        globalLinkSettings,
+        'Axis Indicator'
       );
 
-      this.controls.frames.size = this._sceneFolder.add(
-        frameSettings,
+      this.controls.links.frameSize = this._linksFolder.add(
+        globalLinkSettings,
         'Frame Size',
         0.1,
         10,
         0.05
       );
 
-      this._enforceNumericInput(this.controls.frames.size);
+      this._enforceNumericInput(this.controls.links.frameSize);
 
-      // Individual frame controls subfolder
-      const individualFramesFolder =
-        this._sceneFolder.addFolder('Individual Frames');
-      this.controls.frames.individual = {};
+      // Individual link controls subfolder
+      const individualLinksFolder =
+        this._linksFolder.addFolder('Individual Links');
+      this.controls.links.individual = {};
 
-      // Create checkbox for each link
+      // Create controls for each link
       linkNames.forEach(linkName => {
-        const linkSettings = { [linkName]: false };
-        this.controls.frames.individual[linkName] = individualFramesFolder.add(
-          linkSettings,
-          linkName
+        const linkFolder = individualLinksFolder.addFolder(linkName);
+
+        const linkSettings = {
+          'Show Frame': false,
+          Opacity: 1.0
+        };
+
+        this.controls.links.individual[linkName] = {
+          showFrame: linkFolder.add(linkSettings, 'Show Frame'),
+          opacity: linkFolder.add(linkSettings, 'Opacity', 0.0, 1.0, 0.01)
+        };
+
+        // Enforce numeric input for opacity slider
+        this._enforceNumericInput(
+          this.controls.links.individual[linkName].opacity
         );
+
+        linkFolder.close();
       });
 
-      individualFramesFolder.close();
+      individualLinksFolder.close();
+      this._linksFolder.open();
     }
 
-    return this.controls.frames;
+    return this.controls.links;
   }
 }

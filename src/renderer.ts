@@ -34,7 +34,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   private _directionalLightHelper: THREE.DirectionalLightHelper | null = null;
   private _hemisphereLightHelper: THREE.HemisphereLightHelper | null = null;
   private _frameHelpers: Group = new Group();
-  private _coordinateHelper: Group | null = null;
+  private _axisIndicator: Group | null = null;
   private _coordHelperScene: THREE.Scene | null = null;
   private _coordHelperCamera: THREE.OrthographicCamera | null = null;
   private _coordHelperRenderer: CSS2DRenderer | null = null;
@@ -510,10 +510,11 @@ export class URDFRenderer extends THREE.WebGLRenderer {
         new THREE.Vector3(0, 0, 0),
         size,
         color,
-        size * 0.2,
-        size * 0.1
+        size * 0.15, // Head length
+        size * 0.08 // Head width
       );
 
+      // Make materials render on top and scale line width proportionally
       arrowHelper.traverse(child => {
         if (child instanceof THREE.Mesh) {
           child.material.depthTest = false;
@@ -521,6 +522,8 @@ export class URDFRenderer extends THREE.WebGLRenderer {
           child.renderOrder = 999;
         }
         if (child instanceof THREE.Line) {
+          // Scale line width more proportionally to the arrow heads
+          child.material.linewidth = Math.max(1, size * 3); // Much smaller multiplier
           child.material.depthTest = false;
           child.material.depthWrite = false;
           child.renderOrder = 999;
@@ -543,10 +546,10 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   }
 
   /**
-   * Creates and shows a coordinate reference helper in the bottom-left corner
+   * Creates and shows a coordinate reference helper Indicator in the bottom-left corner
    */
-  private _createCoordinateHelper(): void {
-    this._removeCoordinateHelper();
+  private _createAxisIndicator(): void {
+    this._removeAxisIndicator();
 
     this._coordHelperScene = new THREE.Scene();
 
@@ -672,9 +675,9 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   }
 
   /**
-   * Removes the coordinate helper overlay and cleans up DOM
+   * Removes the axis indicator overlay and cleans up DOM
    */
-  private _removeCoordinateHelper(): void {
+  private _removeAxisIndicator(): void {
     if (
       this._coordHelperContainer &&
       this._coordHelperContainer.parentElement
@@ -701,13 +704,13 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   }
 
   /**
-   * Toggle the coordinate helper visibility
+   * Toggle the axis indicator visibility
    */
-  setCoordinateHelperVisibility(visible: boolean): void {
+  setAxisIndicatorVisibility(visible: boolean): void {
     if (visible) {
-      this._createCoordinateHelper();
+      this._createAxisIndicator();
     } else {
-      this._removeCoordinateHelper();
+      this._removeAxisIndicator();
     }
   }
 
@@ -757,6 +760,154 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   }
 
   /**
+   * Helper method to recursively set opacity on meshes within a single link
+   */
+  private _setMeshOpacity(object: any, opacity: number): void {
+    if (object instanceof THREE.Mesh) {
+      // Handle both single materials and material arrays
+      const materials = Array.isArray(object.material)
+        ? object.material
+        : [object.material];
+
+      materials.forEach((material: any, index: number) => {
+        if (material) {
+          // Debug logging for problematic materials
+          console.log(
+            `Setting opacity ${opacity} for material type: ${material.type}, current opacity: ${material.opacity}`
+          );
+
+          // Check if this material is already cloned for this specific mesh
+          if (!material.userData.isCloned) {
+            const clonedMaterial = material.clone();
+            clonedMaterial.userData.isCloned = true;
+            clonedMaterial.userData.originalOpacity =
+              material.opacity !== undefined ? material.opacity : 1.0;
+
+            // Replace the material with the cloned version
+            if (Array.isArray(object.material)) {
+              object.material[index] = clonedMaterial;
+            } else {
+              object.material = clonedMaterial;
+            }
+
+            material = clonedMaterial;
+          }
+
+          // Store original opacity if not already stored
+          if (material.userData.originalOpacity === undefined) {
+            material.userData.originalOpacity =
+              material.opacity !== undefined ? material.opacity : 1.0;
+          }
+
+          // Aggressive fix for DAE materials - always replace with MeshStandardMaterial for transparency
+          if (opacity < 1.0 && !material.userData.convertedFromDAE) {
+            const standardMaterial = new THREE.MeshStandardMaterial({
+              color: material.color || new THREE.Color(0xffffff),
+              map: material.map,
+              normalMap: material.normalMap,
+              roughness: 0.5,
+              metalness: 0.1,
+              transparent: true,
+              opacity: opacity,
+              side: material.side || THREE.FrontSide,
+              depthWrite: false,
+              alphaTest: 0
+            });
+
+            standardMaterial.userData.isCloned = true;
+            standardMaterial.userData.originalOpacity =
+              material.userData.originalOpacity;
+            standardMaterial.userData.convertedFromDAE = true;
+            standardMaterial.userData.originalMaterial = material;
+
+            // Replace the material
+            if (Array.isArray(object.material)) {
+              object.material[index] = standardMaterial;
+            } else {
+              object.material = standardMaterial;
+            }
+
+            console.log(
+              `Converted ${material.type} to MeshStandardMaterial with opacity ${opacity}`
+            );
+          } else if (opacity >= 1.0 && material.userData.originalMaterial) {
+            // Restore original material for full opacity
+            const originalMaterial = material.userData.originalMaterial;
+            originalMaterial.transparent = false;
+            originalMaterial.opacity = 1.0;
+            originalMaterial.depthWrite = true;
+            originalMaterial.needsUpdate = true;
+
+            if (Array.isArray(object.material)) {
+              object.material[index] = originalMaterial;
+            } else {
+              object.material = originalMaterial;
+            }
+
+            console.log(
+              `Restored original material type: ${originalMaterial.type}`
+            );
+          } else {
+            // Standard opacity setting
+            if (opacity < 1.0) {
+              material.transparent = true;
+              material.alphaTest = 0;
+              material.depthWrite = false;
+            } else {
+              material.transparent = false;
+              material.alphaTest = 0;
+              material.depthWrite = true;
+            }
+
+            material.opacity = opacity;
+            material.needsUpdate = true;
+          }
+
+          // Handle visibility for completely transparent case
+          object.visible = opacity > 0;
+        }
+      });
+    }
+
+    // Recursively apply to children, but only within this link
+    object.children.forEach((child: any) => {
+      if (!child.isURDFLink) {
+        this._setMeshOpacity(child, opacity);
+      }
+    });
+  }
+
+  /**
+   * Sets the opacity of a specific link
+   *
+   * @param linkName - The name of the link
+   * @param opacity - Opacity value from 0 (invisible) to 1 (fully opaque)
+   */
+  setLinkOpacity(linkName: string, opacity: number): void {
+    const robot = this.getRobot();
+    if (!robot) {
+      return;
+    }
+
+    robot.traverse((child: any) => {
+      if (child.isURDFLink && child.name === linkName) {
+        // Only traverse the immediate visual children of THIS link, not nested links
+        child.children.forEach((linkChild: any) => {
+          // Skip if this child is another URDF link (to avoid affecting child links)
+          if (linkChild.isURDFLink) {
+            return;
+          }
+
+          // Recursively handle visual elements within this link only
+          this._setMeshOpacity(linkChild, opacity);
+        });
+      }
+    });
+
+    this.redraw();
+  }
+
+  /**
    * Refreshes the viewer by re-rendering the scene and its elements
    */
   redraw(): void {
@@ -798,9 +949,9 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   dispose(): void {
     // ... existing dispose code
     this._frameHelpers.clear();
-    if (this._coordinateHelper) {
-      this._scene.remove(this._coordinateHelper);
+    if (this._axisIndicator) {
+      this._scene.remove(this._axisIndicator);
     }
-    this._removeCoordinateHelper();
+    this._removeAxisIndicator();
   }
 }
