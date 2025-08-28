@@ -153,29 +153,70 @@ export class LinkManager {
 
   /**
    * Helper method to recursively set opacity on meshes within a single link.
+   * This function clones materials to ensure that opacity changes on one link
+   * do not affect other links that might share the same material.
    */
-  private _setMeshOpacity(object: any, opacity: number): void {
+  private _setMeshOpacity(object: THREE.Object3D, opacity: number): void {
+    if ((object as any).isURDFLink) {
+      // Stop recursion if we encounter another link.
+      // This check is important if the initial call is not on a visual node.
+      return;
+    }
+
     if (object instanceof THREE.Mesh) {
-      const materials = Array.isArray(object.material)
-        ? object.material
-        : [object.material];
-      materials.forEach(material => {
-        if (material) {
-          if (opacity < 1.0) {
-            material.transparent = true;
-            material.depthWrite = false;
+      const mesh = object as THREE.Mesh;
+      const materials = Array.isArray(mesh.material)
+        ? mesh.material
+        : [mesh.material];
+
+      const newMaterials = materials.map(material => {
+        if (!material) {
+          return material;
+        }
+
+        // If we're making it transparent, clone the material to avoid side effects.
+        if (opacity < 1.0) {
+          if (!material.userData.isOpacityClone) {
+            const clonedMaterial = material.clone();
+            clonedMaterial.userData.isOpacityClone = true;
+            clonedMaterial.userData.originalMaterial = material;
+
+            clonedMaterial.transparent = true;
+            clonedMaterial.depthWrite = false;
+            clonedMaterial.opacity = opacity;
+            clonedMaterial.needsUpdate = true;
+            return clonedMaterial;
+          } else {
+            material.opacity = opacity;
+            material.needsUpdate = true;
+            return material;
+          }
+        } else {
+          if (
+            material.userData.isOpacityClone &&
+            material.userData.originalMaterial
+          ) {
+            return material.userData.originalMaterial;
           } else {
             material.transparent = false;
             material.depthWrite = true;
+            material.opacity = 1.0;
+            material.needsUpdate = true;
+            return material;
           }
-          material.opacity = opacity;
-          material.needsUpdate = true;
         }
       });
+
+      if (Array.isArray(mesh.material)) {
+        mesh.material = newMaterials;
+      } else {
+        mesh.material = newMaterials[0];
+      }
     }
 
-    object.children.forEach((child: any) => {
-      if (!child.isURDFLink) {
+    // Recurse through children, but stop if a child is another URDFLink
+    object.children.forEach(child => {
+      if (!(child as any).isURDFLink) {
         this._setMeshOpacity(child, opacity);
       }
     });

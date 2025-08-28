@@ -185,6 +185,7 @@ export class URDFLayout extends PanelLayout {
     this._setSceneControls();
     this._setJointControls();
     this._setLightControls();
+    this._setLinkControls();
     this._setEditorControls();
   }
 
@@ -219,7 +220,26 @@ export class URDFLayout extends PanelLayout {
     sceneControl.height.onChange((newHeight: number) =>
       this._renderer.setGridHeight(newHeight)
     );
+  }
 
+  /**
+   * Set callback for each joint when the value changes in the controls panel.
+   */
+  private _setJointControls(): void {
+    const jointControl = this._controlsPanel.createJointControls(
+      this._loader.robotModel.joints
+    );
+    Object.keys(jointControl).forEach((jointName: string) => {
+      jointControl[jointName].onChange((newValue = 0.0) => {
+        this._setJointValue(jointName, newValue);
+      });
+    });
+  }
+
+  /**
+   * Set callbacks for the link controls in the panel.
+   */
+  private _setLinkControls(): void {
     // Add link controls with link names
     const linkNames = Object.keys(this._loader.robotModel.links);
     const linkControls = this._controlsPanel.createLinkControls(linkNames);
@@ -261,20 +281,6 @@ export class URDFLayout extends PanelLayout {
         );
       });
     }
-  }
-
-  /**
-   * Set callback for each joint when the value changes in the controls panel.
-   */
-  private _setJointControls(): void {
-    const jointControl = this._controlsPanel.createJointControls(
-      this._loader.robotModel.joints
-    );
-    Object.keys(jointControl).forEach((jointName: string) => {
-      jointControl[jointName].onChange((newValue = 0.0) => {
-        this._setJointValue(jointName, newValue);
-      });
-    });
   }
 
   /**
