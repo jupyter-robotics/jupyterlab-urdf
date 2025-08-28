@@ -17,7 +17,7 @@ export class URDFControls extends GUI {
   private _sceneFolder: any;
   private _jointsFolder: any;
   private _jointsEditorFolder: any;
-  private _linksFolder: any; // Add new links folder
+  private _linksFolder: any;
   private _workingPath = '';
 
   controls: any = {
@@ -29,7 +29,7 @@ export class URDFControls extends GUI {
     },
     joints: {},
     lights: {},
-    links: {}, // Move frames here and add new link controls
+    links: {},
     editor: {}
   };
 
@@ -55,7 +55,6 @@ export class URDFControls extends GUI {
     this._jointsFolder = this.addFolder('Joints');
     this._jointsFolder.domElement.setAttribute('class', 'dg joints-folder');
 
-    // Add Links folder right after Joints
     this._linksFolder = this.addFolder('Links');
     this._linksFolder.domElement.setAttribute('class', 'dg links-folder');
 
