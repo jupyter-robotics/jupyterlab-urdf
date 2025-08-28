@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
 import { AxisIndicatorHelper } from './links/axisIndicator';
 import { LinkManager } from './links/linkManager';
+import { SceneManager } from './scene/sceneManager';
 
 import { URDFRobot } from 'urdf-loader';
 
@@ -21,16 +22,10 @@ import { URDFRobot } from 'urdf-loader';
  * URDFRenderer: a renderer to manage the view of a scene with a robot
  */
 export class URDFRenderer extends THREE.WebGLRenderer {
-  private _scene: THREE.Scene;
+  private _sceneManager: SceneManager;
   private _camera: THREE.PerspectiveCamera;
   private _controls: OrbitControls;
   private _css2dRenderer: CSS2DRenderer;
-  private _colorSky = new THREE.Color();
-  private _colorGround = new THREE.Color();
-  private _gridHeight = 0;
-  private _robotIndex = -1;
-  private _directionalLightHelper: THREE.DirectionalLightHelper | null = null;
-  private _hemisphereLightHelper: THREE.HemisphereLightHelper | null = null;
   private _axisIndicator: AxisIndicatorHelper;
   private _linkManager: LinkManager;
 
@@ -46,9 +41,6 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   ) {
     super({ antialias: true });
 
-    this._colorSky = colorSky;
-    this._colorGround = colorGround;
-
     // This is needed to render the axis indicator correctly
     this.autoClear = false;
 
@@ -58,8 +50,9 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     this.shadowMap.enabled = true;
     this.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    this._scene = new THREE.Scene();
-    this._initScene();
+    this._sceneManager = new SceneManager(colorSky, colorGround, () =>
+      this.redraw()
+    );
 
     this._camera = new THREE.PerspectiveCamera();
     this._initCamera();
@@ -73,12 +66,14 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     this._css2dRenderer.domElement.style.top = '0px';
     this._css2dRenderer.domElement.style.pointerEvents = 'none';
 
-    // Instantiate the new managers
+    // Instantiate the other managers
     this._axisIndicator = new AxisIndicatorHelper(
       this._camera,
       this.domElement
     );
-    this._linkManager = new LinkManager(this._scene, () => this.redraw());
+    this._linkManager = new LinkManager(this._sceneManager.scene, () =>
+      this.redraw()
+    );
   }
 
   /**
@@ -104,119 +99,12 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   }
 
   /**
-   * Initializes the scene
-   */
-  private _initScene(): void {
-    this._scene.background = this._colorSky;
-    this._scene.up = new THREE.Vector3(0, 0, 1); // Z is up
-    this._addGround();
-    this._addGrid();
-    this._addLights();
-  }
-
-  /**
-   * Adds a plane representing the ground to the scene
-   */
-  private _addGround(): void {
-    // TODO: fix shadows
-    const ground = new THREE.Mesh(
-      new THREE.PlaneGeometry(40, 40),
-      new THREE.ShadowMaterial({ opacity: 0.5 })
-    );
-    ground.rotation.x = -Math.PI / 2;
-    ground.scale.setScalar(30);
-    ground.receiveShadow = true;
-    this._scene.add(ground);
-  }
-
-  /**
-   * Adds a grid to the scene with ground color given to the constructor()
-   */
-  private _addGrid(): void {
-    const grid = new THREE.GridHelper(
-      50,
-      50,
-      this._colorGround,
-      this._colorGround
-    );
-    grid.receiveShadow = true;
-    this._scene.add(grid);
-  }
-
-  /**
-   * Adds three lights to the scene
-   */
-  private _addLights(): void {
-    // Directional light
-    const directionalLight = new THREE.DirectionalLight(0xfff2cc, 1.8);
-    directionalLight.castShadow = true;
-    directionalLight.position.set(3, 3, 3);
-    directionalLight.shadow.camera.top = 5;
-    directionalLight.shadow.camera.bottom = -5;
-    directionalLight.shadow.camera.left = -5;
-    directionalLight.shadow.camera.right = 5;
-    directionalLight.shadow.camera.near = 0.5;
-    directionalLight.shadow.camera.far = 50;
-    this._scene.add(directionalLight);
-
-    // Directional light helper
-    this._directionalLightHelper = new THREE.DirectionalLightHelper(
-      directionalLight,
-      2,
-      new THREE.Color(0x000000)
-    );
-    this._directionalLightHelper.visible = false;
-    this._scene.add(this._directionalLightHelper);
-
-    // Ambient light
-    const ambientLight = new THREE.AmbientLight(0x404040);
-    ambientLight.intensity = 0.1;
-    ambientLight.position.set(0, 5, 0);
-    this._scene.add(ambientLight);
-
-    // Hemisphere light
-    const hemisphereLight = new THREE.HemisphereLight(
-      0x8888ff, // cool sky
-      0x442200, // warm ground
-      0.4
-    );
-    this._scene.add(hemisphereLight);
-
-    // Hemisphere light helper
-    this._hemisphereLightHelper = new THREE.HemisphereLightHelper(
-      hemisphereLight,
-      2
-    );
-    this._hemisphereLightHelper.material.color.set(0x000000);
-    this._hemisphereLightHelper.visible = false; // Set to hidden by default
-    this._scene.add(this._hemisphereLightHelper);
-  }
-
-  /**
-   * Updates the hemisphere light to reflect the sky and ground colors
-   */
-  private _updateLights(): void {
-    const hemisphereLight = new THREE.HemisphereLight(
-      this._colorSky,
-      this._colorGround
-    );
-    hemisphereLight.intensity = 1;
-    const hemisphereIndex = this._scene.children
-      .map(i => i.type)
-      .indexOf('HemisphereLight');
-    this._scene.children[hemisphereIndex] = hemisphereLight;
-  }
-
-  /**
    * Toggle the visibility of the directional light helper
    *
    * @param visible - Whether the helper should be visible
    */
   setDirectionalLightHelperVisibility(visible: boolean): void {
-    if (this._directionalLightHelper) {
-      this._directionalLightHelper.visible = visible;
-      this.redraw();
-    }
+    this._sceneManager.setDirectionalLightHelperVisibility(visible);
   }
 
   /**
@@ -225,10 +113,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
    * @param visible - Whether the helper should be visible
    */
   setHemisphereLightHelperVisibility(visible: boolean): void {
-    if (this._hemisphereLightHelper) {
-      this._hemisphereLightHelper.visible = visible;
-      this.redraw();
-    }
+    this._sceneManager.setHemisphereLightHelperVisibility(visible);
   }
 
   /**
@@ -241,22 +126,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     altitude: number,
     azimuth: number
   ): void {
-    const directionalLight = this._scene.children.find(
-      obj => obj.type === 'DirectionalLight'
-    ) as THREE.DirectionalLight;
-
-    if (directionalLight) {
-      const distance = 3;
-      const x = distance * Math.cos(altitude) * Math.cos(azimuth);
-      const z = distance * Math.cos(altitude) * Math.sin(azimuth);
-      const y = distance * Math.sin(altitude);
-
-      directionalLight.position.set(x, y, z);
-      if (this._directionalLightHelper) {
-        this._directionalLightHelper.update();
-      }
-      this.redraw();
-    }
+    this._sceneManager.setDirectionalLightPositionSpherical(altitude, azimuth);
   }
 
   /**
@@ -265,10 +135,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
    * @param newColor - The new background color as [R, G, B] array 0-255
    */
   setSkyColor(newColor: number[]): void {
-    this._colorSky = new THREE.Color(...newColor.map(x => x / 255));
-    this._scene.background = this._colorSky;
-    this._updateLights();
-    this.redraw();
+    this._sceneManager.setSkyColor(newColor);
   }
 
   /**
@@ -277,19 +144,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
    * @param newColor - The new background color as [R, G, B] array 0-255
    */
   setGroundColor(newColor: number[]): void {
-    this._colorGround = new THREE.Color(...newColor.map(x => x / 255));
-    const gridIndex = this._scene.children
-      .map(i => i.type)
-      .indexOf('GridHelper');
-    this._scene.children[gridIndex] = new THREE.GridHelper(
-      50,
-      50,
-      this._colorGround,
-      this._colorGround
-    );
-    this._updateLights();
-    this.setGridHeight(this._gridHeight);
-    this.redraw();
+    this._sceneManager.setGroundColor(newColor);
   }
 
   /**
@@ -298,12 +153,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
    * @param height - The height to shift the grid to
    */
   setGridHeight(height = 0): void {
-    const gridIndex = this._scene.children
-      .map(i => i.type)
-      .indexOf('GridHelper');
-    this._scene.children[gridIndex].position.y = height;
-    this._gridHeight = height;
-    this.redraw();
+    this._sceneManager.setGridHeight(height);
   }
 
   /**
@@ -312,20 +162,8 @@ export class URDFRenderer extends THREE.WebGLRenderer {
    * @param robot
    */
   setRobot(robot: URDFRobot): void {
-    if (this._robotIndex !== -1) {
-      this._scene.children[this._robotIndex].traverse(child => {
-        if (child instanceof THREE.Mesh) {
-          child.geometry.dispose();
-          child.material.dispose();
-        }
-      });
-      this._scene.children.splice(this._robotIndex, 1);
-    }
-
-    this._robotIndex = this._scene.children.length;
-    this._scene.add(robot);
+    this._sceneManager.setRobot(robot);
     this._linkManager.setRobot(robot);
-    this.redraw();
   }
 
   /**
@@ -336,17 +174,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
    * @param z - The new z position
    */
   setDirectionalLightPosition(x: number, y: number, z: number): void {
-    const directionalLight = this._scene.children.find(
-      obj => obj.type === 'DirectionalLight'
-    ) as THREE.DirectionalLight;
-
-    if (directionalLight) {
-      directionalLight.position.set(x, y, z);
-      if (this._directionalLightHelper) {
-        this._directionalLightHelper.update();
-      }
-      this.redraw();
-    }
+    this._sceneManager.setDirectionalLightPosition(x, y, z);
   }
 
   /**
@@ -355,14 +183,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
    * @param newColor - The new color as [R, G, B] array 0-255
    */
   setDirectionalLightColor(newColor: number[]): void {
-    const directionalLight = this._scene.children.find(
-      obj => obj.type === 'DirectionalLight'
-    ) as THREE.DirectionalLight;
-
-    if (directionalLight) {
-      directionalLight.color = new THREE.Color(...newColor.map(x => x / 255));
-      this.redraw();
-    }
+    this._sceneManager.setDirectionalLightColor(newColor);
   }
 
   /**
@@ -371,14 +192,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
    * @param intensity - The new intensity value
    */
   setDirectionalLightIntensity(intensity: number): void {
-    const directionalLight = this._scene.children.find(
-      obj => obj.type === 'DirectionalLight'
-    ) as THREE.DirectionalLight;
-
-    if (directionalLight) {
-      directionalLight.intensity = intensity;
-      this.redraw();
-    }
+    this._sceneManager.setDirectionalLightIntensity(intensity);
   }
 
   /**
@@ -387,14 +201,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
    * @param newColor - The new color as [R, G, B] array 0-255
    */
   setAmbientLightColor(newColor: number[]): void {
-    const ambientLight = this._scene.children.find(
-      obj => obj.type === 'AmbientLight'
-    ) as THREE.AmbientLight;
-
-    if (ambientLight) {
-      ambientLight.color = new THREE.Color(...newColor.map(x => x / 255));
-      this.redraw();
-    }
+    this._sceneManager.setAmbientLightColor(newColor);
   }
 
   /**
@@ -403,14 +210,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
    * @param intensity - The new intensity value
    */
   setAmbientLightIntensity(intensity: number): void {
-    const ambientLight = this._scene.children.find(
-      obj => obj.type === 'AmbientLight'
-    ) as THREE.AmbientLight;
-
-    if (ambientLight) {
-      ambientLight.intensity = intensity;
-      this.redraw();
-    }
+    this._sceneManager.setAmbientLightIntensity(intensity);
   }
 
   /**
@@ -419,14 +219,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
    * @param newColor - The new color as [R, G, B] array 0-255
    */
   setHemisphereLightSkyColor(newColor: number[]): void {
-    const hemisphereLight = this._scene.children.find(
-      obj => obj.type === 'HemisphereLight'
-    ) as THREE.HemisphereLight;
-
-    if (hemisphereLight) {
-      hemisphereLight.color = new THREE.Color(...newColor.map(x => x / 255));
-      this.redraw();
-    }
+    this._sceneManager.setHemisphereLightSkyColor(newColor);
   }
 
   /**
@@ -435,16 +228,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
    * @param newColor - The new color as [R, G, B] array 0-255
    */
   setHemisphereLightGroundColor(newColor: number[]): void {
-    const hemisphereLight = this._scene.children.find(
-      obj => obj.type === 'HemisphereLight'
-    ) as THREE.HemisphereLight;
-
-    if (hemisphereLight) {
-      hemisphereLight.groundColor = new THREE.Color(
-        ...newColor.map(x => x / 255)
-      );
-      this.redraw();
-    }
+    this._sceneManager.setHemisphereLightGroundColor(newColor);
   }
 
   /**
@@ -453,14 +237,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
    * @param intensity - The new intensity value
    */
   setHemisphereLightIntensity(intensity: number): void {
-    const hemisphereLight = this._scene.children.find(
-      obj => obj.type === 'HemisphereLight'
-    ) as THREE.HemisphereLight;
-
-    if (hemisphereLight) {
-      hemisphereLight.intensity = intensity;
-      this.redraw();
-    }
+    this._sceneManager.setHemisphereLightIntensity(intensity);
   }
 
   /**
@@ -501,10 +278,10 @@ export class URDFRenderer extends THREE.WebGLRenderer {
     this._camera.updateProjectionMatrix();
     this.clear();
 
-    this.render(this._scene, this._camera);
+    this.render(this._sceneManager.scene, this._camera);
 
     if (this._css2dRenderer) {
-      this._css2dRenderer.render(this._scene, this._camera);
+      this._css2dRenderer.render(this._sceneManager.scene, this._camera);
     }
 
     this._axisIndicator.render(this, this._camera);
@@ -531,13 +308,10 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   }
 
   getRobot(): URDFRobot | null {
-    return this._robotIndex !== -1
-      ? (this._scene.children[this._robotIndex] as URDFRobot)
-      : null;
+    return this._sceneManager.getRobot();
   }
 
   dispose(): void {
-    // ... existing dispose code
     this._axisIndicator.dispose();
   }
 }
