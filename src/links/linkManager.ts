@@ -37,20 +37,18 @@ export class LinkManager {
 
     this._frameHelpers.children.forEach((frameGroup: any) => {
       const linkName = frameGroup.userData.linkName;
-      if (linkName) {
-        this._robot?.traverse((child: any) => {
-          if (child.isURDFLink && child.name === linkName) {
-            const worldPosition = new THREE.Vector3();
-            const worldQuaternion = new THREE.Quaternion();
-            child.matrixWorld.decompose(
-              worldPosition,
-              worldQuaternion,
-              new THREE.Vector3()
-            );
-            frameGroup.position.copy(worldPosition);
-            frameGroup.quaternion.copy(worldQuaternion);
-          }
-        });
+      const link = this._robot?.links[linkName];
+
+      if (link) {
+        const worldPosition = new THREE.Vector3();
+        const worldQuaternion = new THREE.Quaternion();
+        link.matrixWorld.decompose(
+          worldPosition,
+          worldQuaternion,
+          new THREE.Vector3()
+        );
+        frameGroup.position.copy(worldPosition);
+        frameGroup.quaternion.copy(worldQuaternion);
       }
     });
   }
@@ -75,25 +73,25 @@ export class LinkManager {
       return;
     }
 
-    this._robot.traverse((child: any) => {
-      if (child.isURDFLink && child.name === linkName) {
-        const axes = this._createCustomAxesHelper(size);
-        axes.userData.linkName = linkName;
+    const link = this._robot.links[linkName];
 
-        const worldPosition = new THREE.Vector3();
-        const worldQuaternion = new THREE.Quaternion();
-        child.matrixWorld.decompose(
-          worldPosition,
-          worldQuaternion,
-          new THREE.Vector3()
-        );
+    if (link) {
+      const axes = this._createCustomAxesHelper(size);
+      axes.userData.linkName = linkName;
 
-        axes.position.copy(worldPosition);
-        axes.quaternion.copy(worldQuaternion);
+      const worldPosition = new THREE.Vector3();
+      const worldQuaternion = new THREE.Quaternion();
+      link.matrixWorld.decompose(
+        worldPosition,
+        worldQuaternion,
+        new THREE.Vector3()
+      );
 
-        this._frameHelpers.add(axes);
-      }
-    });
+      axes.position.copy(worldPosition);
+      axes.quaternion.copy(worldQuaternion);
+
+      this._frameHelpers.add(axes);
+    }
 
     this._redrawCallback();
   }
@@ -106,15 +104,15 @@ export class LinkManager {
       return;
     }
 
-    this._robot.traverse((child: any) => {
-      if (child.isURDFLink && child.name === linkName) {
-        child.children.forEach((linkChild: any) => {
-          if (!linkChild.isURDFLink) {
-            this._setMeshOpacity(linkChild, opacity);
-          }
-        });
-      }
-    });
+    const link = this._robot.links[linkName];
+
+    if (link) {
+      link.children.forEach((linkChild: any) => {
+        if (!linkChild.isURDFLink) {
+          this._setMeshOpacity(linkChild, opacity);
+        }
+      });
+    }
 
     this._redrawCallback();
   }
