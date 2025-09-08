@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { URDFRobot } from 'urdf-loader';
+import { URDFRobot, URDFVisual } from 'urdf-loader';
 
 /**
  * Manages the visual representation of links
@@ -8,6 +8,8 @@ export class LinkManager {
   private _robot: URDFRobot | null = null;
   private _frameHelpers: THREE.Group;
   private _redrawCallback: () => void;
+  private _linkToMeshes: Map<string, THREE.Mesh[]> = new Map();
+  private _correctLinkMap: Map<string, THREE.Object3D> = new Map(); // Use base Object3D for flexibility
 
   constructor(scene: THREE.Scene, redrawCallback: () => void) {
     this._frameHelpers = new THREE.Group();
@@ -16,13 +18,22 @@ export class LinkManager {
   }
 
   /**
-   * Sets the current robot model for the manager to operate on.
-   * @param robot The URDFRobot model.
+   * Sets the current robot model, builds a correct map of all links,
+   * and then maps those links to their meshes.
    */
   public setRobot(robot: URDFRobot | null): void {
+    // If there's an old robot, remove it from the scene completely.
+    if (this._robot && this._robot.parent) {
+      this._robot.parent.remove(this._robot);
+    }
+
     this._robot = robot;
     this._frameHelpers.clear();
+    this._linkToMeshes.clear();
+    this._correctLinkMap.clear();
+
     if (robot) {
+      this._buildLinkAndMeshMaps(robot);
       this.updateAllFramePositions();
     }
   }
@@ -37,7 +48,7 @@ export class LinkManager {
 
     this._frameHelpers.children.forEach((frameGroup: any) => {
       const linkName = frameGroup.userData.linkName;
-      const link = this._robot?.links[linkName];
+      const link = this._correctLinkMap.get(linkName);
 
       if (link) {
         const worldPosition = new THREE.Vector3();
@@ -73,7 +84,7 @@ export class LinkManager {
       return;
     }
 
-    const link = this._robot.links[linkName];
+    const link = this._correctLinkMap.get(linkName);
 
     if (link) {
       const axes = this._createCustomAxesHelper(size);
@@ -97,22 +108,33 @@ export class LinkManager {
   }
 
   /**
-   * Sets the opacity of a specific link.
+   * Sets the opacity of a specific link using our custom mesh mapping.
    */
   public setLinkOpacity(linkName: string, opacity: number): void {
-    if (!this._robot) {
+    const meshes = this._linkToMeshes.get(linkName);
+    if (!meshes || meshes.length === 0) {
       return;
     }
 
-    const link = this._robot.links[linkName];
+    meshes.forEach(mesh => {
+      const materials = Array.isArray(mesh.material)
+        ? mesh.material
+        : [mesh.material];
 
-    if (link) {
-      link.children.forEach((linkChild: any) => {
-        if (!linkChild.isURDFLink) {
-          this._setMeshOpacity(linkChild, opacity);
+      materials.forEach(material => {
+        if (material) {
+          if (opacity < 1.0) {
+            material.transparent = true;
+            material.depthWrite = false;
+          } else {
+            material.transparent = false;
+            material.depthWrite = true;
+          }
+          material.opacity = opacity;
+          material.needsUpdate = true;
         }
       });
-    }
+    });
 
     this._redrawCallback();
   }
@@ -123,6 +145,86 @@ export class LinkManager {
   public dispose(): void {
     this._frameHelpers.clear();
     this._frameHelpers.parent?.remove(this._frameHelpers);
+    this._linkToMeshes.clear();
+    this._correctLinkMap.clear();
+  }
+
+  /**
+   * This builds the link and mesh maps by using the
+   * URDF's XML structure as the absolute ground truth.
+   */
+  private _buildLinkAndMeshMaps(robot: URDFRobot): void {
+    this._correctLinkMap.clear();
+    this._linkToMeshes.clear();
+
+    const rootXml = robot.urdfRobotNode;
+    if (!rootXml) {
+      return;
+    }
+
+    // Step 1: Build a  map from the <link> XML Element to the THREE.URDFVisual object.
+    // This is the bridge from the XML world to the THREE.js world.
+    const linkXmlToVisualMap = new Map<Element, URDFVisual>();
+    robot.traverse(node => {
+      if ((node as any).isURDFVisual) {
+        const visual = node as URDFVisual;
+        const visualXml = visual.urdfNode;
+        // The parent of a <visual> tag is its <link> tag.
+        if (visualXml && visualXml.parentElement) {
+          linkXmlToVisualMap.set(visualXml.parentElement, visual);
+        }
+      }
+    });
+
+    // Step 2: Get all <link> tags from the XML. This is our ground truth list of links.
+    const allLinkElements = rootXml.querySelectorAll('link');
+
+    // Step 3: Iterate through the ground truth list and populate our maps.
+    allLinkElements.forEach(linkElement => {
+      const linkName = linkElement.getAttribute('name');
+      if (!linkName) {
+        return;
+      }
+
+      const visual = linkXmlToVisualMap.get(linkElement);
+
+      if (visual) {
+        const meshes: THREE.Mesh[] = [];
+        visual.traverse(child => {
+          if (child instanceof THREE.Mesh) {
+            meshes.push(child);
+          }
+        });
+        this._linkToMeshes.set(linkName, meshes);
+
+        // Map the transform object.
+        if (visual.parent && visual.parent !== robot) {
+          // Jointed link: the parent is the distinct URDFLink object.
+          this._correctLinkMap.set(linkName, visual.parent);
+        } else {
+          // Jointless link: the visual itself is the best object representing the transform.
+          this._correctLinkMap.set(linkName, visual);
+        }
+      } else {
+        // This link has no visual component (like 'world').
+        this._linkToMeshes.set(linkName, []);
+        // The root URDFRobot object itself acts as the 'world' link.
+        if (linkName === 'world') {
+          this._correctLinkMap.set(linkName, robot);
+        }
+      }
+    });
+
+    // Step 4: Clone materials for all found meshes to ensure uniqueness.
+    for (const meshes of this._linkToMeshes.values()) {
+      meshes.forEach(mesh => {
+        if (Array.isArray(mesh.material)) {
+          mesh.material = mesh.material.map(mat => (mat ? mat.clone() : mat));
+        } else if (mesh.material) {
+          mesh.material = mesh.material.clone();
+        }
+      });
+    }
   }
 
   /**
@@ -147,76 +249,5 @@ export class LinkManager {
 
     axesGroup.add(xAxis, yAxis, zAxis);
     return axesGroup;
-  }
-
-  /**
-   * Helper method to recursively set opacity on meshes within a single link.
-   * This function clones materials to ensure that opacity changes on one link
-   * do not affect other links that might share the same material.
-   */
-  private _setMeshOpacity(object: THREE.Object3D, opacity: number): void {
-    if ((object as any).isURDFLink) {
-      // Stop recursion if we encounter another link.
-      // This check is important if the initial call is not on a visual node.
-      return;
-    }
-
-    if (object instanceof THREE.Mesh) {
-      const mesh = object as THREE.Mesh;
-      const materials = Array.isArray(mesh.material)
-        ? mesh.material
-        : [mesh.material];
-
-      const newMaterials = materials.map(material => {
-        if (!material) {
-          return material;
-        }
-
-        // If we're making it transparent, clone the material to avoid side effects.
-        if (opacity < 1.0) {
-          if (!material.userData.isOpacityClone) {
-            const clonedMaterial = material.clone();
-            clonedMaterial.userData.isOpacityClone = true;
-            clonedMaterial.userData.originalMaterial = material;
-
-            clonedMaterial.transparent = true;
-            clonedMaterial.depthWrite = false;
-            clonedMaterial.opacity = opacity;
-            clonedMaterial.needsUpdate = true;
-            return clonedMaterial;
-          } else {
-            material.opacity = opacity;
-            material.needsUpdate = true;
-            return material;
-          }
-        } else {
-          if (
-            material.userData.isOpacityClone &&
-            material.userData.originalMaterial
-          ) {
-            return material.userData.originalMaterial;
-          } else {
-            material.transparent = false;
-            material.depthWrite = true;
-            material.opacity = 1.0;
-            material.needsUpdate = true;
-            return material;
-          }
-        }
-      });
-
-      if (Array.isArray(mesh.material)) {
-        mesh.material = newMaterials;
-      } else {
-        mesh.material = newMaterials[0];
-      }
-    }
-
-    // Recurse through children, but stop if a child is another URDFLink
-    object.children.forEach(child => {
-      if (!(child as any).isURDFLink) {
-        this._setMeshOpacity(child, opacity);
-      }
-    });
   }
 }
