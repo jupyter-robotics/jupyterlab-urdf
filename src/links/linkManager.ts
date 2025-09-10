@@ -9,7 +9,7 @@ export class LinkManager {
   private _frameHelpers: THREE.Group;
   private _redrawCallback: () => void;
   private _linkToMeshes: Map<string, THREE.Mesh[]> = new Map();
-  private _correctLinkMap: Map<string, THREE.Object3D> = new Map(); // Use base Object3D for flexibility
+  private _correctLinkMap: Map<string, THREE.Object3D> = new Map();
 
   constructor(scene: THREE.Scene, redrawCallback: () => void) {
     this._frameHelpers = new THREE.Group();
@@ -140,6 +140,17 @@ export class LinkManager {
   }
 
   /**
+   * Retrieves the visual object for a given link name.
+   * @param linkName - The name of the link.
+   * @returns The THREE.Object3D associated with the link's visual, or null.
+   */
+  public getLinkObject(linkName: string): THREE.Object3D | null {
+    const meshes = this._linkToMeshes.get(linkName);
+    // Return the first mesh if it exists, otherwise null.
+    return meshes && meshes.length > 0 ? meshes[0] : null;
+  }
+
+  /**
    * Disposes of managed resources.
    */
   public dispose(): void {
@@ -162,8 +173,7 @@ export class LinkManager {
       return;
     }
 
-    // Step 1: Build a  map from the <link> XML Element to the THREE.URDFVisual object.
-    // This is the bridge from the XML world to the THREE.js world.
+    // Step 1: Build a  map from the <link> XML Element to the THREE.URDFVisual object
     const linkXmlToVisualMap = new Map<Element, URDFVisual>();
     robot.traverse(node => {
       if ((node as any).isURDFVisual) {
@@ -176,10 +186,10 @@ export class LinkManager {
       }
     });
 
-    // Step 2: Get all <link> tags from the XML. This is our ground truth list of links.
+    // Step 2: Get all <link> tags from the XML
     const allLinkElements = rootXml.querySelectorAll('link');
 
-    // Step 3: Iterate through the ground truth list and populate our maps.
+    // Step 3: Iterate through the list and populate our maps
     allLinkElements.forEach(linkElement => {
       const linkName = linkElement.getAttribute('name');
       if (!linkName) {
@@ -199,23 +209,23 @@ export class LinkManager {
 
         // Map the transform object.
         if (visual.parent && visual.parent !== robot) {
-          // Jointed link: the parent is the distinct URDFLink object.
+          // Jointed link: the parent is the distinct URDFLink object
           this._correctLinkMap.set(linkName, visual.parent);
         } else {
-          // Jointless link: the visual itself is the best object representing the transform.
+          // Jointless link: the visual itself is the best object representing the transform
           this._correctLinkMap.set(linkName, visual);
         }
       } else {
-        // This link has no visual component (like 'world').
+        // This link has no visual component (like 'world')
         this._linkToMeshes.set(linkName, []);
-        // The root URDFRobot object itself acts as the 'world' link.
+        // The root URDFRobot object itself acts as the 'world' link
         if (linkName === 'world') {
           this._correctLinkMap.set(linkName, robot);
         }
       }
     });
 
-    // Step 4: Clone materials for all found meshes to ensure uniqueness.
+    // Step 4: Clone materials for all found meshes to ensure uniqueness
     for (const meshes of this._linkToMeshes.values()) {
       meshes.forEach(mesh => {
         if (Array.isArray(mesh.material)) {
@@ -228,7 +238,7 @@ export class LinkManager {
   }
 
   /**
-   * Creates a custom axes helper.
+   * Creates a custom axes helper
    */
   private _createCustomAxesHelper(size = 0.3): THREE.Group {
     const axesGroup = new THREE.Group();

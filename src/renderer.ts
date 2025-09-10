@@ -270,6 +270,15 @@ export class URDFRenderer extends THREE.WebGLRenderer {
   }
 
   /**
+   * Retrieves the visual object for a given link name.
+   * @param linkName - The name of the link.
+   * @returns The THREE.Object3D associated with the link's visual, or null.
+   */
+  getLinkObject(linkName: string): THREE.Object3D | null {
+    return this._linkManager.getLinkObject(linkName);
+  }
+
+  /**
    * Refreshes the viewer by re-rendering the scene and its elements
    */
   redraw(): void {

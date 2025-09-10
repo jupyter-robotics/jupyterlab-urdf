@@ -644,11 +644,11 @@ export class URDFLayout extends PanelLayout {
         this._interactionEditor.unHighlightLink('parent');
         this._selectedLinks.parent = { name: null, obj: null };
       } else {
-        const link = this._loader.robotModel.links[linkName];
-        const linkObject = link.children.find((c: any) => c.isURDFVisual)
-          ?.children[0];
+        const linkObject = this._renderer.getLinkObject(linkName);
         this._selectedLinks.parent = { name: linkName, obj: linkObject };
-        this._interactionEditor.highlightLink(linkObject, 'parent');
+        if (linkObject) {
+          this._interactionEditor.highlightLink(linkObject, 'parent');
+        }
       }
       updateJointName();
     });
@@ -663,11 +663,11 @@ export class URDFLayout extends PanelLayout {
         this._interactionEditor.unHighlightLink('child');
         this._selectedLinks.child = { name: null, obj: null };
       } else {
-        const link = this._loader.robotModel.links[linkName];
-        const linkObject = link.children.find((c: any) => c.isURDFVisual)
-          ?.children[0];
+        const linkObject = this._renderer.getLinkObject(linkName);
         this._selectedLinks.child = { name: linkName, obj: linkObject };
-        this._interactionEditor.highlightLink(linkObject, 'child');
+        if (linkObject) {
+          this._interactionEditor.highlightLink(linkObject, 'child');
+        }
       }
       updateJointName();
     });
@@ -703,24 +703,25 @@ export class URDFLayout extends PanelLayout {
     parentLink: string,
     childLink: string
   ): void {
+    this._interactionEditor.clearHighlights();
     if (parentLink !== 'none') {
-      const link = this._loader.robotModel.links[parentLink];
-      const linkObject = link?.children.find((c: any) => c.isURDFVisual)
-        ?.children[0];
+      const linkObject = this._renderer.getLinkObject(parentLink);
       this._selectedLinks.parent = { name: parentLink, obj: linkObject };
       if (linkObject) {
         this._interactionEditor.highlightLink(linkObject, 'parent');
       }
+    } else {
+      this._selectedLinks.parent = { name: null, obj: null };
     }
 
     if (childLink !== 'none') {
-      const link = this._loader.robotModel.links[childLink];
-      const linkObject = link?.children.find((c: any) => c.isURDFVisual)
-        ?.children[0];
+      const linkObject = this._renderer.getLinkObject(childLink);
       this._selectedLinks.child = { name: childLink, obj: linkObject };
       if (linkObject) {
         this._interactionEditor.highlightLink(linkObject, 'child');
       }
+    } else {
+      this._selectedLinks.child = { name: null, obj: null };
     }
   }
 
