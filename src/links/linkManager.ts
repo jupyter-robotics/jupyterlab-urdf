@@ -22,11 +22,6 @@ export class LinkManager {
    * and then maps those links to their meshes.
    */
   public setRobot(robot: URDFRobot | null): void {
-    // If there's an old robot, remove it from the scene completely.
-    if (this._robot && this._robot.parent) {
-      this._robot.parent.remove(this._robot);
-    }
-
     this._robot = robot;
     this._frameHelpers.clear();
     this._linkToMeshes.clear();
