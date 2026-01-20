@@ -1,0 +1,30 @@
+{
+  "LiteBuildConfig": {
+    "extra_file_types": {
+      "urdf": {
+        "extensions": [".urdf"],
+        "mimeTypes": ["text/xml"],
+        "fileFormat": "text",
+        "name": "urdf"
+      },
+      "xacro": {
+        "extensions": [".xacro"],
+        "mimeTypes": ["text/xml"],
+        "fileFormat": "text",
+        "name": "xacro"
+      },
+      "dae": {
+        "extensions": [".dae"],
+        "mimeTypes": ["text/xml"],
+        "fileFormat": "text",
+        "name": "dae"
+      },
+      "stl": {
+        "extensions": [".stl"],
+        "mimeTypes": ["text/xml"],
+        "fileFormat": "text",
+        "name": "stl"
+      }
+    }
+  }
+}
