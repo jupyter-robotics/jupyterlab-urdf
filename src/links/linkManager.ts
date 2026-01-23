@@ -10,6 +10,7 @@ export class LinkManager {
   private _redrawCallback: () => void;
   private _linkToMeshes: Map<string, THREE.Mesh[]> = new Map();
   private _correctLinkMap: Map<string, THREE.Object3D> = new Map();
+  private _visibleFrames: Map<string, number> = new Map();
 
   constructor(scene: THREE.Scene, redrawCallback: () => void) {
     this._frameHelpers = new THREE.Group();
@@ -30,6 +31,9 @@ export class LinkManager {
     if (robot) {
       this._buildLinkAndMeshMaps(robot);
       this.updateAllFramePositions();
+      this._visibleFrames.forEach((size, linkName) => {
+        this.setIndividualFrameVisibility(linkName, true, size);
+      });
     }
   }
 
@@ -72,6 +76,12 @@ export class LinkManager {
     );
     if (existingFrame) {
       this._frameHelpers.remove(existingFrame);
+    }
+
+    if (visible) {
+      this._visibleFrames.set(linkName, size);
+    } else {
+      this._visibleFrames.delete(linkName);
     }
 
     if (!visible || !this._robot) {
