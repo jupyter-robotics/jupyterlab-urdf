@@ -28,6 +28,18 @@
         "mimeTypes": ["application/xml"],
         "fileFormat": "text",
         "name": "stl"
+      },
+      "obj": {
+        "extensions": [".obj"],
+        "mimeTypes": ["application/xml"],
+        "fileFormat": "text",
+        "name": "obj"
+      },
+      "mtl": {
+        "extensions": [".mtl"],
+        "mimeTypes": ["application/xml"],
+        "fileFormat": "text",
+        "name": "mtl"
       }
     }
   }
