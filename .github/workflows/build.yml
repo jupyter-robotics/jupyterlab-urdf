@@ -50,11 +50,9 @@ jobs:
           --output-dir jupyterlite_urdf
 
     - name: Upload JupyterLite artifacts
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-pages-artifact@v4
       with:
-        name: jupyterlite-artifacts
-        path: jupyterlite_urdf
-        if-no-files-found: error
+        path: jupyterlite_urdf/
 
     - name: Package the extension
       run: |
