@@ -50,11 +50,9 @@ jobs:
           --output-dir jupyterlite_urdf
 
     - name: Upload JupyterLite artifacts
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-pages-artifact@v4
       with:
-        name: jupyterlite-artifacts
-        path: jupyterlite_urdf
-        if-no-files-found: error
+        path: jupyterlite_urdf/
 
     - name: Package the extension
       run: |
@@ -85,9 +83,6 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          artifact_name: jupyterlite-artifacts
-          preview: false # One day this shall work
 
 #------------------------------------------------------------------------------#
   test-isolated:
