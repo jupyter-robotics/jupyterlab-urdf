@@ -17,6 +17,7 @@ export class URDFControls extends GUI {
   private _sceneFolder: any;
   private _jointsFolder: any;
   private _jointsEditorFolder: any;
+  private _linksFolder: any;
   private _workingPath = '';
 
   controls: any = {
@@ -28,6 +29,7 @@ export class URDFControls extends GUI {
     },
     joints: {},
     lights: {},
+    links: {},
     editor: {}
   };
 
@@ -52,6 +54,9 @@ export class URDFControls extends GUI {
     // Create folders
     this._jointsFolder = this.addFolder('Joints');
     this._jointsFolder.domElement.setAttribute('class', 'dg joints-folder');
+
+    this._linksFolder = this.addFolder('Links');
+    this._linksFolder.domElement.setAttribute('class', 'dg links-folder');
 
     this._jointsEditorFolder = this.addFolder('Joints Editor');
     this._jointsEditorFolder.domElement.setAttribute(
@@ -95,6 +100,13 @@ export class URDFControls extends GUI {
    */
   get jointsEditorFolder() {
     return this._jointsEditorFolder;
+  }
+
+  /**
+   * Retrieves the folder with links settings
+   */
+  get linksFolder() {
+    return this._linksFolder;
   }
 
   /**
@@ -555,5 +567,67 @@ export class URDFControls extends GUI {
     }
 
     return this.controls.editor;
+  }
+
+  /**
+   * Creates controls for link visualization (frames, opacity)
+   *
+   * @param linkNames - Array of available link names
+   * @returns - The controls to trigger callbacks when link settings change
+   */
+  createLinkControls(linkNames: string[] = []) {
+    if (this._isEmpty(this.controls.links)) {
+      const globalLinkSettings = {
+        'Axis Indicator': false,
+        'Frame Size': 1
+      };
+
+      this.controls.links.axisIndicator = this._linksFolder.add(
+        globalLinkSettings,
+        'Axis Indicator'
+      );
+
+      this.controls.links.frameSize = this._linksFolder.add(
+        globalLinkSettings,
+        'Frame Size',
+        0.1,
+        10,
+        0.05
+      );
+
+      this._enforceNumericInput(this.controls.links.frameSize);
+
+      // Individual link controls subfolder
+      const individualLinksFolder =
+        this._linksFolder.addFolder('Individual Links');
+      this.controls.links.individual = {};
+
+      // Create controls for each link
+      linkNames.forEach(linkName => {
+        const linkFolder = individualLinksFolder.addFolder(linkName);
+
+        const linkSettings = {
+          'Show Frame': false,
+          Opacity: 1.0
+        };
+
+        this.controls.links.individual[linkName] = {
+          showFrame: linkFolder.add(linkSettings, 'Show Frame'),
+          opacity: linkFolder.add(linkSettings, 'Opacity', 0.0, 1.0, 0.01)
+        };
+
+        // Enforce numeric input for opacity slider
+        this._enforceNumericInput(
+          this.controls.links.individual[linkName].opacity
+        );
+
+        linkFolder.close();
+      });
+
+      individualLinksFolder.close();
+      this._linksFolder.open();
+    }
+
+    return this.controls.links;
   }
 }
