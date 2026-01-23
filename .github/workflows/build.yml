@@ -17,7 +17,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Set up environment
       uses: mamba-org/setup-micromamba@v2
@@ -52,7 +52,7 @@ jobs:
         pip uninstall -y "jupyterlab_urdf" jupyterlab
 
     - name: Upload extension packages
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: extension-artifacts
         path: dist/jupyterlab_urdf*
@@ -65,7 +65,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Set up environment
       uses: mamba-org/setup-micromamba@v2
@@ -77,7 +77,7 @@ jobs:
           jupyterlab>=4.0
 
     - name: Download extension package
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         name: extension-artifacts
 
@@ -98,7 +98,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Set up environment
       uses: mamba-org/setup-micromamba@v2
@@ -110,7 +110,7 @@ jobs:
           jupyterlab>=4.0
 
     - name: Download extension package
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         name: extension-artifacts
 
@@ -126,7 +126,7 @@ jobs:
       run: jlpm install
 
     - name: Set up browser cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ github.workspace }}/pw-browsers
         key: ${{ runner.os }}-${{ hashFiles('ui-tests/yarn.lock') }}
@@ -141,7 +141,7 @@ jobs:
 
     - name: Upload playwright test report
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: jupyterlab_urdf-playwright-tests
         path: |
@@ -153,6 +153,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
       - uses: jupyterlab/maintainer-tools/.github/actions/check-links@v1
