@@ -13,6 +13,7 @@ interface IJoints {
  * the robot joints
  */
 export class URDFControls extends GUI {
+  private _orbitControlsFolder: any;
   private _workspaceFolder: any;
   private _sceneFolder: any;
   private _jointsFolder: any;
@@ -20,6 +21,7 @@ export class URDFControls extends GUI {
   private _workingPath = '';
 
   controls: any = {
+    orbitControls: {},
     path: {},
     scene: {
       background: {},
@@ -58,6 +60,9 @@ export class URDFControls extends GUI {
       'class',
       'dg editor-folder'
     );
+
+    this._orbitControlsFolder = this.addFolder('Orbit Controls');
+    this._orbitControlsFolder.domElement.setAttribute('class', 'dg camera-folder');
 
     this._workspaceFolder = this.addFolder('Workspace');
     this._workspaceFolder.domElement.setAttribute(
@@ -127,6 +132,51 @@ export class URDFControls extends GUI {
         control.updateDisplay();
       }
     });
+  }
+
+  /**
+   * Creates controls for panSpeed, zoomSpeed, rotateSpeed
+   *
+   * @returns - The controls to trigger callbacks when settings change
+   */
+  createOrbitControls() {
+    if (this._isEmpty(this.controls.orbitControls)) {
+      const orbitControlSettings = {
+        panSpeed: 2,
+        zoomSpeed: 1,
+        rotateSpeed: 2
+      };
+
+      const minValue = 0.1;
+      const maxValue = 5;
+      this.controls.orbitControls = {
+        panSpeed: this._orbitControlsFolder.add(
+          orbitControlSettings,
+          'panSpeed',
+          minValue,
+          maxValue
+        ),
+        zoomSpeed: this._orbitControlsFolder.add(
+          orbitControlSettings,
+          'zoomSpeed',
+          minValue,
+          maxValue
+        ),
+        rotateSpeed: this._orbitControlsFolder.add(
+          orbitControlSettings,
+          'rotateSpeed',
+          minValue,
+          maxValue
+        )
+      };
+
+      this._enforceNumericInput(this.controls.orbitControls.panSpeed);
+      this._enforceNumericInput(this.controls.orbitControls.zoomSpeed);
+      this._enforceNumericInput(this.controls.orbitControls.rotateSpeed);
+
+      this._orbitControlsFolder.open()
+    }
+    return this.controls.orbitControls;
   }
 
   /**

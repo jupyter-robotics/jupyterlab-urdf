@@ -181,11 +181,32 @@ export class URDFLayout extends PanelLayout {
       return;
     }
 
+    this._setOrbitControls();
     this._setPathControls();
     this._setSceneControls();
     this._setJointControls();
     this._setLightControls();
     this._setEditorControls();
+  }
+
+  /**
+   * Set OrbitControls for panSpeed, zoomSpeed, rotateSpeed
+   * render again.
+   */
+  private _setOrbitControls(): void {
+    const orbitControls = this._controlsPanel.createOrbitControls();
+
+    orbitControls.panSpeed.onChange((newPanSpeed: number) => {
+      this._renderer.setOrbitControlsPanSpeed(newPanSpeed);
+    });
+
+    orbitControls.zoomSpeed.onChange((newZoomSpeed: number) => {
+      this._renderer.setOrbitControlsZoomSpeed(newZoomSpeed);
+    });
+
+    orbitControls.rotateSpeed.onChange((newRotateSpeed: number) => {
+      this._renderer.setOrbitControlsRotateSpeed(newRotateSpeed);
+    });
   }
 
   /**
