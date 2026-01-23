@@ -11,6 +11,8 @@ defaults:
     shell: bash -el {0}
 
 jobs:
+
+#------------------------------------------------------------------------------#
   build:
     name: Build and test
     runs-on: ubuntu-latest
@@ -23,13 +25,8 @@ jobs:
       uses: mamba-org/setup-micromamba@v2
       with:
         environment-name: urdf
+        environment-file: environment.yml
         init-shell: bash
-        create-args: >-
-          python
-          python-build
-          jupyterlab>=4.0
-          hatch-jupyter-builder
-          nodejs
 
     - name: Lint the extension
       run: |
@@ -46,6 +43,19 @@ jobs:
         jupyter labextension list 2>&1 | grep -ie "jupyterlab-urdf.*OK"
         python -m jupyterlab.browser_check
 
+    - name: JupyterLite integration
+      run: |
+        jupyter lite build \
+          --contents examples \
+          --output-dir jupyterlite_urdf
+
+    - name: Upload JupyterLite artifacts
+      uses: actions/upload-artifact@v6
+      with:
+        name: jupyterlite-artifacts
+        path: jupyterlite_urdf
+        if-no-files-found: error
+
     - name: Package the extension
       run: |
         python -m build
@@ -54,10 +64,32 @@ jobs:
     - name: Upload extension packages
       uses: actions/upload-artifact@v6
       with:
-        name: extension-artifacts
+        name: extension-packages
         path: dist/jupyterlab_urdf*
         if-no-files-found: error
 
+#------------------------------------------------------------------------------#
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: jupyterlite_urdf
+          preview: false # One day this shall work
+
+#------------------------------------------------------------------------------#
   test-isolated:
     name: Isolated tests
     needs: build
@@ -79,7 +111,7 @@ jobs:
     - name: Download extension package
       uses: actions/download-artifact@v7
       with:
-        name: extension-artifacts
+        name: extension-packages
 
     - name: Install and test
       run: |
@@ -88,6 +120,7 @@ jobs:
         jupyter labextension list 2>&1 | grep -ie "jupyterlab-urdf.*OK"
         python -m jupyterlab.browser_check --no-browser-test
 
+#------------------------------------------------------------------------------#
   test-integration:
     name: Integration tests
     needs: build
@@ -112,7 +145,7 @@ jobs:
     - name: Download extension package
       uses: actions/download-artifact@v7
       with:
-        name: extension-artifacts
+        name: extension-packages
 
     - name: Install the extension
       run: |
@@ -148,6 +181,7 @@ jobs:
           ui-tests/test-results
           ui-tests/playwright-report
 
+#------------------------------------------------------------------------------#
   check_links:
     name: Check links
     runs-on: ubuntu-latest

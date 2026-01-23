@@ -1,0 +1,11 @@
+name: urdf
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - python-build
+  - jupyterlab>=4.0
+  - hatch-jupyter-builder
+  - nodejs
+  - jupyterlite-core
+  - catppuccin-jupyterlab
