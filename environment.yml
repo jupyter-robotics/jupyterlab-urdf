@@ -8,4 +8,5 @@ dependencies:
   - hatch-jupyter-builder
   - nodejs
   - jupyterlite-core
+# Optional
   - catppuccin-jupyterlab
