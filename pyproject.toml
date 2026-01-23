@@ -38,7 +38,7 @@ fields = ["description", "authors", "urls"]
 
 [tool.hatch.build.targets.sdist]
 artifacts = ["jupyterlab_urdf/labextension"]
-exclude = [".github", "binder"]
+exclude = [".github"]
 
 [tool.hatch.build.targets.wheel.shared-data]
 "jupyterlab_urdf/labextension" = "share/jupyter/labextensions/jupyterlab-urdf"

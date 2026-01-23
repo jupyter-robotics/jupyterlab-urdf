@@ -11,25 +11,22 @@ defaults:
     shell: bash -el {0}
 
 jobs:
+
+#------------------------------------------------------------------------------#
   build:
     name: Build and test
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Set up environment
       uses: mamba-org/setup-micromamba@v2
       with:
         environment-name: urdf
+        environment-file: environment.yml
         init-shell: bash
-        create-args: >-
-          python
-          python-build
-          jupyterlab>=4.0
-          hatch-jupyter-builder
-          nodejs
 
     - name: Lint the extension
       run: |
@@ -46,18 +43,48 @@ jobs:
         jupyter labextension list 2>&1 | grep -ie "jupyterlab-urdf.*OK"
         python -m jupyterlab.browser_check
 
+    - name: JupyterLite integration
+      run: |
+        jupyter lite build \
+          --contents examples \
+          --output-dir jupyterlite_urdf
+
+    - name: Upload JupyterLite artifacts
+      uses: actions/upload-pages-artifact@v4
+      with:
+        path: jupyterlite_urdf/
+
     - name: Package the extension
       run: |
         python -m build
         pip uninstall -y "jupyterlab_urdf" jupyterlab
 
     - name: Upload extension packages
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
-        name: extension-artifacts
+        name: extension-packages
         path: dist/jupyterlab_urdf*
         if-no-files-found: error
 
+#------------------------------------------------------------------------------#
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+#------------------------------------------------------------------------------#
   test-isolated:
     name: Isolated tests
     needs: build
@@ -65,7 +92,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Set up environment
       uses: mamba-org/setup-micromamba@v2
@@ -77,9 +104,9 @@ jobs:
           jupyterlab>=4.0
 
     - name: Download extension package
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
-        name: extension-artifacts
+        name: extension-packages
 
     - name: Install and test
       run: |
@@ -88,6 +115,7 @@ jobs:
         jupyter labextension list 2>&1 | grep -ie "jupyterlab-urdf.*OK"
         python -m jupyterlab.browser_check --no-browser-test
 
+#------------------------------------------------------------------------------#
   test-integration:
     name: Integration tests
     needs: build
@@ -98,7 +126,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Set up environment
       uses: mamba-org/setup-micromamba@v2
@@ -110,9 +138,9 @@ jobs:
           jupyterlab>=4.0
 
     - name: Download extension package
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
-        name: extension-artifacts
+        name: extension-packages
 
     - name: Install the extension
       run: |
@@ -126,7 +154,7 @@ jobs:
       run: jlpm install
 
     - name: Set up browser cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ github.workspace }}/pw-browsers
         key: ${{ runner.os }}-${{ hashFiles('ui-tests/yarn.lock') }}
@@ -141,18 +169,19 @@ jobs:
 
     - name: Upload playwright test report
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: jupyterlab_urdf-playwright-tests
         path: |
           ui-tests/test-results
           ui-tests/playwright-report
 
+#------------------------------------------------------------------------------#
   check_links:
     name: Check links
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
       - uses: jupyterlab/maintainer-tools/.github/actions/check-links@v1
