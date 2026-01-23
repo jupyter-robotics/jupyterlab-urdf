@@ -23,13 +23,8 @@ jobs:
       uses: mamba-org/setup-micromamba@v2
       with:
         environment-name: urdf
+        environment-file: environment.yml
         init-shell: bash
-        create-args: >-
-          python
-          python-build
-          jupyterlab>=4.0
-          hatch-jupyter-builder
-          nodejs
 
     - name: Lint the extension
       run: |
@@ -49,8 +44,6 @@ jobs:
     - name: JupyterLite integration
       run: |
         jupyter lite build \
-          --XeusAddon.prefix=$MAMBA_ROOT_PREFIX/envs/urdf \
-          --XeusAddon.default_channels=https://repo.prefix.dev/conda-forge \
           --contents examples \
           --output-dir jupyterlite_urdf
 
