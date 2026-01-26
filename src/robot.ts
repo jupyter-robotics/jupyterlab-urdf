@@ -4,7 +4,13 @@ import { XacroLoader } from 'xacro-parser';
 
 import { PageConfig } from '@jupyterlab/coreutils';
 
-import { LoadingManager, Mesh, MeshPhongMaterial, Object3D } from 'three';
+import {
+  Group,
+  LoadingManager,
+  Mesh,
+  MeshPhongMaterial,
+  Object3D
+} from 'three';
 
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
 import { ColladaLoader } from 'three/examples/jsm/loaders/ColladaLoader';
@@ -85,24 +91,30 @@ export class URDFLoadingManager extends LoadingManager {
       const mtlPath = path.replace(/\.obj$/i, '.mtl');
       const mtlLoader = new MTLLoader(manager);
 
+      const loadObj = (materials?: any) => {
+        const objLoader = new OBJLoader(manager);
+        if (materials) {
+          objLoader.setMaterials(materials);
+        }
+        objLoader.load(path, obj => {
+          const wrapper = new Group();
+          // Fix orientation of .obj files
+          obj.rotation.x = Math.PI / 2;
+          wrapper.add(obj);
+          this._applyMaterialSetter(wrapper);
+          done(wrapper);
+        });
+      };
+
       mtlLoader.load(
         mtlPath,
         materials => {
           materials.preload();
-          const objLoader = new OBJLoader(manager);
-          objLoader.setMaterials(materials);
-          objLoader.load(path, obj => {
-            this._applyMaterialSetter(obj);
-            done(obj);
-          });
+          loadObj(materials);
         },
         undefined,
         () => {
-          const objLoader = new OBJLoader(manager);
-          objLoader.load(path, obj => {
-            this._applyMaterialSetter(obj);
-            done(obj);
-          });
+          loadObj();
         }
       );
     } else {
