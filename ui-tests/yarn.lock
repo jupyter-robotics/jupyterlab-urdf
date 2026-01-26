@@ -2505,18 +2505,18 @@ __metadata:
   linkType: hard
 
 "glob@npm:^10.2.2":
-  version: 10.4.5
-  resolution: "glob@npm:10.4.5"
+  version: 10.5.0
+  resolution: "glob@npm:10.5.0"
   dependencies:
-    foreground-child: "npm:^3.1.0"
-    jackspeak: "npm:^3.1.2"
-    minimatch: "npm:^9.0.4"
-    minipass: "npm:^7.1.2"
-    package-json-from-dist: "npm:^1.0.0"
-    path-scurry: "npm:^1.11.1"
+    foreground-child: ^3.1.0
+    jackspeak: ^3.1.2
+    minimatch: ^9.0.4
+    minipass: ^7.1.2
+    package-json-from-dist: ^1.0.0
+    path-scurry: ^1.11.1
   bin:
     glob: dist/esm/bin.mjs
-  checksum: 0bc725de5e4862f9f387fd0f2b274baf16850dcd2714502ccf471ee401803997983e2c05590cb65f9675a3c6f2a58e7a53f9e365704108c6ad3cbf1d60934c4a
+  checksum: cda96c074878abca9657bd984d2396945cf0d64283f6feeb40d738fe2da642be0010ad5210a1646244a5fc3511b0cab5a374569b3de5a12b8a63d392f18c6043
   languageName: node
   linkType: hard
 
@@ -2768,9 +2768,9 @@ __metadata:
   linkType: hard
 
 "lodash-es@npm:^4.17.21":
-  version: 4.17.21
-  resolution: "lodash-es@npm:4.17.21"
-  checksum: 05cbffad6e2adbb331a4e16fbd826e7faee403a1a04873b82b42c0f22090f280839f85b95393f487c1303c8a3d2a010048bf06151a6cbe03eee4d388fb0a12d2
+  version: 4.17.23
+  resolution: "lodash-es@npm:4.17.23"
+  checksum: b1bd1d141bbde8ffc72978e34b364065675806b0ca42ab99477d247fb2ae795faeed81db9283bf18ae1f096c2b6611ec0589e0503fa9724bf82e3dce947bad69
   languageName: node
   linkType: hard
 
@@ -2789,9 +2789,9 @@ __metadata:
   linkType: hard
 
 "lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.4":
-  version: 4.17.21
-  resolution: "lodash@npm:4.17.21"
-  checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
+  version: 4.17.23
+  resolution: "lodash@npm:4.17.23"
+  checksum: 7daad39758a72872e94651630fbb54ba76868f904211089721a64516ce865506a759d9ad3d8ff22a2a49a50a09db5d27c36f22762d21766e47e3ba918d6d7bab
   languageName: node
   linkType: hard
 
@@ -2933,12 +2933,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mkdirp@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "mkdirp@npm:3.0.1"
-  bin:
-    mkdirp: dist/cjs/src/bin.js
-  checksum: 972deb188e8fb55547f1e58d66bd6b4a3623bf0c7137802582602d73e6480c1c2268dcbafbfb1be466e00cc7e56ac514d7fd9334b7cf33e3e2ab547c16f83a8d
+"minizlib@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "minizlib@npm:3.1.0"
+  dependencies:
+    minipass: ^7.1.2
+  checksum: a15e6f0128f514b7d41a1c68ce531155447f4669e32d279bba1c1c071ef6c2abd7e4d4579bb59ccc2ed1531346749665968fdd7be8d83eb6b6ae2fe1f3d370a7
   languageName: node
   linkType: hard
 
@@ -3464,11 +3464,11 @@ __metadata:
   linkType: hard
 
 "systeminformation@npm:^5.8.6":
-  version: 5.27.1
-  resolution: "systeminformation@npm:5.27.1"
+  version: 5.27.14
+  resolution: "systeminformation@npm:5.27.14"
   bin:
     systeminformation: lib/cli.js
-  checksum: 272d155da7615984b91c4e1b06e31855aef212d568af78539af9ab5077a4e6942c271a56d8cdd4ccc732b83b34fe01d3b28f310d261d4b20b877016df9cb28aa
+  checksum: a68728714c51a351f2d3dcd7ce26353916b137965e17b11889325bcec2df7ed618475146145c688fcb456d83b4c28a3ce90799e1515458701a6c9e7cf5123ad9
   conditions: (os=darwin | os=linux | os=win32 | os=freebsd | os=openbsd | os=netbsd | os=sunos | os=android)
   languageName: node
   linkType: hard
@@ -3481,16 +3481,15 @@ __metadata:
   linkType: hard
 
 "tar@npm:^7.4.3":
-  version: 7.4.3
-  resolution: "tar@npm:7.4.3"
+  version: 7.5.6
+  resolution: "tar@npm:7.5.6"
   dependencies:
-    "@isaacs/fs-minipass": "npm:^4.0.0"
-    chownr: "npm:^3.0.0"
-    minipass: "npm:^7.1.2"
-    minizlib: "npm:^3.0.1"
-    mkdirp: "npm:^3.0.1"
-    yallist: "npm:^5.0.0"
-  checksum: 8485350c0688331c94493031f417df069b778aadb25598abdad51862e007c39d1dd5310702c7be4a6784731a174799d8885d2fde0484269aea205b724d7b2ffa
+    "@isaacs/fs-minipass": ^4.0.0
+    chownr: ^3.0.0
+    minipass: ^7.1.2
+    minizlib: ^3.1.0
+    yallist: ^5.0.0
+  checksum: 3d0c4940b78908cf7a796fcc7c05a804f5019e74526cbce7a094d381983393a994ae7521830f36156c369bc8a1e2da0dba8f41e9eb8eb090fce1c2a2025bc505
   languageName: node
   linkType: hard
 
@@ -3698,6 +3697,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"vega-expression@npm:^5.2.1":
+  version: 5.2.1
+  resolution: "vega-expression@npm:5.2.1"
+  dependencies:
+    "@types/estree": ^1.0.0
+    vega-util: ^1.17.4
+  checksum: d4331a522405c339c1fd0c8f8c60798d1acbcad0cbe6e5200afcdcefe58793c30d9d4b0d0d9eca937bfcb1fd8a33b335c540d580ae4d27ffa8939267b1fca6ac
+  languageName: node
+  linkType: hard
+
 "vega-expression@npm:~5.1.1":
   version: 5.1.2
   resolution: "vega-expression@npm:5.1.2"
@@ -3899,13 +3908,13 @@ __metadata:
   linkType: hard
 
 "vega-selections@npm:^5.6.0":
-  version: 5.6.0
-  resolution: "vega-selections@npm:5.6.0"
+  version: 5.6.3
+  resolution: "vega-selections@npm:5.6.3"
   dependencies:
-    d3-array: "npm:3.2.4"
-    vega-expression: "npm:^5.2.0"
-    vega-util: "npm:^1.17.3"
-  checksum: 6533b003fbc4cd523ae5c7650e5e905007fe37ac3db01ad6f652b62b3ab6a846441ddd38018a7e13cf275e176d92c193e2100c02aac8f03788f51326aeafd5fd
+    d3-array: 3.2.4
+    vega-expression: ^5.2.1
+    vega-util: ^1.17.4
+  checksum: ab0a7b2e35ccac2575860a9593520c22c473660b0983a9eeeaf897882e172954b2f15c16eb93c797535d0decf218348a01eb0087252808dc47a9f7b20c1b1d11
   languageName: node
   linkType: hard
 
@@ -3958,6 +3967,13 @@ __metadata:
   version: 1.17.3
   resolution: "vega-util@npm:1.17.3"
   checksum: d8bb21e2cb2ffa005bc3d9859d13aca8a0f13d6a143b8e12598c307de011ce1bc947402769e735ceb62d3b4e648214bdc00664aea1d819ad56563090e96d44b5
+  languageName: node
+  linkType: hard
+
+"vega-util@npm:^1.17.4":
+  version: 1.17.4
+  resolution: "vega-util@npm:1.17.4"
+  checksum: 07b4808fc5d43afc20566a15f4d02465c13d20ec8f36859f4be3ffad9ed3b12220c20efaa12aaf9bcc7b0a07003a513f038cbcebc6e3e90e2bfc3456be085bd0
   languageName: node
   linkType: hard
 
