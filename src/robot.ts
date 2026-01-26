@@ -69,11 +69,12 @@ export class URDFLoadingManager extends LoadingManager {
     this._workingPath = workingPath;
 
     this.setURLModifier((url: string) => {
+      const baseUrl = PageConfig.getBaseUrl();
       if (url.startsWith(this._workingPath)) {
         console.debug('[Loader]:', url);
-        return '/files' + url;
+        return baseUrl + 'files' + url;
       } else {
-        const modifiedURL = '/files' + this._workingPath + url;
+        const modifiedURL = baseUrl + 'files' + this._workingPath + url;
         console.debug('[Loader]:', modifiedURL);
         return modifiedURL;
       }
