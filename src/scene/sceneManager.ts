@@ -232,9 +232,14 @@ export class SceneManager {
   public setRobot(robot: URDFRobot): void {
     if (this._robotIndex !== -1) {
       this.scene.children[this._robotIndex].traverse(child => {
-        if (child instanceof THREE.Mesh) {
-          child.geometry.dispose();
-          child.material.dispose();
+        const mesh = child as THREE.Mesh;
+        if (mesh.isMesh) {
+          mesh.geometry.dispose();
+          if (Array.isArray(mesh.material)) {
+            mesh.material.forEach(mat => mat.dispose());
+          } else {
+            mesh.material.dispose();
+          }
         }
       });
       this.scene.children.splice(this._robotIndex, 1);
