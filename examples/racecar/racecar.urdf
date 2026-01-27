@@ -24,7 +24,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/chassis.STL"/>
+        <mesh filename="meshes/chassis.STL"/>
       </geometry>
       <material name="blue"/>
     </visual>
@@ -56,7 +56,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/left_rear_wheel.obj"/>
+        <mesh filename="meshes/left_rear_wheel.obj"/>
       </geometry>
       <material name="white"/>
     </visual>
@@ -96,7 +96,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/right_rear_wheel.obj"/>
+        <mesh filename="meshes/right_rear_wheel.obj"/>
       </geometry>
       <material name="white"/>
     </visual>
@@ -134,7 +134,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/left_steering_hinge.STL"/>
+        <mesh filename="meshes/left_steering_hinge.STL"/>
       </geometry>
       <material name="grey"/>
     </visual>
@@ -166,7 +166,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/right_steering_hinge.STL"/>
+        <mesh filename="meshes/right_steering_hinge.STL"/>
       </geometry>
       <material name="grey"/>
     </visual>
@@ -198,7 +198,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/left_front_wheel.obj"/>
+        <mesh filename="meshes/left_front_wheel.obj"/>
       </geometry>
       <material name="white"/>
     </visual>
@@ -236,7 +236,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/right_front_wheel.obj"/>
+        <mesh filename="meshes/right_front_wheel.obj"/>
       </geometry>
       <material name="white"/>
     </visual>
@@ -280,7 +280,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/hokuyo.obj"/>
+        <mesh filename="meshes/hokuyo.obj"/>
         <material name="grey"/>
       </geometry>
     </visual>

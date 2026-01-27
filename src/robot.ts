@@ -165,14 +165,15 @@ export class URDFLoadingManager extends LoadingManager {
         console.debug('[Loader]:', url);
         return '/files' + url;
       } else {
-        const modifiedURL = '/files' + this._workingPath + url;
+        const normalizedUrl = url.startsWith('/') ? url.slice(1) : url;
+        const modifiedURL = '/files' + this._workingPath + '/' + normalizedUrl;
         console.debug('[Loader]:', modifiedURL);
         return modifiedURL;
       }
     });
 
     this._xacroLoader.workingPath =
-      PageConfig.getBaseUrl() + 'files' + this._workingPath;
+      PageConfig.getBaseUrl() + 'files' + this._workingPath + '/';
     console.debug(
       '[Xacro]: Modify URL with prefix',
       this._xacroLoader.workingPath
