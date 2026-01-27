@@ -98,8 +98,6 @@ export class URDFLoadingManager extends LoadingManager {
         }
         objLoader.load(path, obj => {
           const wrapper = new Group();
-          // Fix orientation of .obj files
-          obj.rotation.x = Math.PI / 2;
           wrapper.add(obj);
           this._applyMaterialSetter(wrapper);
           done(wrapper);
