@@ -23,3 +23,16 @@ The viewer provides a control panel to manually modify the joint positions.
 Only revolute and prismatic joints will be included in the panel, fixed joints 
 are automatically ignored. Each joint must have upper and lower joint limits to
 be displayed on the control panel.
+
+The opacity of each link can be controlled and their frames can be toggled on/off.
+
+.. image:: _static/frame_opacity.gif
+    :alt: Gif showing the opacity and frame toggle
+
+Joints can be added and modified from the Joints Editor folder in the controls panel.
+To add a new joint, select the parent link and the child link from either the 3D viewer
+or the drop down menu, then choose the joint type and its properties and click "Add Joint".
+
+.. image:: _static/add_joint.gif
+    :alt: Gif showing how to add a joint
+

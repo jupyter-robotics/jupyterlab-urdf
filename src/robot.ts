@@ -161,9 +161,10 @@ export class URDFLoadingManager extends LoadingManager {
     this._workingPath = workingPath;
 
     this.setURLModifier((url: string) => {
+      const baseUrl = PageConfig.getBaseUrl();
       if (url.startsWith(this._workingPath)) {
         console.debug('[Loader]:', url);
-        return '/files' + url;
+        return baseUrl + 'files' + url;
       } else {
         const normalizedUrl = url.startsWith('/') ? url.slice(1) : url;
         const modifiedURL = '/files' + this._workingPath + '/' + normalizedUrl;
