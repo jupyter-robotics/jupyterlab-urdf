@@ -4,7 +4,18 @@ import { XacroLoader } from 'xacro-parser';
 
 import { PageConfig } from '@jupyterlab/coreutils';
 
-import { LoadingManager } from 'three';
+import {
+  Group,
+  LoadingManager,
+  Mesh,
+  MeshPhongMaterial,
+  Object3D
+} from 'three';
+
+import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
+import { ColladaLoader } from 'three/examples/jsm/loaders/ColladaLoader';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 
 /**
  *   THREE.js          ROS URDF
@@ -49,7 +60,88 @@ export class URDFLoadingManager extends LoadingManager {
     super();
     this._urdfLoader = new URDFLoader(this);
     this._xacroLoader = new XacroLoaderWithPath();
+    // Override the default mesh loader to support .obj files
+    (this._urdfLoader as any).loadMeshCb = this._meshLoader.bind(this);
+
     this.setWorkingPath();
+  }
+
+  /**
+   * Custom mesh loading function to support .stl, .dae, and .obj files
+   *
+   * @param path - The path to the mesh file
+   * @param manager - The loading manager
+   * @param done - The callback function to be called when the mesh is loaded
+   */
+  private _meshLoader(
+    path: string,
+    manager: LoadingManager,
+    done: (mesh: Object3D) => void
+  ): void {
+    if (/\.stl$/i.test(path)) {
+      const loader = new STLLoader(manager);
+      loader.load(path, geom => {
+        const mesh = new Mesh(geom, new MeshPhongMaterial());
+        done(mesh);
+      });
+    } else if (/\.dae$/i.test(path)) {
+      const loader = new ColladaLoader(manager);
+      loader.load(path, dae => done(dae.scene));
+    } else if (/\.obj$/i.test(path)) {
+      const mtlPath = path.replace(/\.obj$/i, '.mtl');
+      const mtlLoader = new MTLLoader(manager);
+
+      const loadObj = (materials?: any) => {
+        const objLoader = new OBJLoader(manager);
+        if (materials) {
+          objLoader.setMaterials(materials);
+        }
+        objLoader.load(path, obj => {
+          const wrapper = new Group();
+          wrapper.add(obj);
+          this._applyMaterialSetter(wrapper);
+          done(wrapper);
+        });
+      };
+
+      mtlLoader.load(
+        mtlPath,
+        materials => {
+          materials.preload();
+          loadObj(materials);
+        },
+        undefined,
+        () => {
+          loadObj();
+        }
+      );
+    } else {
+      console.warn(
+        `URDFLoader: Could not load model at ${path}.\nNo loader available`
+      );
+    }
+  }
+
+  /**
+   * Adds a virtual 'material' property to a `THREE.Object3D` (typically a Group)
+   * This is for obj files with mtl files
+   *
+   * @param obj - The object (Group or Mesh) to apply the material propagation to.
+   */
+  private _applyMaterialSetter(obj: Object3D): void {
+    Object.defineProperty(obj, 'material', {
+      get: function () {
+        return null;
+      },
+      set: function (material) {
+        obj.traverse(child => {
+          if ((child as Mesh).isMesh) {
+            (child as Mesh).material = material;
+          }
+        });
+      },
+      configurable: true
+    });
   }
 
   /**
@@ -74,14 +166,15 @@ export class URDFLoadingManager extends LoadingManager {
         console.debug('[Loader]:', url);
         return baseUrl + 'files' + url;
       } else {
-        const modifiedURL = baseUrl + 'files' + this._workingPath + url;
+        const normalizedUrl = url.startsWith('/') ? url.slice(1) : url;
+        const modifiedURL = '/files' + this._workingPath + '/' + normalizedUrl;
         console.debug('[Loader]:', modifiedURL);
         return modifiedURL;
       }
     });
 
     this._xacroLoader.workingPath =
-      PageConfig.getBaseUrl() + 'files' + this._workingPath;
+      PageConfig.getBaseUrl() + 'files' + this._workingPath + '/';
     console.debug(
       '[Xacro]: Modify URL with prefix',
       this._xacroLoader.workingPath
