@@ -89,7 +89,7 @@ export class URDFRenderer extends THREE.WebGLRenderer {
    */
   private _initControls(): void {
     this._controls.rotateSpeed = 2.0;
-    this._controls.zoomSpeed = 5;
+    this._controls.zoomSpeed = 1;
     this._controls.panSpeed = 2;
     this._controls.enableZoom = true;
     this._controls.enableDamping = false;
@@ -276,6 +276,42 @@ export class URDFRenderer extends THREE.WebGLRenderer {
    */
   getLinkObject(linkName: string): THREE.Object3D | null {
     return this._linkManager.getLinkObject(linkName);
+  }
+
+  /**
+   * Updates the OrbitControl's speed of panning
+   *
+   * @param newPanSpeed - Speed of panning
+   */
+  setOrbitControlsPanSpeed(
+    newPanSpeed: number,
+  ): void {
+    this._controls.panSpeed = newPanSpeed;
+    this.redraw();
+  }
+
+  /**
+   * Updates the OrbitControl's speed of panning
+   *
+   * @param newZoomSpeed - Speed of zooming
+   */
+  setOrbitControlsZoomSpeed(
+    newZoomSpeed: number,
+  ): void {
+    this._controls.zoomSpeed = newZoomSpeed;
+    this.redraw();
+  }
+
+  /**
+   * Updates the OrbitControl's speed of panning
+   *
+   * @param newRotateSpeed - Speed of panning
+   */
+  setOrbitControlsRotateSpeed(
+    newRotateSpeed: number,
+  ): void {
+    this._controls.rotateSpeed = newRotateSpeed;
+    this.redraw();
   }
 
   /**
