@@ -26,6 +26,8 @@ import { URDFWidgetFactory } from './factory';
 
 import { urdf_icon } from './icons';
 
+import { setContentsManager } from './robot';
+
 // For syntax highlighting
 import { IEditorLanguageRegistry } from '@jupyterlab/codemirror';
 
@@ -63,6 +65,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     languageRegistry: IEditorLanguageRegistry
   ) => {
     console.log('JupyterLab extension URDF is activated!');
+    setContentsManager(app.serviceManager.contents);
     const { commands, shell } = app;
 
     // Tracker

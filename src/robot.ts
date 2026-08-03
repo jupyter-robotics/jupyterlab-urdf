@@ -17,6 +17,20 @@ import { ColladaLoader } from 'three/examples/jsm/loaders/ColladaLoader';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 
+import type { Contents } from '@jupyterlab/services';
+
+import { decodeBase64ToUtf8, base64ToBytes } from './utils';
+
+/**
+ * Contents manager used to fetch mesh files directly from the Jupyter
+ * contents API instead of over HTTP.
+ */
+let contentsManager: Contents.IManager | null = null;
+
+export function setContentsManager(manager: Contents.IManager): void {
+  contentsManager = manager;
+}
+
 /**
  *   THREE.js          ROS URDF
  *      Y                Z
@@ -79,24 +93,24 @@ export class URDFLoadingManager extends LoadingManager {
     done: (mesh: Object3D) => void
   ): void {
     if (/\.stl$/i.test(path)) {
-      const loader = new STLLoader(manager);
-      loader.load(path, geom => {
-        const mesh = new Mesh(geom, new MeshPhongMaterial());
-        done(mesh);
+      this._loadMeshBytes(path).then(data => {
+        const geom = new STLLoader(manager).parse(data);
+        done(new Mesh(geom, new MeshPhongMaterial()));
       });
     } else if (/\.dae$/i.test(path)) {
-      const loader = new ColladaLoader(manager);
-      loader.load(path, dae => done(dae.scene));
+      this._loadMeshText(path).then(text => {
+        done(new ColladaLoader(manager).parse(text, path).scene);
+      });
     } else if (/\.obj$/i.test(path)) {
       const mtlPath = path.replace(/\.obj$/i, '.mtl');
-      const mtlLoader = new MTLLoader(manager);
 
       const loadObj = (materials?: any) => {
-        const objLoader = new OBJLoader(manager);
-        if (materials) {
-          objLoader.setMaterials(materials);
-        }
-        objLoader.load(path, obj => {
+        this._loadMeshText(path).then(text => {
+          const objLoader = new OBJLoader(manager);
+          if (materials) {
+            objLoader.setMaterials(materials);
+          }
+          const obj = objLoader.parse(text);
           const wrapper = new Group();
           wrapper.add(obj);
           this._applyMaterialSetter(wrapper);
@@ -104,22 +118,44 @@ export class URDFLoadingManager extends LoadingManager {
         });
       };
 
-      mtlLoader.load(
-        mtlPath,
-        materials => {
+      this._loadMeshText(mtlPath)
+        .then(text => {
+          const materials = new MTLLoader(manager).parse(text, mtlPath);
           materials.preload();
           loadObj(materials);
-        },
-        undefined,
-        () => {
-          loadObj();
-        }
-      );
+        })
+        .catch(() => loadObj());
     } else {
       console.warn(
         `URDFLoader: Could not load model at ${path}.\nNo loader available`
       );
     }
+  }
+
+  /**
+   * Fetches a mesh file through the Jupyter contents API.
+   */
+  private _getMeshModel(path: string): Promise<Contents.IModel> {
+    if (!contentsManager) {
+      return Promise.reject(new Error('No contents manager registered'));
+    }
+    return contentsManager.get(path.replace(/^\/+/, ''), { content: true });
+  }
+
+  private _loadMeshText(path: string): Promise<string> {
+    return this._getMeshModel(path).then(model =>
+      model.format === 'base64'
+        ? decodeBase64ToUtf8(model.content)
+        : model.content
+    );
+  }
+
+  private _loadMeshBytes(path: string): Promise<ArrayBuffer> {
+    return this._getMeshModel(path).then(model =>
+      model.format === 'base64'
+        ? (base64ToBytes(model.content).buffer as ArrayBuffer)
+        : (new TextEncoder().encode(model.content).buffer as ArrayBuffer)
+    );
   }
 
   /**
