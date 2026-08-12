@@ -2,7 +2,7 @@
 
 Robot description package modified from [_franka_ros_](https://github.com/frankarobotics/franka_ros) package to include dynamics parameters for the robot arm and gripper for simulating the behavior of the real robot. The descriptions also include transmission and control definitions required for Gazebo support (see [_panda_simulator_](https://github.com/justagist/panda_simulator) package).
 
-Robot dynamics values are as estimated in [this paper](https://inria.hal.science/hal-02265293v1).
+Robot dynamics values are as estimated in [this paper](https://ieeexplore.ieee.org/document/8772145).
 
 ## Special Thanks
 
