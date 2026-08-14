@@ -1,6 +1,6 @@
 import { LabIcon } from '@jupyterlab/ui-components';
 
-import urdf_logo from '/style/icons/urdf_logo.svg';
+import urdf_logo from '../style/icons/urdf_logo.svg';
 
 /**
  * Creates an icon for the URDF extension from a custom SVG
