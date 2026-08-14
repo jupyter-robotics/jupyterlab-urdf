@@ -17,6 +17,24 @@ import { ColladaLoader } from 'three/examples/jsm/loaders/ColladaLoader';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 
+import type { Contents } from '@jupyterlab/services';
+
+import {
+  decodeBase64ToUtf8,
+  base64ToBytes,
+  normalizeContentsPath
+} from './utils';
+
+/**
+ * Contents manager used to fetch mesh files directly from the Jupyter
+ * contents API instead of over HTTP.
+ */
+let contentsManager: Contents.IManager | null = null;
+
+export function setContentsManager(manager: Contents.IManager): void {
+  contentsManager = manager;
+}
+
 /**
  *   THREE.js          ROS URDF
  *      Y                Z
@@ -39,6 +57,27 @@ class XacroLoaderWithPath extends XacroLoader {
 
   constructor() {
     super();
+  }
+
+  // Overridden from XacroLoader to get included xacro files via contentsManager
+  async getFileContents(path: string): Promise<string> {
+    const cm = contentsManager;
+    if (!cm) {
+      return fetch(path).then(res => res.text());
+    }
+    const cleanPath = normalizeContentsPath(path, this.workingPath);
+    const rawPath = normalizeContentsPath(path);
+
+    const model = await cm.get(cleanPath, { content: true }).catch(() => {
+      if (cleanPath !== rawPath) {
+        return cm.get(rawPath, { content: true });
+      }
+      throw new Error(`File not found: ${cleanPath}`);
+    });
+
+    return model.format === 'base64'
+      ? decodeBase64ToUtf8(model.content)
+      : model.content;
   }
 }
 
@@ -79,47 +118,91 @@ export class URDFLoadingManager extends LoadingManager {
     done: (mesh: Object3D) => void
   ): void {
     if (/\.stl$/i.test(path)) {
-      const loader = new STLLoader(manager);
-      loader.load(path, geom => {
-        const mesh = new Mesh(geom, new MeshPhongMaterial());
-        done(mesh);
-      });
+      manager.itemStart(path);
+      this._loadMeshBytes(path)
+        .then(data => {
+          const geom = new STLLoader(manager).parse(data);
+          done(new Mesh(geom, new MeshPhongMaterial()));
+        })
+        .finally(() => manager.itemEnd(path));
     } else if (/\.dae$/i.test(path)) {
-      const loader = new ColladaLoader(manager);
-      loader.load(path, dae => done(dae.scene));
+      manager.itemStart(path);
+      this._loadMeshText(path)
+        .then(text => {
+          done(new ColladaLoader(manager).parse(text, path).scene);
+        })
+        .finally(() => manager.itemEnd(path));
     } else if (/\.obj$/i.test(path)) {
+      manager.itemStart(path);
       const mtlPath = path.replace(/\.obj$/i, '.mtl');
-      const mtlLoader = new MTLLoader(manager);
 
       const loadObj = (materials?: any) => {
-        const objLoader = new OBJLoader(manager);
-        if (materials) {
-          objLoader.setMaterials(materials);
-        }
-        objLoader.load(path, obj => {
-          const wrapper = new Group();
-          wrapper.add(obj);
-          this._applyMaterialSetter(wrapper);
-          done(wrapper);
-        });
+        this._loadMeshText(path)
+          .then(text => {
+            const objLoader = new OBJLoader(manager);
+            if (materials) {
+              objLoader.setMaterials(materials);
+            }
+            const obj = objLoader.parse(text);
+            const wrapper = new Group();
+            wrapper.add(obj);
+            this._applyMaterialSetter(wrapper);
+            done(wrapper);
+          })
+          .finally(() => manager.itemEnd(path));
       };
 
-      mtlLoader.load(
-        mtlPath,
-        materials => {
-          materials.preload();
-          loadObj(materials);
-        },
-        undefined,
-        () => {
-          loadObj();
-        }
-      );
+      this._loadMeshText(mtlPath)
+        .then(text => {
+          try {
+            const materials = new MTLLoader(manager).parse(text, mtlPath);
+            materials.preload();
+            loadObj(materials);
+          } catch {
+            loadObj();
+          }
+        })
+        .catch(() => loadObj());
     } else {
       console.warn(
         `URDFLoader: Could not load model at ${path}.\nNo loader available`
       );
     }
+  }
+
+  /**
+   * Fetches a mesh file through the Jupyter contents API.
+   */
+  private _getMeshModel(path: string): Promise<Contents.IModel> {
+    const cm = contentsManager;
+    if (!cm) {
+      return Promise.reject(new Error('No contents manager registered'));
+    }
+    const cleanPath = normalizeContentsPath(path, this._workingPath);
+    const rawPath = normalizeContentsPath(path);
+
+    return cm.get(cleanPath, { content: true }).catch(() => {
+      if (cleanPath !== rawPath) {
+        return cm.get(rawPath, { content: true });
+      }
+      return Promise.reject(new Error(`File not found: ${cleanPath}`));
+    });
+  }
+
+  private _loadMeshText(path: string): Promise<string> {
+    return this._getMeshModel(path).then(model =>
+      model.format === 'base64'
+        ? decodeBase64ToUtf8(model.content)
+        : model.content
+    );
+  }
+
+  private _loadMeshBytes(path: string): Promise<ArrayBuffer> {
+    return this._getMeshModel(path).then(model =>
+      model.format === 'base64'
+        ? (base64ToBytes(model.content).buffer as ArrayBuffer)
+        : (new TextEncoder().encode(model.content).buffer as ArrayBuffer)
+    );
   }
 
   /**
@@ -159,15 +242,18 @@ export class URDFLoadingManager extends LoadingManager {
 
     console.debug('[Manager]: Modify URL with prefix ', workingPath);
     this._workingPath = workingPath;
+    this._urdfLoader.workingPath = workingPath;
 
     this.setURLModifier((url: string) => {
       const baseUrl = PageConfig.getBaseUrl();
-      if (url.startsWith(this._workingPath)) {
+      const workingDir = this._workingPath ? this._workingPath + '/' : '/';
+      if (url.startsWith(workingDir)) {
         console.debug('[Loader]:', url);
         return baseUrl + 'files' + url;
       } else {
         const normalizedUrl = url.startsWith('/') ? url.slice(1) : url;
-        const modifiedURL = '/files' + this._workingPath + '/' + normalizedUrl;
+        const modifiedURL =
+          baseUrl + 'files' + this._workingPath + '/' + normalizedUrl;
         console.debug('[Loader]:', modifiedURL);
         return modifiedURL;
       }
@@ -195,6 +281,9 @@ export class URDFLoadingManager extends LoadingManager {
         (xml: XMLDocument) => {
           this._robotModel = this._urdfLoader.parse(xml);
           this._robotModel.rotation.x = -Math.PI / 2;
+          if (this.onLoad) {
+            this.onLoad();
+          }
         },
         (err: Error) => console.error(err)
       );
