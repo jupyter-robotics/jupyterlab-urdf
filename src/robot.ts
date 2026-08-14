@@ -61,11 +61,20 @@ class XacroLoaderWithPath extends XacroLoader {
 
   // Overridden from XacroLoader to get included xacro files via contentsManager
   async getFileContents(path: string): Promise<string> {
-    if (!contentsManager) {
+    const cm = contentsManager;
+    if (!cm) {
       return fetch(path).then(res => res.text());
     }
     const cleanPath = normalizeContentsPath(path, this.workingPath);
-    const model = await contentsManager.get(cleanPath, { content: true });
+    const rawPath = normalizeContentsPath(path);
+
+    const model = await cm.get(cleanPath, { content: true }).catch(() => {
+      if (cleanPath !== rawPath) {
+        return cm.get(rawPath, { content: true });
+      }
+      throw new Error(`File not found: ${cleanPath}`);
+    });
+
     return model.format === 'base64'
       ? decodeBase64ToUtf8(model.content)
       : model.content;
@@ -165,11 +174,19 @@ export class URDFLoadingManager extends LoadingManager {
    * Fetches a mesh file through the Jupyter contents API.
    */
   private _getMeshModel(path: string): Promise<Contents.IModel> {
-    if (!contentsManager) {
+    const cm = contentsManager;
+    if (!cm) {
       return Promise.reject(new Error('No contents manager registered'));
     }
     const cleanPath = normalizeContentsPath(path, this._workingPath);
-    return contentsManager.get(cleanPath, { content: true });
+    const rawPath = normalizeContentsPath(path);
+
+    return cm.get(cleanPath, { content: true }).catch(() => {
+      if (cleanPath !== rawPath) {
+        return cm.get(rawPath, { content: true });
+      }
+      return Promise.reject(new Error(`File not found: ${cleanPath}`));
+    });
   }
 
   private _loadMeshText(path: string): Promise<string> {
@@ -264,6 +281,9 @@ export class URDFLoadingManager extends LoadingManager {
         (xml: XMLDocument) => {
           this._robotModel = this._urdfLoader.parse(xml);
           this._robotModel.rotation.x = -Math.PI / 2;
+          if (this.onLoad) {
+            this.onLoad();
+          }
         },
         (err: Error) => console.error(err)
       );
