@@ -2,6 +2,75 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.7.0
+
+([Full Changelog](https://github.com/jupyter-robotics/jupyterlab-urdf/compare/v0.6.0...v0.7.0))
+
+### Enhancements made
+
+- Fix the Editor/Viewer split panel [#97](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/97) ([@Yahiewi](https://github.com/Yahiewi))
+- Added Editor folder to controls panel [#95](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/95) ([@Yahiewi](https://github.com/Yahiewi))
+- Added option to modify joint and Reset button. [#96](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/96) ([@Yahiewi](https://github.com/Yahiewi))
+- Added Links Folder and Refactored Codebase [#100](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/100) ([@Yahiewi](https://github.com/Yahiewi))
+- Add JupyterLite deployment from GitHub pages [#114](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/114) ([@IsabelParedes](https://github.com/IsabelParedes))
+- Add support for .obj meshes [#117](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/117) ([@Yahiewi](https://github.com/Yahiewi))
+- Fix mesh loading on nblink [#144](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/144) ([@Yahiewi](https://github.com/Yahiewi))
+
+### Maintenance and upkeep improvements
+
+- Remove unnecessary console logs [#98](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/98) ([@Yahiewi](https://github.com/Yahiewi))
+- Bump form-data from 4.0.0 to 4.0.4 [#94](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/94) ([@dependabot](https://github.com/dependabot))
+- Bump js-yaml from 3.14.1 to 3.14.2 [#102](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/102) ([@dependabot](https://github.com/dependabot))
+- Bump glob from 10.4.5 to 10.5.0 in /ui-tests [#103](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/103) ([@dependabot](https://github.com/dependabot))
+- Bump systeminformation from 5.27.1 to 5.27.14 in /ui-tests [#104](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/104) ([@dependabot](https://github.com/dependabot))
+- Bump vega-selections from 5.6.0 to 5.6.3 in /ui-tests [#105](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/105) ([@dependabot](https://github.com/dependabot))
+- Bump tar from 7.4.3 to 7.5.6 in /ui-tests [#108](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/108) ([@dependabot](https://github.com/dependabot))
+- Bump lodash-es from 4.17.21 to 4.17.23 in /ui-tests [#109](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/109) ([@dependabot](https://github.com/dependabot))
+- Bump lodash-es from 4.17.21 to 4.17.23 [#110](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/110) ([@dependabot](https://github.com/dependabot))
+- Bump lodash from 4.17.21 to 4.17.23 [#111](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/111) ([@dependabot](https://github.com/dependabot))
+- Bump lodash from 4.17.21 to 4.17.23 in /ui-tests [#112](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/112) ([@dependabot](https://github.com/dependabot))
+- Update CI workflows [#113](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/113) ([@IsabelParedes](https://github.com/IsabelParedes))
+- Fix artifact name for deployment [#115](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/115) ([@IsabelParedes](https://github.com/IsabelParedes))
+- Use the correct action to upload page artifacts [#116](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/116) ([@IsabelParedes](https://github.com/IsabelParedes))
+- Fix jupyterlite build and update documentation [#107](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/107) ([@Yahiewi](https://github.com/Yahiewi))
+- Bump webpack from 5.94.0 to 5.105.0 [#120](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/120) ([@dependabot](https://github.com/dependabot))
+- Bump systeminformation from 5.27.14 to 5.31.1 in /ui-tests [#121](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/121) ([@dependabot](https://github.com/dependabot))
+- Bump tar from 7.5.6 to 7.5.9 in /ui-tests [#122](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/122) ([@dependabot](https://github.com/dependabot))
+- Bump ajv from 6.12.6 to 6.14.0 [#123](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/123) ([@dependabot](https://github.com/dependabot))
+- Bump minimatch from 3.1.2 to 3.1.5 [#126](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/126) ([@dependabot](https://github.com/dependabot))
+- Bump minimatch from 9.0.5 to 9.0.9 in /ui-tests [#127](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/127) ([@dependabot](https://github.com/dependabot))
+- Bump tar from 7.5.9 to 7.5.11 in /ui-tests [#128](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/128) ([@dependabot](https://github.com/dependabot))
+- Bump picomatch from 4.0.2 to 4.0.4 in /ui-tests [#130](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/130) ([@dependabot](https://github.com/dependabot))
+- Bump systeminformation from 5.31.2 to 5.31.6 in /ui-tests [#139](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/139) ([@dependabot](https://github.com/dependabot))
+- Bump lodash-es from 4.17.23 to 4.18.1 in /ui-tests [#135](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/135) ([@dependabot](https://github.com/dependabot))
+- bump flatted from 3.2.7 to 3.4.2 [#129](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/129) ([@dependabot](https://github.com/dependabot))
+- Bump picomatch from 2.3.1 to 2.3.2 [#131](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/131) ([@dependabot](https://github.com/dependabot))
+- Bump yaml from 2.3.1 to 2.8.3 [#132](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/132) ([@dependabot](https://github.com/dependabot))
+- Bump lodash-es from 4.17.23 to 4.18.1 [#134](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/134) ([@dependabot](https://github.com/dependabot))
+- Bump lodash from 4.17.23 to 4.18.1 [#136](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/136) ([@dependabot](https://github.com/dependabot))
+- Bump @babel/plugin-transform-modules-systemjs from 7.22.5 to 7.29.4 [#138](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/138) ([@dependabot](https://github.com/dependabot))
+- Bump @tootallnate/once from 2.0.0 to 2.0.1 [#140](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/140) ([@dependabot](https://github.com/dependabot))
+- Bump ws from 8.17.1 to 8.21.0 [#141](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/141) ([@dependabot](https://github.com/dependabot))
+- Bump ubuntu version in readthedocs [#145](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/145) ([@Yahiewi](https://github.com/Yahiewi))
+- Bump postcss from 8.4.32 to 8.5.15 [#142](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/142) ([@dependabot](https://github.com/dependabot))
+- Bump shell-quote from 1.8.1 to 1.8.4 [#143](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/143) ([@dependabot](https://github.com/dependabot))
+- Bump fast-uri from 3.0.6 to 3.1.5 in /ui-tests [#147](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/147) ([@dependabot](https://github.com/dependabot))
+- Bump brace-expansion from 2.0.2 to 2.1.4 in /ui-tests [#148](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/148) ([@dependabot](https://github.com/dependabot))
+- Bump postcss from 8.5.3 to 8.5.26 in /ui-tests [#149](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/149) ([@dependabot](https://github.com/dependabot))
+- Bump js-yaml from 3.14.2 to 3.15.1 [#150](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/150) ([@dependabot](https://github.com/dependabot))
+- Bump postcss from 8.5.15 to 8.5.26 [#152](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/152) ([@dependabot](https://github.com/dependabot))
+- Bump tar from 7.5.11 to 7.5.22 in /ui-tests [#153](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/153) ([@dependabot](https://github.com/dependabot))
+- Update CI and dependencies [#154](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/154) ([@IsabelParedes](https://github.com/IsabelParedes))
+- Bump brace-expansion from 1.1.11 to 1.1.18 [#155](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/155) ([@dependabot](https://github.com/dependabot))
+- Update flaky link [#156](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/156) ([@IsabelParedes](https://github.com/IsabelParedes))
+- Migrate to jupyter-builder [#157](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/157) ([@Yahiewi](https://github.com/Yahiewi))
+
+### Documentation improvements
+
+- Update urdf version to 0.6.0 in docs [#93](https://github.com/jupyter-robotics/jupyterlab-urdf/pull/93) ([@IsabelParedes](https://github.com/IsabelParedes))
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.6.0
 
 ([Full Changelog](https://github.com/jupyter-robotics/jupyterlab-urdf/compare/v0.5.0...a66e7b86276c50b909904bffd74de1bc6cc9f33a))
@@ -25,7 +94,6 @@
 
 [@dependabot](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3Adependabot+updated%3A2025-05-27..2025-06-15&type=Issues) | [@github-actions](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3Agithub-actions+updated%3A2025-05-27..2025-06-15&type=Issues) | [@IsabelParedes](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3AIsabelParedes+updated%3A2025-05-27..2025-06-15&type=Issues) | [@Yahiewi](https://github.com/search?q=repo%3Ajupyter-robotics%2Fjupyterlab-urdf+involves%3AYahiewi+updated%3A2025-05-27..2025-06-15&type=Issues)
 
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.5.0
 
