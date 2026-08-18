@@ -13,7 +13,8 @@
     var (--jp-layout-color2)
   );
   --gui-color-font: var(--jp-ui-font-color1);
-  --gui-color-accent: var(--jp-brand-color0);
+  --gui-color-accent-bg: var(--jp-brand-color1);
+  --gui-color-accent-fg: var(--jp-ui-inverse-font-color1);
 }
 
 .jp-urdf-canvas canvas {
@@ -64,8 +65,9 @@
 }
 
 .urdf-gui .cr.function .property-name:hover {
-  background: var(--gui-color-accent);
-  border: 1px solid var(--gui-color-accent);
+  background: var(--gui-color-accent-bg);
+  border: 1px solid var(--gui-color-accent-bg);
+  color: var(--gui-color-accent-fg);
 }
 
 .urdf-gui li.cr.number.has-slider .property-name {
